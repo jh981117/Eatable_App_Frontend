@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+
+
+
+
 
 const HomePage = () => {
-  return <div></div>;
+    const [state, setState] = useState([]);
+  return <div>
+
+
+
+
+
+  </div>;
 };
 
 export default HomePage;
