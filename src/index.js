@@ -4,11 +4,21 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "bootstrap/dist/css/bootstrap.min.css";
+<<<<<<< Updated upstream
+=======
+import HomePage from './pages/HomePage';
+import AdminPage from './pages/admin/AdminPage';
+
+>>>>>>> Stashed changes
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+<<<<<<< Updated upstream
     <App />
+=======
+    <AdminPage />
+>>>>>>> Stashed changes
   </React.StrictMode>
 );
 
