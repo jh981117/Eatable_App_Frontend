@@ -5,12 +5,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "bootstrap/dist/css/bootstrap.min.css";
 import HomePage from './pages/HomePage';
+import { BrowserRouter } from 'react-router-dom';
+import LoginPage from './pages/user/LoginPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <HomePage />
-  </React.StrictMode>
+  <BrowserRouter>
+    <LoginPage />
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
