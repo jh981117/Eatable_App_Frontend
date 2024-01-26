@@ -1,18 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "bootstrap/dist/css/bootstrap.min.css";
-import HomePage from './pages/HomePage';
-import { BrowserRouter } from 'react-router-dom';
-import LoginPage from './pages/user/LoginPage';
+import AdminPage from './pages/admin/AdminPage';
+import EatableApp from './EatableApp';
+import App from './App';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
-  <BrowserRouter>
-    <LoginPage />
-  </BrowserRouter>
+
+  <React.StrictMode>
+    <App />
+    <AdminPage />
+    <EatableApp />
+  </React.StrictMode>
+
 );
 
 // If you want to start measuring performance in your app, pass a function

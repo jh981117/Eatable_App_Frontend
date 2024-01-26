@@ -1,6 +1,6 @@
 import React from 'react';
 
-const UserMyPage = () => {
+const CancelList = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const UserMyPage = () => {
     );
 };
 
-export default UserMyPage;
+export default CancelList;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SignupPage = () => {
+const PartnerList = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const SignupPage = () => {
     );
 };
 
-export default SignupPage;
+export default PartnerList;
