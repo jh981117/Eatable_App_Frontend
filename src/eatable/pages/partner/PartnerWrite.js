@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MyPage = () => {
+const PartnerWrite = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const MyPage = () => {
     );
 };
 
-export default MyPage;
+export default PartnerWrite;

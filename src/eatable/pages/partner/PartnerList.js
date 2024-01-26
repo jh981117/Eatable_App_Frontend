@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TimeLinePage = () => {
+const PartnerList = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const TimeLinePage = () => {
     );
 };
 
-export default TimeLinePage;
+export default PartnerList;
