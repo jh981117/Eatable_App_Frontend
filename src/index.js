@@ -10,9 +10,7 @@ import AdminPage from './pages/admin/AdminPage';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-
     <App />
-
     <AdminPage />
 
   </React.StrictMode>
