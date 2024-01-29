@@ -4,6 +4,7 @@ body {
 
   .reqForm {
     max-width: 800px;
+    
   }
 
   .detailTitle{
@@ -11,9 +12,14 @@ body {
     font-weight: bolder;
   }
 
+  .strName, .personName{
+    margin-bottom: 5px;
+  }
+
   .writeInfo, .checkInfo {
     font-weight: bolder;
   }
+  
   .detailInfo {
     text-align: center;
     margin-bottom: 20px;
@@ -32,7 +38,7 @@ body {
     max-height: 150px;
     background-color: #ffffff;
     padding: 20px; 
-    margin-bottom: 50px;
+    margin-bottom: 10px;
     overflow-y:auto;
   }
 
@@ -58,4 +64,8 @@ body {
     font-size: 20px;
     text-align: center;
     cursor: pointer;
+  }
+
+  .agreeCheck {
+    margin-bottom: 10px;
   }
