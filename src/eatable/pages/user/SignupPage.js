@@ -25,6 +25,7 @@ const SignupPage = () => {
         email_id: "",
         email_domain: "",
         input_domain: "",
+
     });
     console.log(userinfo);
 
@@ -36,6 +37,8 @@ const SignupPage = () => {
     //     emailError: "",
     //     submitError: "",
     // });
+
+    // 테스트 
 
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
