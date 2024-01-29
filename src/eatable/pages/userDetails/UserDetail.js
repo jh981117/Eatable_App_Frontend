@@ -10,8 +10,7 @@ const UserDetail = () => {
     let {id} = useParams();
 
     const goReservation = () => {
-        navigate("/reservation/" + id)
-    }
+        navigate("/reservation/")}
 
     return (
         <Container>
@@ -42,7 +41,7 @@ const UserDetail = () => {
                         <MenuSection/>
                     </div>
                     <div className='text-center'>
-                    <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '50rem' }} onClick={goReservation}>예약하기</Button>
+                    <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '25rem' }} onClick={goReservation}>예약하기</Button>
                     </div>
                 </Col>
             </Row>

@@ -27,9 +27,11 @@ const Reservation = () => {
                 <>
                     ㅎㅇㅎㅇ
                     <br />
-                    <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '50rem' }} onClick={() => navigate("/reservationOk/" + id)}>
+                    <div className='text-center'>
+                    <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '25rem' }} onClick={() => navigate("/reservationOk/")}>
                         예약확정
                     </Button>
+                    </div>
                 </>
             )}
         </div>
