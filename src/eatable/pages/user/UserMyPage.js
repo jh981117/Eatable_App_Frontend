@@ -1,7 +1,11 @@
 import React from "react";
 
 const UserMyPage = () => {
-  return <div>12345678</div>;
+  return (
+    <div>
+        
+    </div>
+  );
 };
 
 export default UserMyPage;

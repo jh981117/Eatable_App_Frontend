@@ -22,7 +22,6 @@ const EatableApp = () => {
           <Route path="/home" Component={HomePage}></Route>
 
           {/* 유저 */}
-          <Route path="/login" Component={HomePage}></Route>
           <Route path="/signup" Component={SignupPage}></Route>
           <Route path="/login" Component={LoginPage}></Route>
           <Route path="/usermypage" Component={UserMyPage}></Route>
