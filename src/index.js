@@ -5,14 +5,15 @@ import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EatableApp from "./eatable/EatableApp";
 import { BrowserRouter } from "react-router-dom";
-
+import PartnerWrite from "./eatable/pages/partner/PartnerWrite";
+import PartnerList from "./eatable/pages/partner/PartnerList";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
 
   <React.StrictMode>
     <BrowserRouter>
-      <EatableApp />
+      <EatableApp/>
     </BrowserRouter>
   </React.StrictMode>
 )
