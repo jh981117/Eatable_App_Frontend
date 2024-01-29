@@ -12,6 +12,9 @@ import PartnerDetail from "./pages/partner/PartnerDetail";
 import ApplyList from "./pages/admin/ApplyList";
 import ApplyReq from "./pages/admin/ApplyReq";
 import CancelReq from "./pages/admin/CancelReq";
+import UserDetail from "./pages/userDetails/UserDetail";
+import Reservation from "./pages/userDetails/reservation/Reservation";
+import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 
 const EatableApp = () => {
   return (
@@ -36,6 +39,13 @@ const EatableApp = () => {
           <Route path="/applylist" Component={ApplyList}></Route>
           <Route path="/applyreq" Component={ApplyReq}></Route>
           <Route path="/cancelreq:id" Component={CancelReq}></Route>
+
+
+
+          {/* 유저디테일 */}
+          <Route path="/userDetail" Component={UserDetail}></Route>
+          <Route path="/reservation" Component={Reservation}></Route>
+          <Route path="/reservationOk" Component={ReservationOk}></Route>
         </Routes>
       </Container>
     </div>
