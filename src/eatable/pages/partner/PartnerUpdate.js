@@ -1,6 +1,6 @@
 import React from 'react';
 
-const IntermentDetail = () => {
+const PartnerUpdate = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const IntermentDetail = () => {
     );
 };
 
-export default IntermentDetail;
+export default PartnerUpdate;
