@@ -1,6 +1,6 @@
 import React from 'react';
 
-const IntermentDetail = () => {
+const watingPage = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const IntermentDetail = () => {
     );
 };
 
-export default IntermentDetail;
+export default watingPage;
