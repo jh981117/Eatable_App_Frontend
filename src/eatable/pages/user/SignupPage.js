@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-// import { useDispatch } from "react-redux";
 import { Button, Container, Form, FormControl } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom/dist";
+import ProvisionPage from "./ProvisionPage";
 
 
 
 const SignupPage = () => {
-
-    // const dispatch = useDispatch();     //  생성한 action을 useDispatch를 통해 발생시킬 수 있다
-                                        //  만들어둔 액션생성 함수를 import한다.
 
     const navigate = useNavigate();
 
@@ -44,8 +41,6 @@ const SignupPage = () => {
         image: "",
         email_id: "",
         email_domain: "",
-        input_domain: "",
-
     });
     console.log(userinfo);
 
@@ -61,17 +56,14 @@ const SignupPage = () => {
         submitError: "",
     });
 
-    
-
-    // const [emailIdError, setEmailIdError] = useState('');
-    // const [emailDomainError, setEmailDomainError] = useState('');
-    // const [inputDomainError, setInputDomainError] = useState('');
 
     const validateField = (fieldName, value) => {
         let pwreg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,13}$/;
         let birthreg = /^\d{6}-\d{7}$/;
         let phonereg =  /^\d{3}-\d{4}-\d{4}$/;
         let emailreg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // const { email_id, email_domain } = emailsum;
+        let fullEmail = emailsum.email_id + "@" + emailsum.email_domain;
 
         switch (fieldName) {
             case 'username':
@@ -93,12 +85,7 @@ const SignupPage = () => {
             case 'email_domain':
                 return value.trim() === '' ? '메일주소를 입력해주세요.' : '';
             case 'email':
-                const emailId = userinfo['email_id'].trim();
-                const emailDomain = userinfo['email_domain'].trim();
-                const emailValue = `${emailId}@${emailDomain}`;
-                const emailError = emailValue.trim() === '' ? '이메일을 입력해주세요.' : (emailreg.test(emailValue) ? '' : '이메일 형식을 맞춰서 입력해주세요.');
-                return emailError;
-                console.log(emailValue);
+                return (emailreg.test(fullEmail)) ? '' : '이메일 형식을 맞춰서 입력해주세요.';
         }
     };
 
@@ -108,18 +95,10 @@ const SignupPage = () => {
             [e.target.name] : e.target.value,
         });
 
-        // 이메일주소 직접입력선택시 input_domain 활성화
-        if (e.target.name === 'email_domain' && e.target.value === 'input_domain') {
-            setUserinfo((e) => ({
-                ...userinfo,
-                input_domain: '',
-            }));
-        }
-
-        // emailsum email_id와 input_domain 추가
-        if (e.target.name === 'email_id' || e.target.name === 'input_domain') {
-            setEmailsum([...emailsum, userinfo['email_id'] + '@' + userinfo['email_domain']]);
-        }
+        setEmailsum((prevEmailsum) => ({
+            ...prevEmailsum,
+            [e.target.name]: e.target.value,
+        }));
 
     };
 
@@ -139,10 +118,6 @@ const SignupPage = () => {
             submitError: "",
           });
         
-       
-        // setEmailIdError('');
-        // setEmailDomainError('');
-        // setInputDomainError('');
 
         // < 필드에 대한 유효성 >
         const usernameError = validateField('username', userinfo.username);
@@ -153,9 +128,6 @@ const SignupPage = () => {
         const birthdateError = validateField('birthdate', userinfo.birthdate);
         const phoneError = validateField('phone', userinfo.phone);
         const emailError = validateField('email', userinfo.email);
-        // const emailIdError = validateField('email_id', userinfo.email_id);
-        // const emailDomainError = validateField('email_domain', userinfo.email_domain);
-        // const inputDomainError = validateField('input_domain', userinfo.input_domain);
 
         // < 에러메시지 >
         setError({
@@ -170,9 +142,11 @@ const SignupPage = () => {
             emailError: emailError,
           });
           console.log('emailValue:', userdata.email);
-        // setEmailIdError(emailIdError);
-        // setEmailDomainError(emailDomainError);
-        // setInputDomainError(inputDomainError);
+
+
+        const emailId = userinfo['email_id'].trim();
+        const emailDomain = userinfo['email_domain'].trim();
+        const emailValue = `${emailId}@${emailDomain}`;
 
         if (!usernameError && !passwordError && !repasswordError && !nameError && !nickNameError && !birthdateError && !phoneError && !emailError) {
             fetch("http://localhost:8080/api/user/signup", {
@@ -180,7 +154,10 @@ const SignupPage = () => {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                 },
-                body: JSON.stringify(userinfo),
+                body: JSON.stringify({
+                    ...userinfo,
+                    email: emailValue,
+                }),
             })
             .then(response => {
                 console.log(`response`, response);
@@ -211,7 +188,8 @@ const SignupPage = () => {
 
 
     return (
-        <Container className="mt-3 col-6 flex justify-content-center">
+        <Container className="mt-3 flex justify-content-center">
+            {/* <ProvisionPage/> */}
              <h2>회원가입</h2>
 
             <Form onSubmit={submitUserinfo}>
@@ -262,20 +240,20 @@ const SignupPage = () => {
                     <div className="d-flex">
                         <Form.Control className="form-control col-3" type="text" name="email_id" value={userinfo.email_id} onChange={changeValue}/>
                         <span className="mx-2"> @ </span>
-                        <FormControl className="form-control ms-2 col-3" type="text" name="input_domain" value={userinfo.input_domain} onChange={changeValue}/>
+                        <FormControl className="form-control ms-2 col-3" type="text" name="email_domain" value={userinfo.email_domain} onChange={changeValue}/>
                         <Form.Select className="form-control ms-4 col-3"
                             onChange={(e) => {
                                 changeValue(e);
                                 const value = e.target.value === "" ? "" : e.target.value;
                                 changeValue({
                                 target: {
-                                    name: "input_domain",
+                                    name: "email_domain",
                                     value: value,
                                 },
                                 });
                             }}
-                            name="input_domain"
-                            value={userinfo.input_domain}>
+                            name="email_domain"
+                            value={userinfo.email_domain}>
                             <option value="">-- 메일주소를 선택하세요. --</option>
                             <option value="naver.com">naver.com</option>
                             <option value="gmail.com">gmail.com</option>
@@ -290,7 +268,7 @@ const SignupPage = () => {
                 {error.submitError && <div className="text-danger">{error.submitError}</div>}
 
                 <Button variant="primary" onClick={back}>이전으로</Button>
-                <Button className="m-2" variant="primary" type="submit" onClick={submitUserinfo}>회원가입</Button>
+                <Button variant="primary" type="submit" onClick={submitUserinfo}>회원가입</Button>
             </Form>
         </Container>
     );
