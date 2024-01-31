@@ -7,20 +7,25 @@ import BarChart from './BarChart';
 const ApplyList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [lists, setLists] = useState([]);
-  
+    const [reject,setReject] = useState();
     const handleClose = () => setModalOpen(false);
     const handleOpen = () => setModalOpen(true);
 
+    const handleReject = (index) => {
+      const updatelist = [...lists];
+      updatelist[index].partnerReqState = "거절"
+      setReject(updatelist);
+    }
     const form = useRef();
 
-    useEffect(()=>{
-      fetch("http://localhost:8080/api/req/totalList")
-          .then(response => response.json())
-          .then(data => {
-              console.log("||||||||||" + data);
-              setLists(data);
-          });
-  },[])
+  //   useEffect(()=>{
+  //     fetch("http://localhost:8080/api/req/totalList")
+  //         .then(response => response.json())
+  //         .then(data => {
+  //             console.log("||||||||||" + data);
+  //             setLists(data);
+  //         });
+  // },[])
 
     const sendEmail = (e) => {
       e.preventDefault();
@@ -67,13 +72,15 @@ const ApplyList = () => {
           <td>{apply.id}</td>
           <td>{apply.storeName}</td>
           <td>{apply.managerName}</td>
-          <td>{apply.partnerReqState}</td>
+          <td style={{ color: apply.partnerReqState === '거절' ? 'red' : 'blue' }}>
+            {apply.partnerReqState}
+            </td>
           <td>{apply.phone}</td>
           <td>{apply.regDate}</td>
         <td>
           <div className={'btn-wrapper'}>
           <Button variant="outline-primary me-2" onClick={handleOpen}>승인</Button>
-          <Button  variant="outline-danger">거절</Button>
+          <Button  variant="outline-danger" onClick={() => handleReject(index)}>거절</Button>
           </div>
         </td>
       </tr>
