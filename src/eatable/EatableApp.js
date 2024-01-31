@@ -14,6 +14,7 @@ import ApplyReq from "./pages/admin/ApplyReq";
 import CancelReq from "./pages/admin/CancelReq";
 import AdminRoute from "./rolecomponents/AdminRoute";
 import RoleErrorPage from "./rolecomponents/RoleErrorPage";
+import MemberRoute from "./rolecomponents/MemberRoute";
 
 const EatableApp = () => {
   return (
@@ -26,7 +27,14 @@ const EatableApp = () => {
           {/* 유저 */}
           <Route path="/signup" Component={SignupPage}></Route>
           <Route path="/login" Component={LoginPage}></Route>
-          <Route path="/usermypage" Component={UserMyPage}></Route>
+          <Route
+            path="/usermypage"
+            element={
+              <MemberRoute>
+                <UserMyPage />
+              </MemberRoute>
+            }
+          ></Route>
 
           {/* 파트너 */}
           <Route path="/partnerwrite" Component={PartnerWrite}></Route>
@@ -47,7 +55,7 @@ const EatableApp = () => {
           <Route path="/cancelreq:id" Component={CancelReq}></Route>
 
           {/* 에러페이지 */}
-          <Route path="/roleErrorPage" element={RoleErrorPage}></Route>
+          <Route path="/roleErrorPage" Component={RoleErrorPage}></Route>
         </Routes>
       </Container>
     </div>
