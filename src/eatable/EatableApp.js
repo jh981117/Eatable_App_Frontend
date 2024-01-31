@@ -18,6 +18,13 @@ import RoleErrorPage from "./rolecomponents/RoleErrorPage";
 import MemberRoute from "./rolecomponents/MemberRoute";
 import MyHeader from "./pages/components/MyHeader";
 
+import ApplyReqUpdate from "./pages/admin/ApplyReqUpdate";
+
+import UserDetail from "./pages/userDetails/UserDetail";
+import Reservation from "./pages/userDetails/reservation/Reservation";
+import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
+
+
 const EatableApp = () => {
   return (
     <div>
@@ -55,10 +62,18 @@ const EatableApp = () => {
             }
           ></Route>
           <Route path="/applyreq" Component={ApplyReq}></Route>
+          <Route path="/applyrequpdate" Component={ApplyReqUpdate}></Route>
           <Route path="/cancelreq:id" Component={CancelReq}></Route>
 
           {/* 에러페이지 */}
           <Route path="/roleErrorPage" Component={RoleErrorPage}></Route>
+
+
+
+          {/* 유저디테일 */}
+          <Route path="/userDetail" Component={UserDetail}></Route>
+          <Route path="/reservation" Component={Reservation}></Route>
+          <Route path="/reservationOk" Component={ReservationOk}></Route>
         </Routes>
       </Container>
     </div>
