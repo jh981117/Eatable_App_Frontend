@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode"; // 수정된 부분
 
@@ -28,20 +28,16 @@ const checkAdminRole = () => {
   }
 };
 
-const ProtectedRoute = ({ children }) => {
+const AdminRoute = ({ children }) => {
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(!checkAdminRole());
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    navigate(-1); // 이전 페이지로 이동
-  };
-
-  if (showModal) {
-    return <NoPermissionModal onClose={handleCloseModal} />;
-  }
+  useEffect(() => {
+    if (!checkAdminRole()) {
+      navigate("/roleErrorPage"); // 권한이 없으면 Forbidden 페이지로 리다이렉트
+    }
+  }, [navigate]);
 
   return children;
 };
 
-export default ProtectedRoute;
+export default AdminRoute;

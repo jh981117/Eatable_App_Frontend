@@ -15,20 +15,19 @@ import BarChart from "./BarChart";
 const ApplyList = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [lists, setLists] = useState([]);
-
   const handleClose = () => setModalOpen(false);
   const handleOpen = () => setModalOpen(true);
 
   const form = useRef();
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/req/totalList")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("||||||||||" + data);
-        setLists(data);
-      });
-  }, []);
+  //   useEffect(()=>{
+  //     fetch("http://localhost:8080/api/req/totalList")
+  //         .then(response => response.json())
+  //         .then(data => {
+  //             console.log("||||||||||" + data);
+  //             setLists(data);
+  //         });
+  // },[])
 
   const sendEmail = (e) => {
     e.preventDefault();

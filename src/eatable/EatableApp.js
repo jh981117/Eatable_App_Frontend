@@ -12,7 +12,8 @@ import PartnerDetail from "./pages/partner/PartnerDetail";
 import ApplyList from "./pages/admin/ApplyList";
 import ApplyReq from "./pages/admin/ApplyReq";
 import CancelReq from "./pages/admin/CancelReq";
-import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./rolecomponents/AdminRoute";
+import RoleErrorPage from "./rolecomponents/RoleErrorPage";
 
 const EatableApp = () => {
   return (
@@ -36,10 +37,17 @@ const EatableApp = () => {
           {/* 어드민 */}
           <Route
             path="/applylist"
-            element={<ProtectedRoute component={ApplyList} />}
-          />
+            element={
+              <AdminRoute>
+                <ApplyList />
+              </AdminRoute>
+            }
+          ></Route>
           <Route path="/applyreq" Component={ApplyReq}></Route>
           <Route path="/cancelreq:id" Component={CancelReq}></Route>
+
+          {/* 에러페이지 */}
+          <Route path="/roleErrorPage" element={RoleErrorPage}></Route>
         </Routes>
       </Container>
     </div>
