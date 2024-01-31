@@ -71,6 +71,7 @@ const LoginPage = () => {
     }
   };
 
+  // 유효성 검사 함수
   const validateField = (fieldName, value) => {
     switch (fieldName) {
       case "username":
@@ -85,8 +86,6 @@ const LoginPage = () => {
           : value === user.password
           ? ""
           : "비밀번호를 확인해주세요.";
-      default:
-        return "";
     }
   };
 

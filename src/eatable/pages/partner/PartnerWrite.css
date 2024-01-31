@@ -1,4 +1,4 @@
-.container {
+/* .container {
   max-width: 600px;
   margin: auto;
   padding: 20px;
@@ -6,7 +6,7 @@
   border-radius: 20px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-}
+} */
 
 .form-control {
   margin-top: 10px;
@@ -75,15 +75,15 @@ select.has-value:focus {
 
 input:not(:placeholder-shown),
 select.has-value {
-  background-color: #e8f0Fe;
+  background-color: #e8f0fe;
 }
 
 /* Add transition for smooth effects */
 input,
 select.has-value {
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
 }
-
 
 /* Additional Styles for Checkboxes */
 input[type="checkbox"] {

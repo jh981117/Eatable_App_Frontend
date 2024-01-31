@@ -1,4 +1,5 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -15,10 +16,12 @@ import CancelReq from "./pages/admin/CancelReq";
 import AdminRoute from "./rolecomponents/AdminRoute";
 import RoleErrorPage from "./rolecomponents/RoleErrorPage";
 import MemberRoute from "./rolecomponents/MemberRoute";
+import MyHeader from "./pages/components/MyHeader";
 
 const EatableApp = () => {
   return (
     <div>
+      <MyHeader />
       <Container>
         <Routes>
           <Route path="/" Component={HomePage}></Route>
