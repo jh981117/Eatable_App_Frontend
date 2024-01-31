@@ -1,58 +1,76 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
-import "bootstrap/dist/css/bootstrap.min.css"; // 부트스트랩 CSS 불러오기
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-
-const Header = styled.header`
-  background-color: #f5f5f5;
-  padding: 10px;
-`;
-
-const Logo = styled.div`
-  /* 로고 스타일링 */
-`;
-
-const SearchIcon = styled(FontAwesomeIcon)`
-  cursor: pointer; /* 아이콘에 마우스 커서를 손가락 모양으로 변경 */
-`;
-
-const SearchBar = styled.input.attrs({
-  type: "text",
-  placeholder: "검색...",
-})`
-  display: ${(props) => (props.isSearchOpen ? "block" : "none")};
-  width: 30%; /* 검색 바를 부모 요소에 맞게 100%로 설정 */
-`;
+import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { useAuth } from "../../rolecomponents/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const MyHeader = () => {
-  const [isSearchOpen, setSearchOpen] = useState(false); // 검색 바의 초기 가시성 상태를 닫혀있는 상태로 설정
+  const { auth, setAuth } = useAuth();
 
-  // 검색 아이콘을 클릭했을 때 검색 바의 가시성을 토글하는 함수
-  const toggleSearch = () => {
-    setSearchOpen(!isSearchOpen);
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      setAuth({
+        isLoggedIn: true,
+        user: {
+          nickName: decodedToken.nickName,
+          // 다른 필요한 정보들...
+        },
+      });
+    } catch (error) {
+      console.error("토큰 디코딩 오류", error);
+      // 유효하지 않은 토큰 처리
+    }
+  } else {
+    // 토큰이 없는 경우 초기에 로그아웃 상태로 설정
+    setAuth({ isLoggedIn: false, user: null });
+  }
+}, []);
+
+console.log("auth.isLoggedIn:", auth.isLoggedIn);
+console.log("auth.user:", auth.user);
+  console.log(setAuth)
+
+
+  const handleLogout = () => {
+    setAuth({ isLoggedIn: false, user: null });
+    localStorage.removeItem("token");
   };
 
   return (
-    <Header className="container-fluid">
-      <div className="row align-items-center">
-        <Logo className="col-auto">로고</Logo> {/* 로고 부분 */}
-      
+    <Navbar bg="light" variant="light">
+      <Container>
+        <Navbar.Brand as={Link} to="/home">
+          Logo
+        </Navbar.Brand>
 
-  
-        <div className="col-auto">
-          <Link to="/login" className="btn btn-primary">
-            로그인
-          </Link>{" "}
-          {/* 로그인 버튼 */}
-          <Link to="/signup" className="btn btn-secondary">
-            회원가입
-          </Link>{" "}
-          {/* 회원가입 버튼 */}
-        </div>
-      </div>
-    </Header>
+        <Nav className="ml-auto">
+          {auth.isLoggedIn ? (
+            <>
+              <div className="profile-circle"></div> {/* 프로필 이미지 표시 */}
+              <span className="nickname">
+                {auth.user ? auth.user.nickName : "로그인 필요"}
+              </span>
+              {/* 사용자 닉네임 표시 */}
+              <Button onClick={handleLogout} variant="outline-secondary">
+                로그아웃
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-outline-secondary">
+                로그인
+              </Link>
+              <Link to="/signup" className="btn btn-secondary">
+                회원가입
+              </Link>
+            </>
+          )}
+        </Nav>
+      </Container>
+    </Navbar>
   );
 };
 

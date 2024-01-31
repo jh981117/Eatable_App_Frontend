@@ -10,6 +10,8 @@ const checkAdminRole = () => {
   try {
     const decoded = jwtDecode(token);
     const roles = decoded.auth ? decoded.auth.split(",") : [];
+    console.log(decoded)
+    console.log(token)
     return roles.includes("ROLE_ADMIN");
   } catch (error) {
     console.error("토큰 디코딩 중 오류 발생:", error);

@@ -1,30 +1,23 @@
-import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import { useNavigate, useResolvedPath } from 'react-router-dom';
+import React, { useState } from "react";
+import { Button, Container, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../rolecomponents/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
-const LoginPage = (props) => {
 
-    const navigate = useNavigate();     // 페이지간 이동을 담당하는 함수 생성
+const LoginPage = () => {
 
-    const [user, setUser] = useState({  // user상태 초기화(const로 정의 및 초기화)
-        id: "",                         // useState : react의 상태관리훅(업데이트하는 함수 setuser생성)
-        username: "",
-        password: "",
-        usernameError: "",
-        passwordError: "",
-        submitError:"",
-    });
-    console.log(user);  // user를 잘 받아오는지 콘솔창에서 확인  
+  const { setAuth } = useAuth();
+  const navigate = useNavigate();
 
-    // 유효성 검사 함수
-    const validateField = (fieldName, value) => {
-        switch (fieldName) {
-            case 'username':
-                return value.trim() === '' ? '아이디를 입력해주세요.' : ((value === user.username) ? '' : '존재하지 않는 아이디 입니다.');     // 저장된 아이디인지도 확인해줘야함. 실제로 있는 아이디인지.
-            case 'password':
-                return value.trim() === '' ? '비밀번호를 입력해주세요.' : ((value === user.password) ? '' : '비밀번호를 확인해주세요.');
-        }
-    };
+  const [user, setUser] = useState({
+    id: "",
+    username: "",
+    password: "",
+    usernameError: "",
+    passwordError: "",
+    submitError: "",
+  });
 
   const changeValue = (e) => {
     setUser({
@@ -36,26 +29,20 @@ const LoginPage = (props) => {
   const submitUser = async (e) => {
     e.preventDefault();
 
-        // < 에러상태 초기화 >
-        setUser({
-            usernameError: "",
-            passwordError: "",
-          });
-        // user.setUsernameError('');
-        // user.setPasswordError('');
+    setUser({
+      usernameError: "",
+      passwordError: "",
+      submitError: "",
+    });
 
-        // < 필드에 대한 유효성 >
-        const usernameError = validateField('username', user.username);
-        const passwordError = validateField('password', user.password);
+    const usernameError = validateField("username", user.username);
+    const passwordError = validateField("password", user.password);
 
-        // < 에러메시지 >
-        setUser({
-            ...user,
-            usernameError: usernameError,
-            passwordError: passwordError,
-          });
-        // user.setUsernameError(usernameError);
-        // user.setPasswordError(passwordError);
+    setUser({
+      ...user,
+      usernameError: usernameError,
+      passwordError: passwordError,
+    });
 
     if (!usernameError && !passwordError) {
       try {
@@ -76,8 +63,16 @@ const LoginPage = (props) => {
           alert("로그인 성공!");
 
           saveTokenToLocalStorage(data.token); // JWT 저장
+          // JWT에서 사용자 정보 추출 (예: 닉네임)
+          const decodedToken = jwtDecode(data.token);
+          setAuth({
+            isLoggedIn: true,
+            user: {
+              nickname: decodedToken.nickname, // 토큰에 따라 필드명이 다를 수 있습니다
+            },
+          });
 
-          navigate(`/applyreq`);
+          navigate(-1); // 이전 페이지로 돌아가기
         } else {
           console.error("로그인 실패:", response.status);
           alert("로그인 실패!");
@@ -107,33 +102,65 @@ const LoginPage = (props) => {
     }
   };
 
-    const signup = () => {
-        navigate("/signup");
-    }
+  const signup = () => {
+    navigate("/signup");
+  };
 
-    return (
-        <Container className="mt-3 col-6 flex justify-content-center">
-            <h2>로그인 페이지</h2>
+  const saveTokenToLocalStorage = (token) => {
+    // 로컬 스토리지에 토큰 저장 로직을 여기에 구현
+    localStorage.setItem("token", token);
+  };
 
-            <Form onSubmit={submitUser}>
-                <Form.Group className="mt-3" controlId="formBasicUsername">
-                    <Form.Label>아이디 : </Form.Label>
-                    <Form.Control type="text" name="username" placeholder="아이디를 입력해주세요." value={user.username} onChange={changeValue}/>
-                    {user.usernameError && <div className="text-danger">{user.usernameError}</div>}
-                </Form.Group>
+  return (
+    <Container className="mt-3 col-6 flex justify-content-center">
+      <h2>로그인 페이지</h2>
 
-                <Form.Group className="mt-3" controlId="formBasicPassword">
-                    <Form.Label>비밀번호 : </Form.Label>
-                    <Form.Control type="password" name="password" placeholder="비밀번호를 입력해주세요." value={user.password} onChange={changeValue}/>
-                    {user.passwordError && <div className="text-danger">{user.passwordError}</div>}
-                </Form.Group>
+      <Form onSubmit={submitUser}>
+        <Form.Group className="mt-3" controlId="formBasicUsername">
+          <Form.Label>아이디 : </Form.Label>
+          <Form.Control
+            type="text"
+            name="username"
+            placeholder="아이디를 입력해주세요."
+            value={user.username}
+            onChange={changeValue}
+          />
+          {user.usernameError && (
+            <div className="text-danger">{user.usernameError}</div>
+          )}
+        </Form.Group>
 
-                {user.submitError && <div className="text-danger">{user.submitError}</div>}
-                <Button variant="primary" type="submit" onClick={submitUser}>로그인</Button>
-                <Button className="m-2" variant="primary" type="submit" onClick={signup}>회원가입</Button>
-            </Form>
-        </Container>
-    );
+        <Form.Group className="mt-3" controlId="formBasicPassword">
+          <Form.Label>비밀번호 : </Form.Label>
+          <Form.Control
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력해주세요."
+            value={user.password}
+            onChange={changeValue}
+          />
+          {user.passwordError && (
+            <div className="text-danger">{user.passwordError}</div>
+          )}
+        </Form.Group>
+
+        {user.submitError && (
+          <div className="text-danger">{user.submitError}</div>
+        )}
+        <Button variant="primary" type="submit">
+          로그인
+        </Button>
+        <Button
+          className="m-2"
+          variant="primary"
+          type="button"
+          onClick={signup}
+        >
+          회원가입
+        </Button>
+      </Form>
+    </Container>
+  );
 };
 
 export default LoginPage;
