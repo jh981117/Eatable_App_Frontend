@@ -1,4 +1,4 @@
-.container {
+#partnerwrite {
   max-width: 600px;
   margin: auto;
   padding: 20px;
@@ -126,4 +126,55 @@ input[type="checkbox"]:focus {
 /* Checkbox unchecked state */
 input[type="checkbox"]:not(:checked) {
   background-color: #fff;
+}
+
+
+.act {
+  position: relative;
+}
+
+.act button,
+.act span {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  
+}
+
+.act > * > svg {
+  display: block;
+}
+
+.act span {
+  left: 20px;
+  opacity: .5;
+  margin-top: 1px;
+}
+
+.act button {
+  right: 20px;
+  left: auto;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.act button:hover {
+  color: #0077ff;
+}
+
+.act input {
+  box-sizing: border-box;
+  display: block;
+  /* width: 560px; */
+  height: 50px;
+  border-radius: 5px;
+  /* padding: 0 50px 0 45px; */
+  /* font-size: 20px; */
+  outline: none;
+  border: 2px solid #0077ff;
+  background: white;
 }
