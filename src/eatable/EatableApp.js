@@ -12,6 +12,7 @@ import PartnerDetail from "./pages/partner/PartnerDetail";
 import ApplyList from "./pages/admin/ApplyList";
 import ApplyReq from "./pages/admin/ApplyReq";
 import CancelReq from "./pages/admin/CancelReq";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const EatableApp = () => {
   return (
@@ -33,7 +34,10 @@ const EatableApp = () => {
           <Route path="/partnerdetail:id" Component={PartnerDetail}></Route>
 
           {/* 어드민 */}
-          <Route path="/applylist" Component={ApplyList}></Route>
+          <Route
+            path="/applylist"
+            element={<ProtectedRoute component={ApplyList} />}
+          />
           <Route path="/applyreq" Component={ApplyReq}></Route>
           <Route path="/cancelreq:id" Component={CancelReq}></Route>
         </Routes>

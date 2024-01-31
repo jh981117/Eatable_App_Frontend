@@ -12,14 +12,6 @@ import emailjs from "@emailjs/browser";
 import LineChart from "./LineChart";
 import BarChart from "./BarChart";
 
-/////////
-
-const config = {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("Token")}`, // 저장된 JWT를 헤더에 추가
-  },
-};
-
 const ApplyList = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [lists, setLists] = useState([]);
@@ -30,7 +22,7 @@ const ApplyList = () => {
   const form = useRef();
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/req/totalList", config)
+    fetch("http://localhost:8080/api/req/totalList")
       .then((response) => response.json())
       .then((data) => {
         console.log("||||||||||" + data);
