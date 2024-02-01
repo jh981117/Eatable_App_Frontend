@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { useNavigate, useResolvedPath } from 'react-router-dom';
 
-const LoginPage = (props) => {
+const LoginPage = () => {
 
     const navigate = useNavigate();     // 페이지간 이동을 담당하는 함수 생성
 
@@ -77,7 +77,7 @@ const LoginPage = (props) => {
                 if (data !== null) {
                     console.log(`로그인 성공`, data);
                     alert("로그인 성공!");
-                    navigate(`/applyreq`);
+                    navigate(`/usermypage`);
                 } else {
                     alert("로그인 실패!");
                 }
@@ -85,8 +85,8 @@ const LoginPage = (props) => {
         }
     };
 
-    const signup = () => {
-        navigate("/signup");
+    const provision = () => {
+        navigate("/provision");
     }
 
     return (
@@ -108,7 +108,7 @@ const LoginPage = (props) => {
 
                 {user.submitError && <div className="text-danger">{user.submitError}</div>}
                 <Button variant="primary" type="submit" onClick={submitUser}>로그인</Button>
-                <Button className="m-2" variant="primary" type="submit" onClick={signup}>회원가입</Button>
+                <Button className="m-2" variant="primary" type="submit" onClick={provision}>회원가입</Button>
             </Form>
         </Container>
     );

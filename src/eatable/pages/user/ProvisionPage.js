@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Button, Container, Form, Table } from 'react-bootstrap';
-import SignupPage from './SignupPage';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ProvisionPage = () => {
+
+    const navigate = useNavigate();
 
     const [provision, setProvision] = useState(false);  // 약관동의
     const [infoagree, setInfoagree] = useState(false);  // 개인정보동의
     const [nextPage, setNextPage] = useState(false);    // 동의시에만 다음페이지로
-    const [sign, setSign] = useState(false);
-
 
     const handleProvision = () => {
         setProvision(!provision);
@@ -25,7 +24,7 @@ const ProvisionPage = () => {
         
         if (nextPage) { // 전부 동의
             // alert('회원가입 페이지로 이동합니다.');
-            sign(true);
+            navigate('/signup');
         } else {
           alert('모든 약관에 동의해주세요.');
         }
@@ -269,7 +268,7 @@ const ProvisionPage = () => {
             </Container>
             <Form.Check  id="infoCheckbox" className="infoCheck" type="checkbox" label="개인정보 수집 및 이용 동의 (필수)" onChange={handleInfoAgree}/>
         
-            <Link to={SignupPage}><Button variant="primary"  onClick={handleNextPageClick}>다음</Button></Link>
+            <Button variant="primary"  onClick={handleNextPageClick}>다음</Button>
         </div>
     );
 };
