@@ -1,33 +1,43 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Container, Row, Col,Button, Form, Modal, Table } from 'react-bootstrap';
+import React, { useRef, useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Form,
+  Modal,
+  Table,
+} from "react-bootstrap";
 import emailjs from "@emailjs/browser";
-
+import LineChart from "./LineChart";
+import BarChart from "./BarChart";
 const ApplyList = () => {
-    const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [lists, setLists] = useState([]);
 
-    const [lists, setLists] = useState([]);
-    const [reject,setReject] = useState();
+  const [reject, setReject] = useState();
+  const handleClose = () => setModalOpen(false);
+  const handleOpen = () => setModalOpen(true);
 
-    const handleClose = () => setModalOpen(false);
-    const handleOpen = () => setModalOpen(true);
+  const handleReject = (index) => {
+    const updatelist = [...lists];
+    updatelist[index].partnerReqState = "거절";
+    setReject(updatelist);
+  };
+  const form = useRef();
 
-    const handleReject = (index) => {
-      const updatelist = [...lists];
-      updatelist[index].partnerReqState = "거절"
-      setReject(updatelist);
-    }
-    const form = useRef();
+  useEffect(() => {
+    fetch("http://localhost:8080/api/req/totalList")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("||||||||||" + data);
+        setLists(data);
+      });
+  }, []);
 
 
-  //   useEffect(()=>{
-  //     fetch("http://localhost:8080/api/req/totalList")
-  //         .then(response => response.json())
-  //         .then(data => {
-  //             console.log("||||||||||" + data);
-  //             setLists(data);
-  //         });
-  // },[])
-
+  const sendEmail = (e) => {
+    e.preventDefault();
 
     emailjs
       .sendForm(
@@ -46,51 +56,78 @@ const ApplyList = () => {
       );
     setModalOpen(false);
   };
-
-    return (
-        <div>
-              
-     <Container>      
-      <Row>
-        <Col >
-        <Table striped bordered hover size='sm' className="list_table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>업체명</th>
-          <th>문의자명</th>
-          <th>상태</th>
-          <th>전화번호</th>
-       
-        </tr>
-      </thead>
-      <tbody>
-
-      
-      {lists.map((apply, index) => (
-        <tr key={index}>      
-          <td>{apply.id}</td>
-          <td>{apply.storeName}</td>
-          <td>{apply.managerName}</td>
-          <td style={{ color: apply.partnerReqState === '거절' ? 'red' : 'blue' }}>
-            {apply.partnerReqState}
-            </td>
-          <td>{apply.phone}</td>
-          <td>{apply.regDate}</td>
-
-        <td>
-          <div className={'btn-wrapper'}>
-          <Button variant="outline-primary me-2" onClick={handleOpen}>승인</Button>
-          <Button  variant="outline-danger" onClick={() => handleReject(index)}>거절</Button>
-          </div>
-        </td>
-      </tr>    
-      </tbody>
-    </Table>   
-        </Col>
-      </Row>
-    </Container> 
-
+  return (
+    <div>
+      <Container>
+        <Row>
+          <Col className="d-flex justify-content-center">
+            <BarChart />
+          </Col>
+          <Col className="d-flex justify-content-center">
+            <BarChart />
+          </Col>
+        </Row>
+        <Row>
+          <Col className="d-flex justify-content-center mb-4">
+            <LineChart />
+          </Col>
+        </Row>
+      </Container>
+      <Container>
+        <Row>
+          <Col>
+            <Table striped bordered hover size="sm" className="list_table">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>업체명</th>
+                  <th>문의자명</th>
+                  <th>상태</th>
+                  <th>전화번호</th>
+                  <th>신청날짜</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lists.map((apply, index) => (
+                  <tr key={index}>
+                    <td>{apply.id}</td>
+                    <td>{apply.storeName}</td>
+                    <td>{apply.managerName}</td>
+                    <td>{apply.partnerReqState}</td>
+                    <td
+                      style={{
+                        color:
+                          apply.partnerReqState === "거절" ? "red" : "blue",
+                      }}
+                    >
+                      {apply.partnerReqState}
+                    </td>
+                    <td>{apply.phone}</td>
+                    <td>{apply.regDate}</td>
+                    <td>
+                      <div className={"btn-wrapper"}>
+                        <Button
+                          variant="outline-primary me-2"
+                          onClick={handleOpen}
+                        >
+                          승인
+                        </Button>
+                        <Button variant="outline-danger">거절</Button>
+                        <Button
+                          variant="outline-danger"
+                          onClick={() => handleReject(index)}
+                        >
+                          거절
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
+      </Container>
       <Modal show={modalOpen}>
         <Modal.Body>정말 승인 하시겠습니까?</Modal.Body>
         <Modal.Footer>
@@ -128,5 +165,4 @@ const ApplyList = () => {
     </div>
   );
 };
-
 export default ApplyList;
