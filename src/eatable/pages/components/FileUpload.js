@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Image } from "react-bootstrap";
+
+
 
 const FileUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);

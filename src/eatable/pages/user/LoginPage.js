@@ -64,15 +64,31 @@ const LoginPage = () => {
 
           saveTokenToLocalStorage(data.token); // JWT 저장
           // JWT에서 사용자 정보 추출 (예: 닉네임)
-          const decodedToken = jwtDecode(data.token);
-          setAuth({
-            isLoggedIn: true,
-            user: {
-              nickname: decodedToken.nickname, // 토큰에 따라 필드명이 다를 수 있습니다
+
+      const profileResponse = await fetch('http://localhost:8080/api/user/profile', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${data.token}`,
+              'Content-Type': 'application/json',
             },
           });
 
-          navigate(-1); // 이전 페이지로 돌아가기
+          if (!profileResponse.ok) {
+            throw new Error('Failed to fetch profile');
+          }
+
+          const profileData = await profileResponse.json();
+
+          // 로그인 상태와 프로필 정보를 함께 업데이트
+          setAuth({ isLoggedIn: true, user: profileData, profile: profileData });
+
+
+
+
+
+          
+       
+          navigate(-1) ? navigate(-1) : navigate("/"); // 이전 페이지로 돌아가기
         } else {
           console.error("로그인 실패:", response.status);
           alert("로그인 실패!");

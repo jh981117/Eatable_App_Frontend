@@ -1,60 +1,92 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import { jwtDecode } from "jwt-decode";
+import PartnerDetail from "../partner/PartnerDetail";
 
 const MyHeader = () => {
-  const { auth, setAuth } = useAuth();
+  const { auth, setAuth, updateProfile } = useAuth();
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    try {
-      const decodedToken = jwtDecode(token);
-      setAuth({
-        isLoggedIn: true,
-        user: {
-          nickName: decodedToken.nickName,
-          // 다른 필요한 정보들...
-        },
-      });
-    } catch (error) {
-      console.error("토큰 디코딩 오류", error);
-      // 유효하지 않은 토큰 처리
-    }
-  } else {
-    // 토큰이 없는 경우 초기에 로그아웃 상태로 설정
-    setAuth({ isLoggedIn: false, user: null });
-  }
-}, []);
+  useEffect(() => {
+    updateProfile();
+    // 의존성 배열에 auth 상태를 포함시킴으로써 auth 상태가 변경될 때마다 updateProfile 함수가 호출됩니다.
+  }, []);
 
-console.log("auth.isLoggedIn:", auth.isLoggedIn);
-console.log("auth.user:", auth.user);
-  console.log(setAuth)
-
-
+  console.log(auth);
   const handleLogout = () => {
-    setAuth({ isLoggedIn: false, user: null });
+    setAuth({ isLoggedIn: false, user: null, profile: null }); // 프로필 정보도 초기화
     localStorage.removeItem("token");
+    // 필요한 경우 localStorage에서 다른 인증 관련 데이터도 제거
+  };
+
+  // 네비바의 스타일을 설정합니다.
+  const navbarStyle = {
+    height: "60px", // 원하는 높이로 조정하세요
+    display: "flex",
+    alignItems: "center", // 세로 가운데 정렬
+    justifyContent: "space-between", // 요소 간 간격 조절
+    padding: "0 20px", // 좌우 여백 추가
+    
+  };
+
+  // 로그아웃 버튼의 스타일을 설정합니다.
+  const logoutButtonStyle = {
+    fontSize: "14px", // 원하는 글자 크기로 조정
+    margin: "0", // 마진 없애기
+    marginRight: "5px",
   };
 
   return (
-    <Navbar bg="light" variant="light">
+    <Navbar bg="light" variant="light" style={navbarStyle}>
       <Container>
         <Navbar.Brand as={Link} to="/home">
-          Logo
+          Eatabel
         </Navbar.Brand>
-
         <Nav className="ml-auto">
+          <Link to={"/partnerlist"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
+              파트너페이지
+            </Button>
+          </Link>
+          <Link to={"/userDetail"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
+              유저디테일
+            </Button>
+          </Link>
+          <Link to={"/applyreq"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
+              업체신청등록
+            </Button>
+          </Link>
+          <Link to={"/applylist"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
+              어드민페이지
+            </Button>
+          </Link>
           {auth.isLoggedIn ? (
             <>
-              <div className="profile-circle"></div> {/* 프로필 이미지 표시 */}
-              <span className="nickname">
-                {auth.user ? auth.user.nickName : "로그인 필요"}
-              </span>
-              {/* 사용자 닉네임 표시 */}
-              <Button onClick={handleLogout} variant="outline-secondary">
+              <Link to="/usermypage" className="d-flex align-items-center">
+                {/* 세로 가운데 정렬 */}
+                <Image
+                  src={auth.profile?.profileImageUrl}
+                  alt="Profile"
+                  style={{
+                    borderRadius: "50%",
+                    maxWidth: "40px",
+                    height: "40px",
+                    cursor: "pointer",
+                    marginRight: "5px",
+                  }}
+                />
+                <span className="nickname ml-2" style={{ marginRight: "10px" }}>
+                  {auth.profile ? auth.profile.nickName : "로그인 필요"}
+                </span>
+              </Link>
+              <Button
+                onClick={handleLogout}
+                variant="outline-secondary"
+                style={logoutButtonStyle} // 로그아웃 버튼에 스타일 적용
+              >
                 로그아웃
               </Button>
             </>

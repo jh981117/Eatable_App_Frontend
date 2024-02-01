@@ -23,38 +23,12 @@ import ApplyReqUpdate from "./pages/admin/ApplyReqUpdate";
 import UserDetail from "./pages/userDetails/UserDetail";
 import Reservation from "./pages/userDetails/reservation/Reservation";
 import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
-import { jwtDecode } from "jwt-decode";
 import { AuthProvider } from "./rolecomponents/AuthContext";
 import FileUpload from "./pages/components/FileUpload";
 
 
 const EatableApp = () => {
-  // 로그인 상태 관리
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setIsLoggedIn(true);
-        setUser({ nickname: decodedToken.nickName });
-      } catch (error) {
-        console.error("토큰 디코딩 오류", error);
-      }
-    } else {
-      // 토큰이 없는 경우 초기에 로그아웃 상태로 설정
-      setIsLoggedIn(false);
-      setUser(null);
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setUser(null);
-  };
+ 
 
   return (
     <div>
@@ -105,7 +79,6 @@ const EatableApp = () => {
             <Route path="/userDetail" Component={UserDetail}></Route>
             <Route path="/reservation" Component={Reservation}></Route>
             <Route path="/reservationOk" Component={ReservationOk}></Route>
-            <Route path="/song" Component={FileUpload}></Route>
             
           </Routes>
         </Container>

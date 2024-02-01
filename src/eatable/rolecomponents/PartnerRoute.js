@@ -2,6 +2,8 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+
+
 // 사용자의 권한을 체크하는 함수
 const checkPartnerRole = () => {
   const token = localStorage.getItem("token");
