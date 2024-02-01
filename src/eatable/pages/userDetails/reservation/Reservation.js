@@ -13,6 +13,8 @@ const Reservation = () => {
     const [selectedDate, setSelectedDate] = useState(
         setHours(setMinutes(new Date(), 30), 16)
     );
+    const [adultCount, setAdultCount] = useState(0);
+    const [infantCount, setInfantCount] = useState(0);
 
     const handleChangeDate = (date) => {
         setSelectedDate(date);
@@ -31,10 +33,14 @@ const Reservation = () => {
     return (
         <div>
             예약 인원 설정하기 <br />
-            성인 <br />
+
+            {/* 성인수 조절 버튼 */}
+            <Button onClick={() => setAdultCount(adultCount > 0 ? adultCount - 1 : 0)}>-</Button>
+            총원: {adultCount}
+            <Button onClick={() => setAdultCount(adultCount + 1)}>+</Button>
+            <br />
 
             <hr />
-
 
             <Button onClick={goReservationOk}>다음</Button> <br />
             {showGreeting && (
