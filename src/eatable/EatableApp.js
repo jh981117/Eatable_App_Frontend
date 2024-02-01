@@ -53,11 +53,11 @@ const EatableApp = () => {
               }
             ></Route>
 
-            {/* 파트너 */}
-            <Route path="/partnerwrite" Component={PartnerWrite}></Route>
-            <Route path="/partnerlist" Component={PartnerList}></Route>
-            <Route path="/partnerupdate:id" Component={PartnerUpdate}></Route>
-            <Route path="/partnerdetail:id" Component={PartnerDetail}></Route>
+          {/* 파트너 */}
+          <Route path="/partnerwrite" Component={PartnerWrite}></Route>
+          <Route path="/partnerlist" Component={PartnerList}></Route>
+          <Route path="/partnerupdate/:id" Component={PartnerUpdate}></Route>
+          <Route path="/partnerdetail/:id" Component={PartnerDetail}></Route>
 
             {/* 어드민 */}
             <Route
