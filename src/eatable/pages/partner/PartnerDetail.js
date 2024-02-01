@@ -155,7 +155,7 @@ const PartnerDetail = () => {
         ))}
       </div>
 
-      {/* 권한 선택 부분 */}
+      {/* 권한 선택 부분
       <div className="mt-3">
         <label htmlFor="job">
           <h5>권한</h5>
@@ -169,7 +169,7 @@ const PartnerDetail = () => {
           value={'권한 입력예정'}
           readOnly
         />
-      </div>
+      </div> */}
 
       {/* 하단 링크 */}
       <div className="d-flex my-3">

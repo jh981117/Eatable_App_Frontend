@@ -12,19 +12,14 @@ import PartnerUpdate from "./pages/partner/PartnerUpdate";
 import PartnerDetail from "./pages/partner/PartnerDetail";
 import ApplyList from "./pages/admin/ApplyList";
 import ApplyReq from "./pages/admin/ApplyReq";
-import CancelReq from "./pages/admin/CancelReq";
 import AdminRoute from "./rolecomponents/AdminRoute";
 import RoleErrorPage from "./rolecomponents/RoleErrorPage";
 import MemberRoute from "./rolecomponents/MemberRoute";
 import MyHeader from "./pages/components/MyHeader";
 
-import ApplyReqUpdate from "./pages/admin/ApplyReqUpdate";
 
-import UserDetail from "./pages/userDetails/UserDetail";
 import Reservation from "./pages/userDetails/reservation/Reservation";
-import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 import { AuthProvider } from "./rolecomponents/AuthContext";
-import FileUpload from "./pages/components/FileUpload";
 
 
 const EatableApp = () => {
@@ -53,11 +48,47 @@ const EatableApp = () => {
               }
             ></Route>
 
-          {/* 파트너 */}
-          <Route path="/partnerwrite" Component={PartnerWrite}></Route>
-          <Route path="/partnerlist" Component={PartnerList}></Route>
-          <Route path="/partnerupdate/:id" Component={PartnerUpdate}></Route>
-          <Route path="/partnerdetail/:id" Component={PartnerDetail}></Route>
+
+
+
+            {/* 파트너페이지 어드민권환 */}
+            <Route
+              path="/partnerwrite"
+              element={
+                <AdminRoute>
+                  <PartnerWrite />
+                </AdminRoute>
+              }
+            ></Route>
+            <Route
+              path="/partnerlist"
+              element={
+                <AdminRoute>
+                  <PartnerList />
+                </AdminRoute>
+              }
+            ></Route>
+            <Route
+              path="/partnerupdate/:id"
+              element={
+                <AdminRoute>
+                  <PartnerUpdate />
+                </AdminRoute>
+              }
+            ></Route>
+            <Route
+              path="/partnerdetail/:id"
+              element={
+                <AdminRoute>
+                  <PartnerDetail />
+                </AdminRoute>
+              }
+            ></Route>
+
+
+
+
+
 
             {/* 어드민 */}
             <Route
@@ -68,18 +99,85 @@ const EatableApp = () => {
                 </AdminRoute>
               }
             ></Route>
-            <Route path="/applyreq" Component={ApplyReq}></Route>
-            <Route path="/applyrequpdate" Component={ApplyReqUpdate}></Route>
-            <Route path="/cancelreq:id" Component={CancelReq}></Route>
+            <Route
+              path="/applyreq"
+              element={
+                <AdminRoute>
+                  {" "}
+                  <ApplyReq />
+                </AdminRoute>
+              }
+            ></Route>
+            <Route
+              path="/applyrequpdate"
+              element={
+                <AdminRoute>
+                  {" "}
+                  <ApplyReq />
+                </AdminRoute>
+              }
+            ></Route>
+            <Route
+              path="/cancelreq/:id"
+              element={
+                <AdminRoute>
+                  {" "}
+                  <ApplyReq />
+                </AdminRoute>
+              }
+            ></Route>
+
+
+
+
+
+
 
             {/* 에러페이지 */}
             <Route path="/roleErrorPage" Component={RoleErrorPage}></Route>
 
-            {/* 유저디테일 */}
-            <Route path="/userDetail" Component={UserDetail}></Route>
-            <Route path="/reservation" Component={Reservation}></Route>
-            <Route path="/reservationOk" Component={ReservationOk}></Route>
-            
+
+
+
+
+
+
+
+            {/* 유저디테일   스토어디테일  유저권한 */}
+            <Route
+              path="/userDetail"
+              element={
+                <MemberRoute>
+                  {" "}
+                  {/* <UserDetail /> */}
+                </MemberRoute>
+              }
+            ></Route>
+
+
+
+
+
+
+
+            {/* 예약 페이지 유저권한  */}
+            <Route
+              path="/reservation"
+              element={
+                <MemberRoute>
+                  {" "}
+                  <Reservation />
+                </MemberRoute>
+              }
+            ></Route>
+            <Route
+              path="/reservationOk"
+              element={
+                <MemberRoute>
+                  {/* <ApplyReq /> */}
+                </MemberRoute>
+              }
+            ></Route>
           </Routes>
         </Container>
       </AuthProvider>

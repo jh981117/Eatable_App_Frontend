@@ -43,8 +43,8 @@ const MyHeader = () => {
           Eatabel
         </Navbar.Brand>
         <Nav className="ml-auto">
-          <Link to={"/partnerlist"}>
-            <Button variant="outline-secondary" style={logoutButtonStyle}>
+          <Link to={"/partnerlist"} >
+            <Button variant="outline-secondary"  style={logoutButtonStyle}>
               파트너페이지
             </Button>
           </Link>
