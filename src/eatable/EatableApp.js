@@ -20,6 +20,8 @@ import MyHeader from "./pages/components/MyHeader";
 
 import Reservation from "./pages/userDetails/reservation/Reservation";
 import { AuthProvider } from "./rolecomponents/AuthContext";
+import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
+import ProvisionPage from "./pages/user/ProvisionPage";
 
 
 const EatableApp = () => {
@@ -37,6 +39,7 @@ const EatableApp = () => {
             <Route path="/home" Component={HomePage}></Route>
 
             {/* 유저 */}
+            <Route path="/provision" Component={ProvisionPage}></Route>
             <Route path="/signup" Component={SignupPage}></Route>
             <Route path="/login" Component={LoginPage}></Route>
             <Route
@@ -47,9 +50,6 @@ const EatableApp = () => {
                 </MemberRoute>
               }
             ></Route>
-
-
-
 
             {/* 파트너페이지 어드민권환 */}
             <Route
@@ -84,11 +84,6 @@ const EatableApp = () => {
                 </AdminRoute>
               }
             ></Route>
-
-
-
-
-
 
             {/* 어드민 */}
             <Route
@@ -127,38 +122,14 @@ const EatableApp = () => {
               }
             ></Route>
 
-
-
-
-
-
-
             {/* 에러페이지 */}
             <Route path="/roleErrorPage" Component={RoleErrorPage}></Route>
-
-
-
-
-
-
-
 
             {/* 유저디테일   스토어디테일  유저권한 */}
             <Route
               path="/userDetail"
-              element={
-                <MemberRoute>
-                  {" "}
-                  {/* <UserDetail /> */}
-                </MemberRoute>
-              }
+              element={<MemberRoute> {/* <UserDetail /> */}</MemberRoute>}
             ></Route>
-
-
-
-
-
-
 
             {/* 예약 페이지 유저권한  */}
             <Route
@@ -172,11 +143,7 @@ const EatableApp = () => {
             ></Route>
             <Route
               path="/reservationOk"
-              element={
-                <MemberRoute>
-                  {/* <ApplyReq /> */}
-                </MemberRoute>
-              }
+              element={<MemberRoute>{/* <ApplyReq /> */}</MemberRoute>}
             ></Route>
           </Routes>
         </Container>
