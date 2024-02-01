@@ -11,7 +11,10 @@ import './ApplyReq.css';
       partner_id:'1',
       user_id:'',
     })
-    const [error,setError] = useState();
+    const [error,setError] = useState('');
+    const [storeName,setStoreName] = useState('');
+    const [managerName,setManagerName] = useState('');
+    const [phone,setPhone] = useState('');
     const changeValue = (e) => {
       setApply({
           ...apply, 
@@ -24,45 +27,45 @@ import './ApplyReq.css';
       const agreementCheckbox = document.getElementById('agreementCheckbox')     
 
 
-      // if (!apply.store_name) {
-      //   setApply({ ...apply, store_name: '매장명을 입력해주세요.' });     
-      // } else {
-      //   setApply({ ...apply, store_name: '' }); 
-      //     }
+      if (!apply.storeName) {
+        setStoreName('매장명을 입력해주세요.');     
+      } else {
+        setStoreName(''); 
+      }
+      
+      if (!apply.managerName) {
+        setManagerName('문의자명을 입력해주세요.' );      
+      } else {
+        setManagerName('');
+      }
+      
+      if (!apply.phone) {
+        setPhone( '연락처를 입력해주세요.' );        
+      } else {
+        setPhone(''); 
+      }
+      
+      if (!agreementCheckbox.checked) {
+        setError('이용약관 동의를 체크해주세요');
+      } else {
+        setError('');
+      }
 
-      // if (!apply.manager_name) {
-      //   setApply({ ...apply, manager_name: '문의자명을 입력해주세요.' });      
-      // } else {
-      //   setApply({ ...apply, manager_name: '' });
-      // }
-
-      // if (!apply.phone) {
-      //   setApply({ ...apply, phone: '연락처를 입력해주세요.' });        
-      // } else {
-      //   setApply({ ...apply, phone: '' }); 
-      // }
-
-      // if (agreementCheckbox.checked) {
-      //   setError('이용약관 동의를 체크해주세요');
-      //   } else {
-      //     setError('');
-      // }
-
-        fetch("http://localhost:8080/api/req/write", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json;charset=utf-8",
-          },
-          body: JSON.stringify(apply),
-        })
-          .then(response => {
-            console.log(`response`, response);
-            if (response.status === 201) {
-              return response.json();
-            } else {
-              return null;
-            }
-          })
+        // fetch("http://localhost:8080/api/req/write", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json;charset=utf-8",
+        //   },
+        //   body: JSON.stringify(apply),
+        // })
+        //   .then(response => {
+        //     console.log(`response`, response);
+        //     if (response.status === 201) {
+        //       return response.json();
+        //     } else {
+        //       return null;
+        //     }
+        //   })
         
         }
    
@@ -81,19 +84,19 @@ import './ApplyReq.css';
             <Form.Label>매장명<span style={{color : 'red'}}>(필수)</span></Form.Label>
             <Form.Control className="strName" type="text" placeholder="매장명을 입력해주세요" onChange={changeValue} name="storeName"/>
           </Form.Group>
-          {/* {apply.store_name && <div style={{ color: 'red' }}>{apply.store_name}</div>} */}
+          {storeName && <div style={{ color: 'red' }}>{storeName}</div>}
 
           <Form.Group controlId="fullName">
             <Form.Label>문의자명<span style={{color : 'red'}}>(필수)</span></Form.Label>
             <Form.Control className="personName" type="text" placeholder="성함을 입력해주세요" onChange={changeValue} name="managerName"/>
           </Form.Group>
-          {/* {apply.manager_name && <div style={{ color: 'red' }}>{apply.manager_name}</div>} */}
+          {managerName && <div style={{ color: 'red' }}>{managerName}</div>}
 
           <Form.Group controlId="number">
             <Form.Label>연락처<span style={{color : 'red'}}>(필수)</span></Form.Label>
             <Form.Control type="text" placeholder="연락처를 입력해주세요" onChange={changeValue} name="phone"/>
           </Form.Group>
-          {/* {apply.phone && <div style={{ color: 'red' }}>{apply.phone}</div>} */}
+          {phone && <div style={{ color: 'red' }}>{phone}</div>}
           
         </div> 
           <h5 class="checkInfo">약관 동의</h5>       
@@ -129,7 +132,7 @@ import './ApplyReq.css';
             </Form.Group>
           </div>
           <Form.Check  id="agreementCheckbox" className="agreeCheck" type="checkbox" label="개인정보 수집 및 이용 동의 (필수)" />
-          {/* {error && <div style={{ color: 'red' }}>{error}</div>}           */}
+          {error && <div style={{ color: 'red' }}>{error}</div>}          
             <Button className="reqbtn" variant="primary" type="submit">
                 등록 신청
           </Button>

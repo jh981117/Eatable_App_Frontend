@@ -4,21 +4,30 @@ import emailjs from "@emailjs/browser";
 
 const ApplyList = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [list, setList] = useState({
-        // 업체명:
-        // 문의자명:
-        // 상태:
-        // 전화번호:
-    });
-  
-    // const deleteList =()=>{};
+
+    const [lists, setLists] = useState([]);
+    const [reject,setReject] = useState();
+
     const handleClose = () => setModalOpen(false);
     const handleOpen = () => setModalOpen(true);
 
+    const handleReject = (index) => {
+      const updatelist = [...lists];
+      updatelist[index].partnerReqState = "거절"
+      setReject(updatelist);
+    }
     const form = useRef();
 
-  const sendEmail = (e) => {
-    e.preventDefault();
+
+  //   useEffect(()=>{
+  //     fetch("http://localhost:8080/api/req/totalList")
+  //         .then(response => response.json())
+  //         .then(data => {
+  //             console.log("||||||||||" + data);
+  //             setLists(data);
+  //         });
+  // },[])
+
 
     emailjs
       .sendForm(
@@ -56,23 +65,23 @@ const ApplyList = () => {
         </tr>
       </thead>
       <tbody>
-      {/* {surveys.map((survey, index) => (
-                                <tr key={index}>
-                                    <td><Link to={`/detail/${survey.id}`}>{survey.id}</Link></td>
-                                    <td>{survey.name}</td>
-                                    <td>{survey.createdAt}</td>
-                                </tr>
-                            ))}  */}
-      <tr>
-        <td>#</td>
-        <td>Data 1</td>
-        <td>Data 2</td>
-        <td>Data 3</td>
-        <td>Data 4</td>
+
+      
+      {lists.map((apply, index) => (
+        <tr key={index}>      
+          <td>{apply.id}</td>
+          <td>{apply.storeName}</td>
+          <td>{apply.managerName}</td>
+          <td style={{ color: apply.partnerReqState === '거절' ? 'red' : 'blue' }}>
+            {apply.partnerReqState}
+            </td>
+          <td>{apply.phone}</td>
+          <td>{apply.regDate}</td>
+
         <td>
           <div className={'btn-wrapper'}>
           <Button variant="outline-primary me-2" onClick={handleOpen}>승인</Button>
-          <Button  variant="outline-danger">거절</Button>
+          <Button  variant="outline-danger" onClick={() => handleReject(index)}>거절</Button>
           </div>
         </td>
       </tr>    
