@@ -18,6 +18,7 @@ import ApplyReqUpdate from "./pages/admin/ApplyReqUpdate";
 import UserDetail from "./pages/userDetails/UserDetail";
 import Reservation from "./pages/userDetails/reservation/Reservation";
 import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
+import ProvisionPage from "./pages/user/ProvisionPage";
 
 
 const EatableApp = () => {
@@ -29,6 +30,7 @@ const EatableApp = () => {
           <Route path="/home" Component={HomePage}></Route>
 
           {/* 유저 */}
+          <Route path="/signup" Component={ProvisionPage}></Route>
           <Route path="/signup" Component={SignupPage}></Route>
           <Route path="/login" Component={LoginPage}></Route>
           <Route path="/usermypage" Component={UserMyPage}></Route>
