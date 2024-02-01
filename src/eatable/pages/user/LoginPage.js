@@ -121,6 +121,11 @@ const LoginPage = () => {
   const signup = () => {
     navigate("/signup");
   };
+ const provision = () => {
+   navigate("/provision");
+ };
+
+
 
   const saveTokenToLocalStorage = (token) => {
     // 로컬 스토리지에 토큰 저장 로직을 여기에 구현
@@ -170,7 +175,7 @@ const LoginPage = () => {
           className="m-2"
           variant="primary"
           type="button"
-          onClick={signup}
+          onClick={provision}
         >
           회원가입
         </Button>
