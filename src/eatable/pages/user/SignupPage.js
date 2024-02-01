@@ -22,11 +22,7 @@ const SignupPage = () => {
         });
     }, []);
 
-    const [emailsum, setEmailsum] = useState({
-        email_id: "",
-        email: "@",
-        email_domain: "",
-    });
+    const [emailsum, setEmailsum] = useState("");
 
     const [userinfo, setUserinfo] = useState({
         id: "",
@@ -59,11 +55,9 @@ const SignupPage = () => {
 
     const validateField = (fieldName, value) => {
         let pwreg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,13}$/;
-        let birthreg = /^\d{6}-\d{7}$/;
-        let phonereg =  /^\d{3}-\d{4}-\d{4}$/;
-        let emailreg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // const { email_id, email_domain } = emailsum;
-        let fullEmail = emailsum.email_id + "@" + emailsum.email_domain;
+        let birthreg = /^\d{4}\d{2}\d{2}$/;
+        let phonereg =  /^\d{3}\d{4}\d{4}$/;
+        // let emailreg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         switch (fieldName) {
             case 'username':
@@ -85,20 +79,33 @@ const SignupPage = () => {
             case 'email_domain':
                 return value.trim() === '' ? '메일주소를 입력해주세요.' : '';
             case 'email':
-                return (emailreg.test(fullEmail)) ? '' : '이메일 형식을 맞춰서 입력해주세요.';
+                const emailId = userinfo['email_id'].trim();
+                const emailDomain = userinfo['email_domain'].trim();
+                const emailValue = `${emailId}@${emailDomain}`;
+                // const emailError = emailValue.trim() === '' ? '이메일을 입력해주세요.' : (emailreg.test(emailValue) ? '' : '이메일 형식을 맞춰서 입력해주세요.');
+                // return emailError;
+                // console.log(emailValue);
         }
     };
 
     const changeValue = (e) => {
-        setUserinfo({
-            ...userinfo,
-            [e.target.name] : e.target.value,
-        });
+      setUserinfo({
+        ...userinfo,
+        [e.target.name]: e.target.value,
+      });
 
-        setEmailsum((prevEmailsum) => ({
-            ...prevEmailsum,
-            [e.target.name]: e.target.value,
-        }));
+        // 이메일주소 직접입력선택시 input_domain 활성화
+        if (e.target.name === 'email_domain' && e.target.value === 'input_domain') {
+            setUserinfo((e) => ({
+                ...userinfo,
+                input_domain: '',
+            }));
+        }
+
+        // emailsum email_id와 input_domain 추가
+        if (e.target.name === 'email_id' || e.target.name === 'input_domain') {
+            setEmailsum([...emailsum, userinfo['email_id'] + '@' + userinfo['email_domain']]);
+        }
 
     };
 

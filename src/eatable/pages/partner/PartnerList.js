@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../rolecomponents/AuthContext';
 
 
 const Tbody = (p) => {
+    const { setAuth } = useAuth();
     const post = p.test;
     return (
         <tr>
