@@ -143,9 +143,10 @@ const { setAuth } = useAuth();
         <Col md={6}>
           <Card style={{ width: "100%" }} className="mb-2">
             <Card.Body>
+              
               <Card.Title>User Profile</Card.Title>
               <Card.Title>{profile.nickName}</Card.Title>
-              <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
+              <Tabs defaultActiveKey="profile" id="profile-tab">
                 <Tab eventKey="profile" title="프로필">
                   <ListGroup variant="flush">
                     <ListGroup.Item>아이디: {profile.username}</ListGroup.Item>

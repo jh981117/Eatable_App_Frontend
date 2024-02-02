@@ -84,11 +84,11 @@ const LoginPage = () => {
 
 
 
-
+          navigate(-1) ? navigate(-1) : navigate("/home"); // 이전 페이지로 돌아가기
+          
 
           
        
-          navigate(-1) ? navigate(-1) : navigate("/"); // 이전 페이지로 돌아가기
         } else {
           console.error("로그인 실패:", response.status);
           alert("로그인 실패!");

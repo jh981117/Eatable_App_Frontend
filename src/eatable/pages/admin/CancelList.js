@@ -21,16 +21,16 @@ const CancelList = () => {
     }
     const form = useRef();
 
-  //   useEffect(()=>{
-  //     fetch("http://localhost:8080/api/req/totalList")
-  //         .then(response => response.json())
-  //         .then(data => {
-  //           const list = data.map(i => ({...i,
-  //             partnerReqState: i.partnerReqState === 'OPEN_READY' ? '접수 대기중' : i.partnerReqState
-  //           }));
-  //             setLists(list);
-  //         });
-  // },[])
+    useEffect(()=>{
+      fetch("http://localhost:8080/api/req/totalList")
+          .then(response => response.json())
+          .then(data => {
+            const list = data.map(i => ({...i,
+              partnerReqState: i.partnerReqState === 'OPEN_READY' ? '접수 대기중' : i.partnerReqState
+            }));
+              setLists(list);
+          });
+  },[])
 
     const sendEmail = (e) => {
       e.preventDefault();
