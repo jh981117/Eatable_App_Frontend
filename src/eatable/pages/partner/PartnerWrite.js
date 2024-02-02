@@ -19,6 +19,20 @@ const PartnerWrite = () => {
     zipCode: '',
   });
 
+  const [errorMessages, setErrorMessages] = useState({
+    storeName: '',
+    partnerName: '',
+    partnerPhone: '',
+    storePhone: '',
+    favorite: '',
+    lat: '',
+    lng: '',
+    area: '',
+    zipCode: '',
+  });
+
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPost(prevState => ({
@@ -47,32 +61,72 @@ const PartnerWrite = () => {
     ['백반', '국수', '비건']
   ];
 
-  const handleCheckboxChange = (e) => {
-    const { value, checked } = e.target;
-    let newFavorites = post.favorite.split(',').filter(food => food.trim() !== '');
-
-    if (checked && newFavorites.length >= 3 && !newFavorites.includes(value)) {
-      alert('3개 이상은 체크할 수 없습니다.');
-      e.target.checked = false;
-      return;
-    }
-
-    if (checked) {
-      newFavorites.push(value);
-    } else {
-      newFavorites = newFavorites.filter(food => food !== value);
-    }
-
-    setPost(prevState => ({
-      ...prevState,
-      favorite: newFavorites.join(','),
-    }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // 초기화
+    setErrorMessages({
+      storeName: '',
+      partnerName: '',
+      partnerPhone: '',
+      storePhone: '',
+      favorite: '',
+      lat: '',
+      lng: '',
+      area: '',
+      zipCode: '',
+    });
+
+    let hasError = true;
+
+    if (post.storeName === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        storeName: '매장이름은 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.partnerName === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        partnerName: '관리자이름은 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.partnerPhone === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        partnerPhone: '전화번호는 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.storePhone === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        storePhone: '전화번호는 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.area === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        area: '주소는 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (!hasError) {
+      return;
+    }
+
     fetch('http://localhost:8080/api/partner/write', {
+
+
+
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -287,8 +341,15 @@ const PartnerWrite = () => {
               name={fieldName}
               onChange={handleChange}
             />
+            <div>
+              {errorMessages[fieldName] && (
+                <span className="text-danger">{errorMessages[fieldName]}</span>
+              )}
+            </div>
           </div>
         ))}
+
+
 
         {/* 매장주소 입력 부분 */}
         <div className="mt-3">
@@ -304,13 +365,18 @@ const PartnerWrite = () => {
             <input type="text" name="lat" id="lat" placeholder="lat" onChange={handleChange} />
             <input type="text" name="lng" id="lng" placeholder="lng" onChange={handleChange} />
             {/* 주소와 우편번호 입력 */}
+            <div>
+              {errorMessages.area && (
+                <span className="text-danger">{errorMessages.area}</span>
+              )}
+            </div>
             <input type="text" name="area" id="area" className="form-control" placeholder="Address" onChange={handleChange} />
             <input type="text" name="zipCode" id="zipCode" className="form-control" placeholder="zipCode" onChange={handleChange} />
           </div>
         </div>
 
         {/* 업종 선택 부분 */}
-        <div className="mt-3">
+        {/* <div className="mt-3">
           <label>
             <h5>
               업종 <small>(1개이상 선택)</small>
@@ -337,7 +403,7 @@ const PartnerWrite = () => {
               ))}
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* 권한 선택 부분 */}
         <div className="mt-3">

@@ -38,12 +38,20 @@ const PartnerList = () => {
             })
             .then(data => {
                 if (data !== null) {
-                    const sortedPosts = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); //비교 함수는 배열의 요소를 정렬할 때 사용됩니다.
                     console.log(data)
+                    // const sortedPosts = data.sort((a, b) => new Date(b.regDate) - new Date(a.regDate)); //비교 함수는 배열의 요소를 정렬할 때 사용됩니다.
                     setPosts(data);
                 }
             })
     }, []);
+
+    // useEffect(() => {
+
+    //     console.log('=====================================================');
+    //     console.log(post);
+    //     console.log('=====================================================');
+
+    // }, [post]);
 
     return (
         <>

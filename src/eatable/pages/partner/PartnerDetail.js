@@ -155,6 +155,99 @@ const PartnerDetail = () => {
         ))}
       </div>
 
+      <div className="mt-3">
+        <label htmlFor="storeInfo">
+          <h5>
+            매장소개
+          </h5>
+        </label>
+        <textarea
+          placeholder="여기에 입력하세요"
+          id="storeInfo" name="storeInfo" value={post.storeInfo} readOnly
+        ></textarea>
+      </div>
+
+      <div className="mt-3">
+        <label htmlFor="tableCnt">
+          <h5>테이블수</h5>
+        </label>
+        <input
+          type="number"
+          className="form-control"
+          id="tableCnt"
+          placeholder="테이블수를 입력하세요"
+          name="tableCnt"
+          min="0"
+          value={post.tableCnt} readOnly
+        />
+      </div>
+
+      <div className="mt-3">
+        <label htmlFor="openTime">
+          <h5>
+            영업시간 <small>(정기휴무)</small>
+          </h5>
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          id="openTime"
+          placeholder="영업시간을 입력하세요"
+          name="openTime"
+          value={post.openTime}
+          readOnly
+        />
+      </div>
+
+      <div className="mt-3">
+        <label htmlFor="reserveInfo">
+          <h5>
+            예약주의사항
+          </h5>
+        </label>
+        <textarea
+          placeholder="여기에 입력하세요"
+          id="reserveInfo" name="reserveInfo" value={post.reserveInfo} readOnly
+        ></textarea>
+      </div>
+
+
+      <div className="d-flex flex-column mt-3">
+        {['parking', 'corkCharge', 'dog'].map((item, index) => (
+          <div key={index} className="form-group">
+            <label htmlFor={`${item}Radio`}>{item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}</label>
+            <div className="d-flex flex-row">
+              <div className="form-check mr-3">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={item}
+                  id={`${item}Available`}
+                  value="TRUE"
+                  checked={post[item] === 'TRUE'}
+                />
+                <label className="form-check-label" htmlFor={`${item}Available`}>
+                  가능
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={item}
+                  id={`${item}NotAvailable`}
+                  value="FALSE"
+                  checked={post[item] === 'FALSE'}
+                />
+                <label className="form-check-label" htmlFor={`${item}NotAvailable`}>
+                  불가능
+                </label>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* 권한 선택 부분
       <div className="mt-3">
         <label htmlFor="job">
