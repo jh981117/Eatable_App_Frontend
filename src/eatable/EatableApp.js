@@ -22,6 +22,12 @@ import Reservation from "./pages/userDetails/reservation/Reservation";
 import { AuthProvider } from "./rolecomponents/AuthContext";
 import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 import ProvisionPage from "./pages/user/ProvisionPage";
+import ReviewList from "./pages/userreview/ReviewList";
+import EatableTimeLine from "./pages/userreview/EatableTimeLine";
+import DetailTab from "./pages/userreview/DetailTab";
+import ReviewImg from "./pages/userreview/ReviewImg";
+import ReviewWrite from "./pages/userreview/ReviewWrite";
+import ReviewDetail from "./pages/userreview/ReviewDetail";
 
 
 const EatableApp = () => {
@@ -144,6 +150,20 @@ const EatableApp = () => {
               path="/reservationOk"
               element={<MemberRoute>{/* <ApplyReq /> */}</MemberRoute>}
             ></Route>
+
+
+
+              {/* 민호 */}
+            <Route path="/reviewlist" Component={ReviewList}></Route>
+            <Route path="/eatabletimeline" Component={EatableTimeLine}></Route>
+            <Route path="/detailtab" Component={DetailTab}></Route>
+            <Route path="/reviewimg" Component={ReviewImg}></Route>
+            <Route path="/reviewwrite" Component={ReviewWrite}></Route>
+            <Route path="/reviewdetail" Component={ReviewDetail}></Route>
+
+
+
+
           </Routes>
         </Container>
       </AuthProvider>

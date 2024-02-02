@@ -68,6 +68,11 @@ const MyHeader = () => {
               어드민페이지
             </Button>
           </Link>
+          <Link to={"/reviewlist"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
+              리뷰리스트
+            </Button>
+          </Link>
           {auth.isLoggedIn ? (
             <>
               <Link to="/usermypage" className="d-flex align-items-center">
