@@ -51,21 +51,21 @@ import './ApplyReq.css';
         setError('');
       }
 
-        // fetch("http://localhost:8080/api/req/write", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json;charset=utf-8",
-        //   },
-        //   body: JSON.stringify(apply),
-        // })
-        //   .then(response => {
-        //     console.log(`response`, response);
-        //     if (response.status === 201) {
-        //       return response.json();
-        //     } else {
-        //       return null;
-        //     }
-        //   })
+        fetch("http://localhost:8080/api/req/write", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json;charset=utf-8",
+          },
+          body: JSON.stringify(apply),
+        })
+          .then(response => {
+            console.log(`response`, response);
+            if (response.status === 201) {
+              return response.json();
+            } else {
+              return null;
+            }
+          })
         
         }
    

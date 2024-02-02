@@ -10,7 +10,7 @@ import PartnerWrite from "./pages/partner/PartnerWrite";
 import PartnerList from "./pages/partner/PartnerList";
 import PartnerUpdate from "./pages/partner/PartnerUpdate";
 import PartnerDetail from "./pages/partner/PartnerDetail";
-import ApplyList from "./pages/admin/ApplyList";
+
 import ApplyReq from "./pages/admin/ApplyReq";
 import AdminRoute from "./rolecomponents/AdminRoute";
 import RoleErrorPage from "./rolecomponents/RoleErrorPage";
@@ -22,6 +22,7 @@ import Reservation from "./pages/userDetails/reservation/Reservation";
 import { AuthProvider } from "./rolecomponents/AuthContext";
 import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 import ProvisionPage from "./pages/user/ProvisionPage";
+import AdminPage from "./pages/admin/AdminPage";
 
 
 const EatableApp = () => {
@@ -90,7 +91,7 @@ const EatableApp = () => {
               path="/applylist"
               element={
                 <AdminRoute>
-                  <ApplyList />
+                  <AdminPage />
                 </AdminRoute>
               }
             ></Route>
