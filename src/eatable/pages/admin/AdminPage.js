@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Container, Row, Col,Button, Form, Modal, Table, Tab,Tabs } from 'react-bootstrap';
-import emailjs from "@emailjs/browser";
+
 import LineChart from './LineChart';
 import BarChart from './BarChart';
 import ApplyList from './ApplyList';
