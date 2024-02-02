@@ -136,7 +136,6 @@ const EatableApp = () => {
               path="/reservation"
               element={
                 <MemberRoute>
-                  {" "}
                   <Reservation />
                 </MemberRoute>
               }
