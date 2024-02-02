@@ -11,30 +11,23 @@ import {
 import emailjs from "@emailjs/browser";
 import LineChart from "./LineChart";
 import BarChart from "./BarChart";
+
 const ApplyList = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [lists, setLists] = useState([]);
-
-  const [reject, setReject] = useState();
   const handleClose = () => setModalOpen(false);
   const handleOpen = () => setModalOpen(true);
 
-  const handleReject = (index) => {
-    const updatelist = [...lists];
-    updatelist[index].partnerReqState = "거절";
-    setReject(updatelist);
-  };
   const form = useRef();
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/req/totalList")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("||||||||||" + data);
-        setLists(data);
-      });
-  }, []);
-
+  //   useEffect(()=>{
+  //     fetch("http://localhost:8080/api/req/totalList")
+  //         .then(response => response.json())
+  //         .then(data => {
+  //             console.log("||||||||||" + data);
+  //             setLists(data);
+  //         });
+  // },[])
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -56,6 +49,7 @@ const ApplyList = () => {
       );
     setModalOpen(false);
   };
+
   return (
     <div>
       <Container>
@@ -94,14 +88,6 @@ const ApplyList = () => {
                     <td>{apply.storeName}</td>
                     <td>{apply.managerName}</td>
                     <td>{apply.partnerReqState}</td>
-                    <td
-                      style={{
-                        color:
-                          apply.partnerReqState === "거절" ? "red" : "blue",
-                      }}
-                    >
-                      {apply.partnerReqState}
-                    </td>
                     <td>{apply.phone}</td>
                     <td>{apply.regDate}</td>
                     <td>
@@ -113,12 +99,6 @@ const ApplyList = () => {
                           승인
                         </Button>
                         <Button variant="outline-danger">거절</Button>
-                        <Button
-                          variant="outline-danger"
-                          onClick={() => handleReject(index)}
-                        >
-                          거절
-                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -128,6 +108,7 @@ const ApplyList = () => {
           </Col>
         </Row>
       </Container>
+
       <Modal show={modalOpen}>
         <Modal.Body>정말 승인 하시겠습니까?</Modal.Body>
         <Modal.Footer>
@@ -165,4 +146,5 @@ const ApplyList = () => {
     </div>
   );
 };
+
 export default ApplyList;
