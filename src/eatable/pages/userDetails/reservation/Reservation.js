@@ -56,7 +56,7 @@ const Reservation = () => {
                         setHours(setMinutes(new Date(), 30), 18),
                         setHours(setMinutes(new Date(), 30), 19),
                         setHours(setMinutes(new Date(), 30), 17),
-                    ]}
+                    ]}  /*영업시간 설정*/
                     dateFormat="MMMM d, yyyy h:mm aa"
                 />
                     <br />

@@ -22,6 +22,7 @@ import Reservation from "./pages/userDetails/reservation/Reservation";
 import { AuthProvider } from "./rolecomponents/AuthContext";
 import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 import ProvisionPage from "./pages/user/ProvisionPage";
+import UserDetail from "./pages/userDetails/UserDetail";
 
 
 const EatableApp = () => {
@@ -127,8 +128,8 @@ const EatableApp = () => {
 
             {/* 유저디테일   스토어디테일  유저권한 */}
             <Route
-              path="/userDetail"
-              element={<MemberRoute> {/* <UserDetail /> */}</MemberRoute>}
+              path="/userDetail/:id"
+              element={<MemberRoute><UserDetail /></MemberRoute>}
             ></Route>
 
             {/* 예약 페이지 유저권한  */}
