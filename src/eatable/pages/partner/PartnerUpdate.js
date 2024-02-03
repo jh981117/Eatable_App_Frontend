@@ -466,14 +466,14 @@ const PartnerUpdate = () => {
 
 
                 {/* 하단 버튼 */}
-                <div className="my-3 d-flex">
-                    <button type="submit" className="btn btn-outline-dark">
+                <div className="d-flex justify-content-end my-3">
+                    <button type="submit" className="button-link">
                         수정완료
                     </button>
 
                     <button
                         type="button"
-                        className="btn btn-outline-dark ms-1"
+                        className="button-link"
                         onClick={() => {
                             navigate(-1) ? navigate(-1) : navigate("/home"); // 이전 페이지로 돌아가기
                         }}
@@ -481,7 +481,7 @@ const PartnerUpdate = () => {
                         이전으로
                     </button>
 
-                    <Link className="btn btn-outline-dark ms-1" to="/partnerlist">
+                    <Link className="button-link" to="/partnerlist">
                         목록
                     </Link>
 

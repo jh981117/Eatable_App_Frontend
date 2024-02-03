@@ -265,20 +265,20 @@ const PartnerDetail = () => {
       </div> */}
 
       {/* 하단 링크 */}
-      <div className="d-flex my-3">
-        <Button className="btn btn-outline-dark ms-2" onClick={updatePost}>
+      <div className="d-flex justify-content-end my-3">
+        <Button className="button-link" onClick={updatePost}>
           수정
         </Button>
-        <Link className="btn btn-outline-dark ms-2" to="/partnerlist">
+        <Link className="button-link" to="/partnerlist">
           목록
         </Link>
         <Button
           variant="none"
-          className="btn btn-outline-danger ms-2" onClick={deletePost}
+          className="button-link" onClick={deletePost}
         >
           삭제
         </Button>
-        <Link className="btn btn-outline-dark ms-2" to="/partnerwrite">
+        <Link className="button-link" to="/partnerwrite">
           작성
         </Link>
       </div>
