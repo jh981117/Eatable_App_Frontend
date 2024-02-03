@@ -51,7 +51,7 @@ export const data = {
 };
 
    const BarChart = () => {
-    return <Bar options={options} data={data} height="400px" width="400px"/>;
+    return <Bar options={options} data={data} height="600px" width="1000px"/>;
   }
 
   export default BarChart;

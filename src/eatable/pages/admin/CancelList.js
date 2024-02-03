@@ -3,7 +3,7 @@ import { Container, Row, Col,Button, Form, Modal, Table} from 'react-bootstrap';
 import emailjs from "@emailjs/browser";
 
 
-const ApplyList = () => {
+const CancelList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [lists, setLists] = useState([]);   
     const [button, setButton] = useState(true);
@@ -72,7 +72,7 @@ const ApplyList = () => {
                   </td>
                 <td>{list.phone}</td>
                 <td>{list.regDate}</td>
-              <td style={{maxWidth: '60px', minWidth:'60px'}}>
+              <td>
               <div className={'btn-wrapper'}>
               {!button[index] && (
                   <>
@@ -111,4 +111,4 @@ const ApplyList = () => {
     );
 };
 
-export default ApplyList;
+export default CancelList;
