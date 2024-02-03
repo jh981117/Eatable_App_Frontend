@@ -42,14 +42,7 @@ const EatableApp = () => {
             <Route path="/provision" Component={ProvisionPage}></Route>
             <Route path="/signup" Component={SignupPage}></Route>
             <Route path="/login" Component={LoginPage}></Route>
-            <Route
-              path="/usermypage"
-              element={
-                <MemberRoute>
-                  <UserMyPage />
-                </MemberRoute>
-              }
-            ></Route>
+            <Route path="/usermypage" element={<MemberRoute><UserMyPage /></MemberRoute>}></Route>
 
             {/* 파트너페이지 어드민권환 */}
             <Route

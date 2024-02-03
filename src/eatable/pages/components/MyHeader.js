@@ -95,7 +95,7 @@ const MyHeader = () => {
               <Link to="/login" className="btn btn-outline-secondary">
                 로그인
               </Link>
-              <Link to="/signup" className="btn btn-secondary">
+              <Link to="/provision" className="btn btn-secondary">
                 회원가입
               </Link>
             </>
