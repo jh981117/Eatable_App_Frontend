@@ -6,7 +6,7 @@ import emailjs from "@emailjs/browser";
 const ApplyList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [lists, setLists] = useState([]);   
-    const [button, setButton] = useState(true);
+    const [button, setButton] = useState([]);
     const handleClose = () => setModalOpen(false);
     const handleOpen = () => setModalOpen(true);
 
@@ -22,7 +22,7 @@ const ApplyList = () => {
     const form = useRef();
 
     useEffect(()=>{
-      fetch("http://localhost:8080/api/req/totalList")
+      fetch("http://localhost:8080/api/req/stateList/OPEN_READY")
           .then(response => response.json())
           .then(data => {
             const list = data.map(i => ({...i,
@@ -33,8 +33,8 @@ const ApplyList = () => {
   },[])
 
     const sendEmail = (e) => {
-      e.preventDefault();
-  
+      e.preventDefault();  
+
       emailjs.sendForm('service_fch3yro1', 'template_76jxtmb1', form.current, 'ORegbfZuljHYVzE1s1')
         .then((result) => {
             console.log(result.text);
@@ -67,12 +67,12 @@ const ApplyList = () => {
                 <td>{list.id}</td>
                 <td>{list.storeName}</td>
                 <td>{list.managerName}</td>
-                <td style={{ color: list.partnerReqState === '접수 거절' ? 'red' : 'blue' }}>
+                <td style={{ color: list.partnerReqState === '접수 거절' ? 'red' : (list.partnerReqState ==='접수 완료'?'green' :'blue' )}}>
                   {list.partnerReqState}
                   </td>
                 <td>{list.phone}</td>
                 <td>{list.regDate}</td>
-              <td style={{maxWidth: '60px', minWidth:'60px'}}>
+              <td style={{maxWidth: '65px', minWidth:'65px'}}>
               <div className={'btn-wrapper'}>
               {!button[index] && (
                   <>
