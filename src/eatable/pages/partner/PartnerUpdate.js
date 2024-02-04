@@ -259,7 +259,7 @@ const PartnerUpdate = () => {
                             placeholder={fieldName === 'partnerPhone' ? '전화번호를 입력하세요   ex) 01042364123' : fieldName === 'storePhone' ? '전화번호를 입력하세요   ex) 0242364123' : '이름을 입력하세요'}
                             name={fieldName}
                             onChange={handleChange}
-                            value={post[fieldName] || ''} // 값이 정의되지 않았을 때는 빈 문자열을 사용
+                            value={post[fieldName] || ''}
                             readOnly
                         />
                     </div>
@@ -303,7 +303,7 @@ const PartnerUpdate = () => {
                                             value={food}
                                             name="favorite"
                                             onChange={handleCheckboxChange}
-                                            checked={post.favorite && post.favorite.includes(food) || ''} // post.favorite가 존재하고, 해당 음식이 선택되었는지 확인
+                                            checked={post.favorite && post.favorite.includes(food) || ''}
                                         />
                                         <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
                                             {food}
@@ -320,7 +320,7 @@ const PartnerUpdate = () => {
                     )}
                 </div>
 
-
+                {/* 텍스트 입력 */}
                 <div className="mt-3">
                     <label htmlFor="storeInfo">
                         <h5>
@@ -339,7 +339,7 @@ const PartnerUpdate = () => {
                     )}
                 </div>
 
-
+                {/* 테이블수 */}
                 <div className="mt-3">
                     <label htmlFor="tableCnt">
                         <h5>테이블수</h5>
@@ -361,6 +361,7 @@ const PartnerUpdate = () => {
                     )}
                 </div>
 
+                {/* 영업시간 */}
                 <div className="mt-3">
                     <label htmlFor="openTime">
                         <h5>
@@ -383,6 +384,7 @@ const PartnerUpdate = () => {
                     )}
                 </div>
 
+                {/* 텍스트 입력 */}
                 <div className="mt-3">
                     <label htmlFor="reserveInfo">
                         <h5>
@@ -401,6 +403,7 @@ const PartnerUpdate = () => {
                     )}
                 </div>
 
+                {/* radio타입 입력 */}
                 <div className="d-flex flex-column mt-3">
                     {['parking', 'corkCharge', 'dog'].map((item, index) => (
                         <div key={index} className="form-group">
@@ -475,7 +478,7 @@ const PartnerUpdate = () => {
                         type="button"
                         className="button-link"
                         onClick={() => {
-                            navigate(-1) ? navigate(-1) : navigate("/home"); // 이전 페이지로 돌아가기
+                            navigate(-1) ? navigate(-1) : navigate("/home");
                         }}
                     >
                         이전으로

@@ -64,7 +64,6 @@ const PartnerWrite = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 초기화
     setErrorMessages({
       storeName: '',
       partnerName: '',
@@ -311,6 +310,7 @@ const PartnerWrite = () => {
       <h2 className="display-6">업체 등록</h2>
       <hr />
       <form onSubmit={handleSubmit}>
+
         {/* ID 입력 부분 */}
         <div className="mt-3">
           <label htmlFor="id">

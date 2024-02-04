@@ -2,6 +2,7 @@ import { Button } from 'react-bootstrap';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+
 const PartnerDetail = () => {
   const navigate = useNavigate();
   let { id } = useParams();
@@ -91,7 +92,7 @@ const PartnerDetail = () => {
             id={fieldName}
             placeholder={fieldName === 'partnerPhone' ? '전화번호를 입력하세요   ex) 01042364123' : fieldName === 'storePhone' ? '전화번호를 입력하세요   ex) 0242364123' : '이름을 입력하세요'}
             name={fieldName}
-            value={post[fieldName] || ''} // 값이 정의되지 않았을 때는 빈 문자열을 사용
+            value={post[fieldName] || ''}
             readOnly
           />
         </div>
@@ -131,7 +132,6 @@ const PartnerDetail = () => {
             업종 <small>(1개이상 선택)</small>
           </h5>
         </label>
-
         {favoriteGroups.map((group, index) => (
           <div key={index} className="row">
             {group.map((food, i) => (
@@ -142,7 +142,7 @@ const PartnerDetail = () => {
                     type="checkbox"
                     value={food}
                     name="favorite"
-                    checked={post.favorite && post.favorite.includes(food) || ''} // post.favorite가 존재하고, 해당 음식이 선택되었는지 확인
+                    checked={post.favorite && post.favorite.includes(food) || ''}
                     readOnly
                   />
                   <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
@@ -155,6 +155,7 @@ const PartnerDetail = () => {
         ))}
       </div>
 
+      {/* 텍스트 입력 */}
       <div className="mt-3">
         <label htmlFor="storeInfo">
           <h5>
@@ -167,6 +168,7 @@ const PartnerDetail = () => {
         ></textarea>
       </div>
 
+      {/* 테이블수 */}
       <div className="mt-3">
         <label htmlFor="tableCnt">
           <h5>테이블수</h5>
@@ -182,6 +184,7 @@ const PartnerDetail = () => {
         />
       </div>
 
+      {/* 영업시간 */}
       <div className="mt-3">
         <label htmlFor="openTime">
           <h5>
@@ -199,6 +202,7 @@ const PartnerDetail = () => {
         />
       </div>
 
+      {/* 텍스트 입력 */}
       <div className="mt-3">
         <label htmlFor="reserveInfo">
           <h5>
@@ -211,12 +215,14 @@ const PartnerDetail = () => {
         ></textarea>
       </div>
 
-
-      <div className="d-flex flex-column mt-3">
+      {/* radio타입 입력 */}
+      <div className="mt-3">
         {['parking', 'corkCharge', 'dog'].map((item, index) => (
           <div key={index} className="form-group">
-            <label htmlFor={`${item}Radio`}>{item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}</label>
-            <div className="d-flex flex-row">
+            <label htmlFor={`${item}Available`}>
+              {item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}
+            </label>
+            <div className="d-flex flex-row ">
               <div className="form-check mr-3">
                 <input
                   className="form-check-input"
@@ -247,6 +253,7 @@ const PartnerDetail = () => {
           </div>
         ))}
       </div>
+
 
       {/* 권한 선택 부분
       <div className="mt-3">
