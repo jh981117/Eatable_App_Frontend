@@ -1,48 +1,32 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Container, Row, Col,Button, Form, Modal, Table} from 'react-bootstrap';
-import emailjs from "@emailjs/browser";
+import React, {  useState, useEffect } from 'react';
+import { Container, Row, Col,Button, Table} from 'react-bootstrap';
 
 
-const CancelList = () => {
-    const [modalOpen, setModalOpen] = useState(false);
+
+const CancelList = () => {  
     const [lists, setLists] = useState([]);   
-    const [button, setButton] = useState(true);
-    const handleClose = () => setModalOpen(false);
-    const handleOpen = () => setModalOpen(true);
+    const [button, setButton] = useState([]);
 
-    const handleReject = (index) => {
+    const handleOpen = (index) => {
       const updatelist = [...lists];
-      updatelist[index].partnerReqState = "접수 거절"
+      updatelist[index].partnerReqState = "CLOSE"
       setLists(updatelist);
       setButton( s => ({
         ...s,
         [index]: true,
       }));
-    }
-    const form = useRef();
+    } 
 
     useEffect(()=>{
-      fetch("http://localhost:8080/api/req/totalList")
+      fetch("http://localhost:8080/api/req/stateList/CLOSE_READY")
           .then(response => response.json())
           .then(data => {
             const list = data.map(i => ({...i,
-              partnerReqState: i.partnerReqState === 'OPEN_READY' ? '접수 대기중' : i.partnerReqState
+              partnerReqState: i.partnerReqState === 'CLOSE_READY' ? '취소 대기중' : i.partnerReqState
             }));
               setLists(list);
           });
   },[])
-
-    const sendEmail = (e) => {
-      e.preventDefault();
-  
-      emailjs.sendForm('service_fch3yro1', 'template_76jxtmb1', form.current, 'ORegbfZuljHYVzE1s1')
-        .then((result) => {
-            console.log(result.text);
-        }, (error) => {
-            console.log(error.text);
-        });
-        setModalOpen(false);
-    };
 
     return (
       <div>  
@@ -67,17 +51,16 @@ const CancelList = () => {
                 <td>{list.id}</td>
                 <td>{list.storeName}</td>
                 <td>{list.managerName}</td>
-                <td style={{ color: list.partnerReqState === '접수 거절' ? 'red' : 'blue' }}>
-                  {list.partnerReqState}
+                <td style={{ color: list.partnerReqState === 'CLOSE' ? 'blue' : 'red' }}>
+                   {list.partnerReqState === 'CLOSE' ? '취소승인' : list.partnerReqState}                  
                   </td>
                 <td>{list.phone}</td>
                 <td>{list.regDate}</td>
-              <td>
+              <td style={{maxWidth: '34px', minWidth:'34px'}}>
               <div className={'btn-wrapper'}>
               {!button[index] && (
                   <>
-                    <Button variant="outline-primary me-2" onClick={handleOpen}>승인</Button>
-                    <Button variant="outline-danger" onClick={() => handleReject(index)}>거절</Button>
+                    <Button variant="outline-primary"  onClick={() => handleOpen(index)}>승인</Button>               
                   </>
                 )}
               </div>
@@ -90,23 +73,6 @@ const CancelList = () => {
             </Row>
         </Container>         
 
-        <Modal show={modalOpen}>      
-            <Modal.Body>정말 승인 하시겠습니까?</Modal.Body>
-              <Modal.Footer>
-                  <Form ref={form} onSubmit={sendEmail}>
-                    <Form.Control type="hidden" name="user_name" value="부트스트랩" />
-                    <Form.Control type="hidden" name="user_email" value="imsen4@naver.com" />
-                    <Form.Control type="hidden" name="to_email" value="imsen456@gmail.com" />
-                    <Form.Control as="textarea" style={{ display: 'none' }} name="message" value="부트스트랩 이게 맞냐 어?" />
-                    <Button className="finalOk" type="submit" variant="outline-primary me-2">
-                      확인
-                    </Button>
-                  </Form> 
-                <Button variant="outline-secondary" onClick={handleClose}>
-                  닫기
-                </Button>
-            </Modal.Footer>
-        </Modal>        
       </div>
     );
 };
