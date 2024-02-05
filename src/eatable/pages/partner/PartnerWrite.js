@@ -17,7 +17,23 @@ const PartnerWrite = () => {
     lng: '',
     area: '',
     zipCode: '',
+    files: []
   });
+
+  const [errorMessages, setErrorMessages] = useState({
+    storeName: '',
+    partnerName: '',
+    partnerPhone: '',
+    storePhone: '',
+    favorite: '',
+    lat: '',
+    lng: '',
+    area: '',
+    zipCode: '',
+
+  });
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,10 +43,35 @@ const PartnerWrite = () => {
     }));
   };
 
+
+
+  const [files, setFiles] = useState([]);
+
+
+  const handleAddFile = () => {
+    setFiles([...files, null]);
+  };
+
+  const handleFileChange = (index, file) => {
+    if (file) {
+      const newFiles = [...files];
+      newFiles[index] = file;
+      setFiles(newFiles);
+
+      setPost(prevPost => ({
+        ...prevPost,
+        files: newFiles
+      }));
+    }
+  };
+
+
+
   useEffect(() => {
 
     console.log('=====================================================');
     console.log(post);
+    // console.log(files);
     console.log('=====================================================');
 
   }, [post]);
@@ -47,37 +88,84 @@ const PartnerWrite = () => {
     ['백반', '국수', '비건']
   ];
 
-  const handleCheckboxChange = (e) => {
-    const { value, checked } = e.target;
-    let newFavorites = post.favorite.split(',').filter(food => food.trim() !== '');
-
-    if (checked && newFavorites.length >= 3 && !newFavorites.includes(value)) {
-      alert('3개 이상은 체크할 수 없습니다.');
-      e.target.checked = false;
-      return;
-    }
-
-    if (checked) {
-      newFavorites.push(value);
-    } else {
-      newFavorites = newFavorites.filter(food => food !== value);
-    }
-
-    setPost(prevState => ({
-      ...prevState,
-      favorite: newFavorites.join(','),
-    }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    setErrorMessages({
+      storeName: '',
+      partnerName: '',
+      partnerPhone: '',
+      storePhone: '',
+      favorite: '',
+      lat: '',
+      lng: '',
+      area: '',
+      zipCode: '',
+    });
+
+    let hasError = true;
+
+    if (post.storeName === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        storeName: '매장이름은 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.partnerName === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        partnerName: '관리자이름은 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.partnerPhone === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        partnerPhone: '전화번호는 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.storePhone === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        storePhone: '전화번호는 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (post.area === '') {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        area: '주소는 필수입니다',
+      }));
+      hasError = false;
+    }
+
+    if (!hasError) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('storeName', post.storeName);
+    formData.append('partnerName', post.partnerName);
+    formData.append('partnerPhone', post.partnerPhone);
+    formData.append('storePhone', post.storePhone);
+    formData.append('favorite', post.favorite);
+    formData.append('lat', post.lat);
+    formData.append('lng', post.lng);
+    formData.append('area', post.area);
+    formData.append('zipCode', post.zipCode);
+    post.files.forEach((file) => {
+      formData.append('files', file);
+    });
+
     fetch('http://localhost:8080/api/partner/write', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      body: JSON.stringify(post),
+      body: formData,
     })
       .then((response) => {
         if (response.status === 201) {
@@ -257,6 +345,7 @@ const PartnerWrite = () => {
       <h2 className="display-6">업체 등록</h2>
       <hr />
       <form onSubmit={handleSubmit}>
+
         {/* ID 입력 부분 */}
         <div className="mt-3">
           <label htmlFor="id">
@@ -268,7 +357,7 @@ const PartnerWrite = () => {
             id="id"
             placeholder=""
             name="id"
-            value={'id 입력예정'}
+
             readOnly
           />
         </div>
@@ -287,8 +376,15 @@ const PartnerWrite = () => {
               name={fieldName}
               onChange={handleChange}
             />
+            <div>
+              {errorMessages[fieldName] && (
+                <span className="text-danger">{errorMessages[fieldName]}</span>
+              )}
+            </div>
           </div>
         ))}
+
+
 
         {/* 매장주소 입력 부분 */}
         <div className="mt-3">
@@ -304,40 +400,45 @@ const PartnerWrite = () => {
             <input type="text" name="lat" id="lat" placeholder="lat" onChange={handleChange} />
             <input type="text" name="lng" id="lng" placeholder="lng" onChange={handleChange} />
             {/* 주소와 우편번호 입력 */}
+            <div>
+              {errorMessages.area && (
+                <span className="text-danger">{errorMessages.area}</span>
+              )}
+            </div>
             <input type="text" name="area" id="area" className="form-control" placeholder="Address" onChange={handleChange} />
             <input type="text" name="zipCode" id="zipCode" className="form-control" placeholder="zipCode" onChange={handleChange} />
           </div>
         </div>
 
         {/* 업종 선택 부분 */}
-        <div className="mt-3">
-          <label>
-            <h5>
-              업종 <small>(1개이상 선택)</small>
-            </h5>
-          </label>
+        {/* <div className="mt-3">
+            <label>
+              <h5>
+                업종 <small>(1개이상 선택)</small>
+              </h5>
+            </label>
 
-          {favoriteGroups.map((group, index) => (
-            <div key={index} className="row">
-              {group.map((food, i) => (
-                <div key={i} className="col-md-4">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value={food}
-                      name="favorite"
-                      onChange={handleCheckboxChange}
-                    />
-                    <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
-                      {food}
-                    </label>
+            {favoriteGroups.map((group, index) => (
+              <div key={index} className="row">
+                {group.map((food, i) => (
+                  <div key={i} className="col-md-4">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value={food}
+                        name="favorite"
+                        onChange={handleCheckboxChange}
+                      />
+                      <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
+                        {food}
+                      </label>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+                ))}
+              </div>
+            ))}
+          </div> */}
 
         {/* 권한 선택 부분 */}
         <div className="mt-3">
@@ -357,6 +458,41 @@ const PartnerWrite = () => {
             <option value="user,partner">파트너</option>
           </select>
         </div>
+
+        {/* 첨부파일 */}
+        <div className="mt-3">
+          <label htmlFor="files">
+            <h5>첨부파일:</h5>
+          </label>
+          <div id="files">
+            {/* Dynamically add file input fields */}
+            {files.map((file, index) => (
+              <div key={index} className="input-group mb-3">
+                <input
+                  type="file"
+                  name='file'
+                  className="form-control"
+                  onChange={(e) => handleFileChange(index, e.target.files[0])}
+                />
+                <button
+                  className="btn btn-outline-danger"
+                  type="button"
+                  onClick={() => {
+                    const newFiles = [...files];
+                    newFiles.splice(index, 1);
+                    setFiles(newFiles);
+                  }}
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
+          </div>
+          <button type="button" id="btnAdd" className="btn btn-secondary mt-2" onClick={handleAddFile}>
+            추가
+          </button>
+        </div>
+
 
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">

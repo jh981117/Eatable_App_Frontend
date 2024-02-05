@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Pagination } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../rolecomponents/AuthContext';
 
@@ -24,8 +24,23 @@ const PartnerList = () => {
 
     console.log("포스트", post);
 
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
+    const [searchKeyword, setSearchKeyword] = useState('');
+
+
     useEffect(() => {
-        fetch("http://localhost:8080/api/partner/list")
+        fetchPosts();
+    }, [page, searchKeyword]);
+
+    const fetchPosts = () => {
+        let url = `http://localhost:8080/api/partner/list?page=${page}`;
+        if (searchKeyword) {
+            url += `&keyword=${searchKeyword}`;
+        }
+
+        fetch(url)
             .then(response => {
                 if (response.status === 200) {
                     return response.json();
@@ -47,7 +62,7 @@ const PartnerList = () => {
             .finally(() => {
                 setLoading(false); // 로딩 상태 변경
             });
-    }, []);
+    }, [] );
 
     if (loading) {
         return <p>Loading...</p>; // 로딩 중일 때 렌더링
@@ -83,10 +98,22 @@ const PartnerList = () => {
                 </Table>
             )}
 
-            <div className="row">
-                <div className="col-12">
-                    <Link to="/partnerwrite" className="btn btn-outline-dark">작성</Link>
+            <div >
+                <div className="d-flex justify-content-end my-2">
+                    <Link to="/partnerwrite" className="btn btn-outline-dark partner-write-btn">작성</Link>
                 </div>
+            </div>
+
+            <div className="justify-content-center" style={{ display: 'flex', justifyContent: 'center' }}>
+                <Pagination>
+                    <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 0} />
+                    {Array.from(Array(totalPages).keys()).map(pageNumber => (
+                        <Pagination.Item key={pageNumber} active={pageNumber === page} onClick={() => handlePageChange(pageNumber)}>
+                            {pageNumber + 1}
+                        </Pagination.Item>
+                    ))}
+                    <Pagination.Next onClick={() => handlePageChange(page + 1)} disabled={page === totalPages - 1} />
+                </Pagination>
             </div>
         </>
     );

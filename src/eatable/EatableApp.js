@@ -35,7 +35,7 @@ import ReviewDetail from "./pages/userreview/ReviewDetail";
 
 
 const EatableApp = () => {
- 
+
 
   return (
     <div>
@@ -65,33 +65,33 @@ const EatableApp = () => {
             <Route
               path="/partnerwrite"
               element={
-                <AdminRoute>
-                  <PartnerWrite />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerWrite />
+                // </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerlist"
               element={
-                <AdminRoute>
-                  <PartnerList />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerList />
+                // </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerupdate/:id"
               element={
-                <AdminRoute>
-                  <PartnerUpdate />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerUpdate />
+                // </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerdetail/:id"
               element={
-                <AdminRoute>
-                  <PartnerDetail />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerDetail />
+                // </AdminRoute>
               }
             ></Route>
 
