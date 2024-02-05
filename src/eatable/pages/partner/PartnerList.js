@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Pagination } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../rolecomponents/AuthContext';
-
+import './components/PartnerList.css';
 
 const Tbody = (p) => {
     const { setAuth } = useAuth();
     const post = p.test;
+
     return (
-        <tr>
-            <td><span >{post.id}</span></td>
-            <td><span><Link to={`/partnerdetail/${post.id}`}>{post.storeName}</Link></span> </td>
-            <td><span >{post.address && post.address.area || ''}</span></td>
-            <td><span >{post.partnerName}</span></td>
-            <td><span >{post.partnerPhone}</span></td>
-            <td><span >{post.storePhone}</span></td>
-            <td><span >{post.favorite}</span></td>
-            <td><span >{post.regDate}</span></td>
+        <tr onClick={() => { window.location = `/partnerdetail/${post.id}` }}>
+            <td><span>{post.id}</span></td>
+            <td><span>{post.storeName}</span></td>
+            <td><span>{post.address && post.address.area || ''}</span></td>
+            <td><span>{post.partnerName}</span></td>
+            <td><span>{post.partnerPhone}</span></td>
+            <td><span>{post.storePhone}</span></td>
+            <td><span>{post.favorite}</span></td>
+            <td><span>{post.regDate}</span></td>
         </tr>
     );
 }
@@ -26,31 +27,59 @@ const PartnerList = () => {
 
     const [post, setPosts] = useState([]);
 
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
+    const [searchKeyword, setSearchKeyword] = useState('');
+
+
     useEffect(() => {
-        fetch("http://localhost:8080/api/partner/list")
+        fetchPosts();
+    }, [page, searchKeyword]);
+
+    const fetchPosts = () => {
+        let url = `http://localhost:8080/api/partner/list?page=${page}`;
+        if (searchKeyword) {
+            url += `&keyword=${searchKeyword}`;
+        }
+
+        fetch(url)
             .then(response => {
                 if (response.status === 200) {
-                    return response.json(); //비동기 작업을 수행하는데, 이 작업이 성공하면 Promise가 완료되고, 그 결과로 JSON 데이터를 얻게 됩니다
-                }
-                else {
+                    return response.json();
+                } else {
                     return null;
                 }
             })
             .then(data => {
                 if (data !== null) {
-                    const sortedPosts = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); //비교 함수는 배열의 요소를 정렬할 때 사용됩니다.
-                    console.log(data)
-                    setPosts(data);
+                    console.log(data);
+                    setPosts(data.content);
+                    setTotalPages(data.totalPages);
                 }
             })
-    }, []);
+            .catch(error => console.error('Error fetching search results:', error));
+    };
+
+    const handlePageChange = (pageNumber) => {
+        setPage(pageNumber);
+    };
 
     return (
         <>
-            <Table>
-                <thead className="table-success">
+            <div className="search-container mt-3">
+                <input
+                    type="text"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    placeholder="검색어를 입력하세요"
+                />
+            </div>
+
+            <Table bordered hover className="partner-table mt-4">
+                <thead>
                     <tr>
-                        <th>매장id</th>
+                        <th>id</th>
                         <th>매장이름</th>
                         <th>매장주소</th>
                         <th>관리자이름</th>
@@ -69,10 +98,22 @@ const PartnerList = () => {
                 </tbody>
             </Table>
 
-            <div className="row">
-                <div className="col-12">
-                    <Link to="/partnerwrite" className="btn btn-outline-dark">작성</Link>
+            <div >
+                <div className="d-flex justify-content-end my-2">
+                    <Link to="/partnerwrite" className="btn btn-outline-dark partner-write-btn">작성</Link>
                 </div>
+            </div>
+
+            <div className="justify-content-center" style={{ display: 'flex', justifyContent: 'center' }}>
+                <Pagination>
+                    <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 0} />
+                    {Array.from(Array(totalPages).keys()).map(pageNumber => (
+                        <Pagination.Item key={pageNumber} active={pageNumber === page} onClick={() => handlePageChange(pageNumber)}>
+                            {pageNumber + 1}
+                        </Pagination.Item>
+                    ))}
+                    <Pagination.Next onClick={() => handlePageChange(page + 1)} disabled={page === totalPages - 1} />
+                </Pagination>
             </div>
         </>
     );
