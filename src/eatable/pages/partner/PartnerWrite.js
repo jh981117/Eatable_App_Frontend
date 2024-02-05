@@ -17,6 +17,7 @@ const PartnerWrite = () => {
     lng: '',
     area: '',
     zipCode: '',
+    files: []
   });
 
   const [errorMessages, setErrorMessages] = useState({
@@ -29,6 +30,7 @@ const PartnerWrite = () => {
     lng: '',
     area: '',
     zipCode: '',
+
   });
 
 
@@ -41,10 +43,35 @@ const PartnerWrite = () => {
     }));
   };
 
+
+
+  const [files, setFiles] = useState([]);
+
+
+  const handleAddFile = () => {
+    setFiles([...files, null]);
+  };
+
+  const handleFileChange = (index, file) => {
+    if (file) {
+      const newFiles = [...files];
+      newFiles[index] = file;
+      setFiles(newFiles);
+
+      setPost(prevPost => ({
+        ...prevPost,
+        files: newFiles
+      }));
+    }
+  };
+
+
+
   useEffect(() => {
 
     console.log('=====================================================');
     console.log(post);
+    // console.log(files);
     console.log('=====================================================');
 
   }, [post]);
@@ -122,15 +149,23 @@ const PartnerWrite = () => {
       return;
     }
 
+    const formData = new FormData();
+    formData.append('storeName', post.storeName);
+    formData.append('partnerName', post.partnerName);
+    formData.append('partnerPhone', post.partnerPhone);
+    formData.append('storePhone', post.storePhone);
+    formData.append('favorite', post.favorite);
+    formData.append('lat', post.lat);
+    formData.append('lng', post.lng);
+    formData.append('area', post.area);
+    formData.append('zipCode', post.zipCode);
+    post.files.forEach((file) => {
+      formData.append('files', file);
+    });
+
     fetch('http://localhost:8080/api/partner/write', {
-
-
-
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      body: JSON.stringify(post),
+      body: formData,
     })
       .then((response) => {
         if (response.status === 201) {
@@ -322,7 +357,7 @@ const PartnerWrite = () => {
             id="id"
             placeholder=""
             name="id"
-            value={'id 입력예정'}
+
             readOnly
           />
         </div>
@@ -377,33 +412,33 @@ const PartnerWrite = () => {
 
         {/* 업종 선택 부분 */}
         {/* <div className="mt-3">
-          <label>
-            <h5>
-              업종 <small>(1개이상 선택)</small>
-            </h5>
-          </label>
+            <label>
+              <h5>
+                업종 <small>(1개이상 선택)</small>
+              </h5>
+            </label>
 
-          {favoriteGroups.map((group, index) => (
-            <div key={index} className="row">
-              {group.map((food, i) => (
-                <div key={i} className="col-md-4">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value={food}
-                      name="favorite"
-                      onChange={handleCheckboxChange}
-                    />
-                    <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
-                      {food}
-                    </label>
+            {favoriteGroups.map((group, index) => (
+              <div key={index} className="row">
+                {group.map((food, i) => (
+                  <div key={i} className="col-md-4">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value={food}
+                        name="favorite"
+                        onChange={handleCheckboxChange}
+                      />
+                      <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
+                        {food}
+                      </label>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div> */}
+                ))}
+              </div>
+            ))}
+          </div> */}
 
         {/* 권한 선택 부분 */}
         <div className="mt-3">
@@ -423,6 +458,41 @@ const PartnerWrite = () => {
             <option value="user,partner">파트너</option>
           </select>
         </div>
+
+        {/* 첨부파일 */}
+        <div className="mt-3">
+          <label htmlFor="files">
+            <h5>첨부파일:</h5>
+          </label>
+          <div id="files">
+            {/* Dynamically add file input fields */}
+            {files.map((file, index) => (
+              <div key={index} className="input-group mb-3">
+                <input
+                  type="file"
+                  name='file'
+                  className="form-control"
+                  onChange={(e) => handleFileChange(index, e.target.files[0])}
+                />
+                <button
+                  className="btn btn-outline-danger"
+                  type="button"
+                  onClick={() => {
+                    const newFiles = [...files];
+                    newFiles.splice(index, 1);
+                    setFiles(newFiles);
+                  }}
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
+          </div>
+          <button type="button" id="btnAdd" className="btn btn-secondary mt-2" onClick={handleAddFile}>
+            추가
+          </button>
+        </div>
+
 
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">

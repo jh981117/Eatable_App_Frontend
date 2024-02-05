@@ -404,12 +404,14 @@ const PartnerUpdate = () => {
                 </div>
 
                 {/* radio타입 입력 */}
-                <div className="d-flex flex-column mt-3">
+                <div className="mt-3">
                     {['parking', 'corkCharge', 'dog'].map((item, index) => (
                         <div key={index} className="form-group">
-                            <label htmlFor={`${item}Radio`}>{item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}</label>
-                            <div className="d-flex flex-row">
-                                <div className="form-check mr-3">
+                            <label htmlFor={`${item}Radio`}>
+                                {item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}
+                            </label>
+                            <div className="d-flex">
+                                <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
                                     <input
                                         className="form-check-input"
                                         type="radio"
@@ -418,12 +420,13 @@ const PartnerUpdate = () => {
                                         value="TRUE"
                                         onChange={handleChange}
                                         checked={post[item] === 'TRUE'}
+                                        style={{ marginRight: '5px' }}
                                     />
-                                    <label className="form-check-label" htmlFor={`${item}Available`}>
+                                    <label className="form-check-label" htmlFor={`${item}Available`} style={{ marginRight: '10px' }}>
                                         가능
                                     </label>
                                 </div>
-                                <div className="form-check">
+                                <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
                                     <input
                                         className="form-check-input"
                                         type="radio"
@@ -432,8 +435,9 @@ const PartnerUpdate = () => {
                                         value="FALSE"
                                         onChange={handleChange}
                                         checked={post[item] === 'FALSE'}
+                                        style={{ marginRight: '5px' }}
                                     />
-                                    <label className="form-check-label" htmlFor={`${item}NotAvailable`}>
+                                    <label className="form-check-label" htmlFor={`${item}NotAvailable`} >
                                         불가능
                                     </label>
                                 </div>

@@ -222,8 +222,8 @@ const PartnerDetail = () => {
             <label htmlFor={`${item}Available`}>
               {item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}
             </label>
-            <div className="d-flex flex-row ">
-              <div className="form-check mr-3">
+            <div className="d-flex">
+              <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
                 <input
                   className="form-check-input"
                   type="radio"
@@ -231,12 +231,13 @@ const PartnerDetail = () => {
                   id={`${item}Available`}
                   value="TRUE"
                   checked={post[item] === 'TRUE'}
+                  style={{ marginRight: '5px' }}
                 />
-                <label className="form-check-label" htmlFor={`${item}Available`}>
+                <label className="form-check-label" htmlFor={`${item}Available`} style={{ marginRight: '10px' }}>
                   가능
                 </label>
               </div>
-              <div className="form-check">
+              <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
                 <input
                   className="form-check-input"
                   type="radio"
@@ -244,8 +245,9 @@ const PartnerDetail = () => {
                   id={`${item}NotAvailable`}
                   value="FALSE"
                   checked={post[item] === 'FALSE'}
+                  style={{ marginRight: '5px' }}
                 />
-                <label className="form-check-label" htmlFor={`${item}NotAvailable`}>
+                <label className="form-check-label" htmlFor={`${item}NotAvailable`} >
                   불가능
                 </label>
               </div>
@@ -253,6 +255,7 @@ const PartnerDetail = () => {
           </div>
         ))}
       </div>
+
 
 
       {/* 권한 선택 부분
