@@ -27,8 +27,7 @@ const AdminPage = () => {
                 <Row >        
                   <Col className="d-flex justify-content-center"><BarChartNewp /></Col>
                 </Row>        
-              </Container>
-                    
+              </Container>                    
             </Tab>
 
             <Tab eventKey="news" title="신규가게수">
