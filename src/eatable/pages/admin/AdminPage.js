@@ -2,9 +2,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Container, Row, Col,Button, Form, Modal, Table, Tab,Tabs } from 'react-bootstrap';
 
 import LineChart from './LineChart';
-import BarChart from './BarChart';
+import BarChartNewp from './BarChartNewp';
 import ApplyList from './ApplyList';
 import CancelList from './CancelList';
+import BarChartNews from './BarChartNews';
 
 const AdminPage = () => {  
     return (
@@ -24,7 +25,7 @@ const AdminPage = () => {
               <h3>신규가입자수</h3>
               <Container>
                 <Row >        
-                  <Col className="d-flex justify-content-center"><BarChart /></Col>
+                  <Col className="d-flex justify-content-center"><BarChartNewp /></Col>
                 </Row>        
               </Container>
                     
@@ -34,7 +35,7 @@ const AdminPage = () => {
               <h3>신규가게수</h3>
               <Container>
                 <Row >        
-                  <Col className="d-flex justify-content-center"><BarChart /></Col>
+                  <Col className="d-flex justify-content-center"><BarChartNews /></Col>
                 </Row>        
               </Container>
             </Tab>
