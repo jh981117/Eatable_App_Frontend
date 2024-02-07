@@ -68,9 +68,6 @@ ChartJS.register(
     };
     
     const labels = getWeekDates();
-
-
-
   
   const userListsByDate = {}; // 각 날짜별 가입자 수를 저장할 객체
 
