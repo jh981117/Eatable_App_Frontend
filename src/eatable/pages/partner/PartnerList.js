@@ -22,7 +22,6 @@ const Tbody = (p) => {
     );
 }
 
-
 const PartnerList = () => {
 
     const [post, setPosts] = useState([]);
@@ -31,7 +30,6 @@ const PartnerList = () => {
     const [totalPages, setTotalPages] = useState(0);
 
     const [searchKeyword, setSearchKeyword] = useState('');
-
 
     useEffect(() => {
         fetchPosts();
