@@ -32,17 +32,17 @@ const ApplyList = () => {
           });
   },[])
 
-    const sendEmail = (e) => {
-      e.preventDefault();  
+    // const sendEmail = (e) => {
+    //   e.preventDefault();  
 
-      emailjs.sendForm('service_fch3yro1', 'template_76jxtmb1', form.current, 'ORegbfZuljHYVzE1s1')
-        .then((result) => {
-            console.log(result.text);
-        }, (error) => {
-            console.log(error.text);
-        });
-        setModalOpen(false);
-    };
+    //   emailjs.sendForm('service_fch3yro1', 'template_76jxtmb1', form.current, 'ORegbfZuljHYVzE1s1')
+    //     .then((result) => {
+    //         console.log(result.text);
+    //     }, (error) => {
+    //         console.log(error.text);
+    //     });
+    //     setModalOpen(false);
+    // };
 
     return (
       <div>  
