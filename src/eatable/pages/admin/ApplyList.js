@@ -53,7 +53,6 @@ const ApplyList = () => {
               setLists(list);
           });
   },[])
-
  
     // const sendEmail = (e) => {
     //   e.preventDefault();  
