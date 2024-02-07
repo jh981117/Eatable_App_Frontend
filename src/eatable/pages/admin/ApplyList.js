@@ -57,6 +57,12 @@ const ApplyList = () => {
     // const sendEmail = (e) => {
     //   e.preventDefault();  
 
+<<<<<<< HEAD
+=======
+    // const sendEmail = (e) => {
+    //   e.preventDefault();  
+
+>>>>>>> 591d5dd3203f4aed0bebda1c6750c86ced619454
     //   emailjs.sendForm('service_fch3yro1', 'template_76jxtmb1', form.current, 'ORegbfZuljHYVzE1s1')
     //     .then((result) => {
     //         console.log(result.text);
