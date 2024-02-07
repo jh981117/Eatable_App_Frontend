@@ -5,6 +5,24 @@ import { useAuth } from "../../rolecomponents/AuthContext";
 import "./components/PartnerList.css";
 
 const Tbody = (p) => {
+
+    const { setAuth } = useAuth();
+    const post = p.test;
+
+    return (
+        <tr onClick={() => { window.location = `/partnerdetail/${post.id}` }}>
+            <td><span>{post.id}</span></td>
+            <td><span>{post.storeName}</span></td>
+            <td><span>{post.address && post.address.area || ''}</span></td>
+            <td><span>{post.partnerName}</span></td>
+            <td><span>{post.partnerPhone}</span></td>
+            <td><span>{post.storePhone}</span></td>
+            <td><span>{post.favorite}</span></td>
+            <td><span>{post.regDate}</span></td>
+        </tr>
+    );
+}
+
   const { setAuth } = useAuth();
   const post = p.test;
 
@@ -54,6 +72,15 @@ const PartnerList = () => {
     fetchPosts();
   }, [page, searchKeyword]);
 
+
+    useEffect(() => {
+        fetchPosts();
+    }, [page, searchKeyword]);
+
+    const fetchPosts = () => {
+        let url = `http://localhost:8080/api/partner/list?page=${page}`;
+        if (searchKeyword) {
+
   const fetchPosts = () => {
     let url = `http://localhost:8080/api/partner/list?page=${page}`;
     if (searchKeyword) {
@@ -66,6 +93,7 @@ const PartnerList = () => {
           return response.json();
         } else {
           return null;
+
         }
       })
       .then((data) => {

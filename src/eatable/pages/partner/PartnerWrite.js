@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import './components/PartnerWrite.css';
 import { GpsFixed } from '@material-ui/icons';
 
-
 const PartnerWrite = () => {
   const navigate = useNavigate();
 
@@ -17,7 +16,6 @@ const PartnerWrite = () => {
     lng: '',
     area: '',
     zipCode: '',
-    files: []
   });
 
   const [errorMessages, setErrorMessages] = useState({
@@ -33,139 +31,48 @@ const PartnerWrite = () => {
 
   });
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPost(prevState => ({
       ...prevState,
       [name]: value,
     }));
+
+    // 입력란의 값이 변경될 때 해당 입력란의 에러 메시지를 초기화
+    setErrorMessages(prevState => ({
+      ...prevState,
+      [name]: '', // 해당 입력란의 에러 메시지 초기화
+    }));
   };
-
-
-
-  const [files, setFiles] = useState([]);
-
-
-  const handleAddFile = () => {
-    setFiles([...files, null]);
-  };
-
-  const handleFileChange = (index, file) => {
-    if (file) {
-      const newFiles = [...files];
-      newFiles[index] = file;
-      setFiles(newFiles);
-
-      setPost(prevPost => ({
-        ...prevPost,
-        files: newFiles
-      }));
-    }
-  };
-
-
-
-  useEffect(() => {
-
-    console.log('=====================================================');
-    console.log(post);
-    // console.log(files);
-    console.log('=====================================================');
-
-  }, [post]);
-
-  const favoriteGroups = [
-    ['한식', '중식', '일식'],
-    ['이탈리아', '프랑스', '유러피안'],
-    ['퓨전', '스페인', '아메리칸'],
-    ['스시', '한우', '소고기구이'],
-    ['와인', '코스요리', '고기요리'],
-    ['한정식', '파스타', '해물'],
-    ['다이닝바', '브런치', '카페'],
-    ['치킨', '레스토랑', '피자'],
-    ['백반', '국수', '비건']
-  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setErrorMessages({
-      storeName: '',
-      partnerName: '',
-      partnerPhone: '',
-      storePhone: '',
-      favorite: '',
-      lat: '',
-      lng: '',
-      area: '',
-      zipCode: '',
+    let hasError = false;
+
+    const requiredFields = ['storeName', 'partnerName', 'partnerPhone', 'storePhone', 'area'];
+
+    requiredFields.forEach(fieldName => {
+      if (!post[fieldName]) {
+        const errorMessage =
+          fieldName === 'storeName' ? '매장이름은' :
+            fieldName === 'partnerName' ? '관리자이름은' :
+              fieldName === 'partnerPhone' ? '관리자 전화번호는' :
+                fieldName === 'storePhone' ? '매장 전화번호는' :
+                  '주소는';
+        setErrorMessages(prevErrors => ({ ...prevErrors, [fieldName]: `${errorMessage} 필수입니다` }));
+        hasError = true;
+      }
     });
 
-    let hasError = true;
-
-    if (post.storeName === '') {
-      setErrorMessages((prevErrors) => ({
-        ...prevErrors,
-        storeName: '매장이름은 필수입니다',
-      }));
-      hasError = false;
-    }
-
-    if (post.partnerName === '') {
-      setErrorMessages((prevErrors) => ({
-        ...prevErrors,
-        partnerName: '관리자이름은 필수입니다',
-      }));
-      hasError = false;
-    }
-
-    if (post.partnerPhone === '') {
-      setErrorMessages((prevErrors) => ({
-        ...prevErrors,
-        partnerPhone: '전화번호는 필수입니다',
-      }));
-      hasError = false;
-    }
-
-    if (post.storePhone === '') {
-      setErrorMessages((prevErrors) => ({
-        ...prevErrors,
-        storePhone: '전화번호는 필수입니다',
-      }));
-      hasError = false;
-    }
-
-    if (post.area === '') {
-      setErrorMessages((prevErrors) => ({
-        ...prevErrors,
-        area: '주소는 필수입니다',
-      }));
-      hasError = false;
-    }
-
-    if (!hasError) {
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('storeName', post.storeName);
-    formData.append('partnerName', post.partnerName);
-    formData.append('partnerPhone', post.partnerPhone);
-    formData.append('storePhone', post.storePhone);
-    formData.append('favorite', post.favorite);
-    formData.append('lat', post.lat);
-    formData.append('lng', post.lng);
-    formData.append('area', post.area);
-    formData.append('zipCode', post.zipCode);
-    post.files.forEach((file) => {
-      formData.append('files', file);
-    });
+    if (hasError) return;
 
     fetch('http://localhost:8080/api/partner/write', {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+      body: JSON.stringify(post),
     })
       .then((response) => {
         if (response.status === 201) {
@@ -189,14 +96,9 @@ const PartnerWrite = () => {
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_KEY}&libraries=places`;
     script.async = true;
     document.body.appendChild(script);
+    script.onload = () => initialize();
 
-    script.onload = () => {
-      initialize();
-    };
-
-    return () => {
-      document.body.removeChild(script);
-    };
+    return () => document.body.removeChild(script);
 
   }, []);
 
@@ -214,7 +116,7 @@ const PartnerWrite = () => {
     autocomplete.addListener('place_changed', function () {
       const place = autocomplete.getPlace();
 
-      // 장소 없을때---------------------------------------------------
+      // 장소 없을때 ---------------------------------------------------
       if (!place.geometry || !place.geometry.location) {
         const service = new window.google.maps.places.AutocompleteService();
         service.getPlacePredictions({ input: input.value }, function (predictions, status) {
@@ -250,7 +152,7 @@ const PartnerWrite = () => {
         });
         return;
       }
-      // -----------------------------------------------------------
+      // 장소있을때 -----------------------------------------------------------
 
       handleSetPost('lat', place.geometry.location.lat());
       handleSetPost('lng', place.geometry.location.lng());
@@ -260,7 +162,7 @@ const PartnerWrite = () => {
       document.getElementById('lng').value = place.geometry.location.lng();
       document.getElementById('area').value = place.formatted_address;
 
-
+      // 우편번호 찾기 -----------------------------------------------------------
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ 'location': place.geometry.location }, function (results, status) {
         if (status === 'OK') {
@@ -290,6 +192,7 @@ const PartnerWrite = () => {
     });
   };
 
+  // 현재위치기반 --------------------------------------------------------------
   const findMyLocation = (event) => {
     event.preventDefault();
 
@@ -385,8 +288,6 @@ const PartnerWrite = () => {
           </div>
         ))}
 
-
-
         {/* 매장주소 입력 부분 */}
         <div className="mt-3">
           <label htmlFor="address">
@@ -411,36 +312,6 @@ const PartnerWrite = () => {
           </div>
         </div>
 
-        {/* 업종 선택 부분 */}
-        {/* <div className="mt-3">
-            <label>
-              <h5>
-                업종 <small>(1개이상 선택)</small>
-              </h5>
-            </label>
-
-            {favoriteGroups.map((group, index) => (
-              <div key={index} className="row">
-                {group.map((food, i) => (
-                  <div key={i} className="col-md-4">
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value={food}
-                        name="favorite"
-                        onChange={handleCheckboxChange}
-                      />
-                      <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
-                        {food}
-                      </label>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div> */}
-
         {/* 권한 선택 부분 */}
         <div className="mt-3">
           <label htmlFor="job">
@@ -460,41 +331,6 @@ const PartnerWrite = () => {
           </select>
         </div>
 
-        {/* 첨부파일 */}
-        <div className="mt-3">
-          <label htmlFor="files">
-            <h5>첨부파일:</h5>
-          </label>
-          <div id="files">
-            {/* Dynamically add file input fields */}
-            {files.map((file, index) => (
-              <div key={index} className="input-group mb-3">
-                <input
-                  type="file"
-                  name='file'
-                  className="form-control"
-                  onChange={(e) => handleFileChange(index, e.target.files[0])}
-                />
-                <button
-                  className="btn btn-outline-danger"
-                  type="button"
-                  onClick={() => {
-                    const newFiles = [...files];
-                    newFiles.splice(index, 1);
-                    setFiles(newFiles);
-                  }}
-                >
-                  삭제
-                </button>
-              </div>
-            ))}
-          </div>
-          <button type="button" id="btnAdd" className="btn btn-secondary mt-2" onClick={handleAddFile}>
-            추가
-          </button>
-        </div>
-
-
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">
           <button type="submit" className="button-link">
@@ -509,5 +345,6 @@ const PartnerWrite = () => {
     </div>
   );
 };
+
 
 export default PartnerWrite;
