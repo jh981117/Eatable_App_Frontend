@@ -43,8 +43,13 @@ const MyHeader = () => {
           Eatabel
         </Navbar.Brand>
         <Nav className="ml-auto">
-          <Link to={"/partnerlist"} >
-            <Button variant="outline-secondary"  style={logoutButtonStyle}>
+          <Link to={"/reservation"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
+              예약페이지
+            </Button>
+          </Link>
+          <Link to={"/partnerlist"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
               파트너페이지
             </Button>
           </Link>
@@ -63,7 +68,14 @@ const MyHeader = () => {
               어드민페이지
             </Button>
           </Link>
+
+          <Link to={"/reviewlist"}>
+            <Button variant="outline-secondary" style={logoutButtonStyle}>
+              리뷰리스트
+            </Button>
+          </Link>
           {auth ? (
+
             <>
               <Link to="/usermypage" className="d-flex align-items-center">
                 {/* 세로 가운데 정렬 */}

@@ -54,38 +54,38 @@ const SignupPage = () => {
 
 
     const validateField = (fieldName, value) => {
-        let pwreg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,13}$/;
-        let birthreg = /^\d{4}\d{2}\d{2}$/;
-        let phonereg =  /^\d{3}\d{4}\d{4}$/;
-        // let emailreg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // let pwreg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,13}$/;
+        // let birthreg = /^\d{4}\d{2}\d{2}$/;
+        // let phonereg =  /^\d{3}\d{4}\d{4}$/;
+        // // let emailreg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        switch (fieldName) {
-            case 'username':
-                return value.trim() === '' ? '아이디를 입력해주세요.' : (userdata.some(user => user.username === value.trim()) ? '아이디가 이미 존재합니다.' : '');
-            case 'password':
-                return value.trim() === '' ? '비밀번호를 입력해주세요.' : ((pwreg.test(value)) ? '' : '영문과 숫자를 포함한 9~13자리의 비밀번호를 입력해주세요.');
-            case 'repassword':
-                return value.trim() === '' ? '비밀번호를 확인을 위해 다시 입력해주세요.' : ((value === userinfo.password) ? '' : '비밀번호가 일치하지 않습니다.');
-            case 'name':
-                return value.trim() === '' ? '이름을 입력해주세요.' : '';
-            case 'nickName':
-                return value.trim() === '' ? '별명을 입력해주세요.' : '';
-            case 'birthdate':
-                return value.trim() === '' ? '주민등록번호를 입력해주세요.' : ((birthreg.test(value)) ? '' : '주민등록번호 형식을 맞춰서 입력해주세요.');
-            case 'phone':
-                return value.trim() === '' ? '전화번호를 입력해주세요.' : ((phonereg.test(value)) ? '' : '전화번호 형식을 맞춰서 입력해주세요.');
-            case 'email_id':
-                return value.trim() === '' ? '메일아이디를 입력해주세요.' : '';
-            case 'email_domain':
-                return value.trim() === '' ? '메일주소를 입력해주세요.' : '';
-            case 'email':
-                const emailId = userinfo['email_id'].trim();
-                const emailDomain = userinfo['email_domain'].trim();
-                const emailValue = `${emailId}@${emailDomain}`;
-                // const emailError = emailValue.trim() === '' ? '이메일을 입력해주세요.' : (emailreg.test(emailValue) ? '' : '이메일 형식을 맞춰서 입력해주세요.');
-                // return emailError;
-                // console.log(emailValue);
-        }
+        // switch (fieldName) {
+        //     case 'username':
+        //         return value.trim() === '' ? '아이디를 입력해주세요.' : (userdata.some(user => user.username === value.trim()) ? '아이디가 이미 존재합니다.' : '');
+        //     case 'password':
+        //         return value.trim() === '' ? '비밀번호를 입력해주세요.' : ((pwreg.test(value)) ? '' : '영문과 숫자를 포함한 9~13자리의 비밀번호를 입력해주세요.');
+        //     case 'repassword':
+        //         return value.trim() === '' ? '비밀번호를 확인을 위해 다시 입력해주세요.' : ((value === userinfo.password) ? '' : '비밀번호가 일치하지 않습니다.');
+        //     case 'name':
+        //         return value.trim() === '' ? '이름을 입력해주세요.' : '';
+        //     case 'nickName':
+        //         return value.trim() === '' ? '별명을 입력해주세요.' : '';
+        //     case 'birthdate':
+        //         return value.trim() === '' ? '주민등록번호를 입력해주세요.' : ((birthreg.test(value)) ? '' : '주민등록번호 형식을 맞춰서 입력해주세요.');
+        //     case 'phone':
+        //         return value.trim() === '' ? '전화번호를 입력해주세요.' : ((phonereg.test(value)) ? '' : '전화번호 형식을 맞춰서 입력해주세요.');
+        //     case 'email_id':
+        //         return value.trim() === '' ? '메일아이디를 입력해주세요.' : '';
+        //     case 'email_domain':
+        //         return value.trim() === '' ? '메일주소를 입력해주세요.' : '';
+        //     case 'email':
+        //         const emailId = userinfo['email_id'].trim();
+        //         const emailDomain = userinfo['email_domain'].trim();
+        //         const emailValue = `${emailId}@${emailDomain}`;
+        //         // const emailError = emailValue.trim() === '' ? '이메일을 입력해주세요.' : (emailreg.test(emailValue) ? '' : '이메일 형식을 맞춰서 입력해주세요.');
+        //         // return emailError;
+        //         // console.log(emailValue);
+        // }
     };
 
     const changeValue = (e) => {

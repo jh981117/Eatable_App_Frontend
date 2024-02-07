@@ -10,7 +10,7 @@ import PartnerWrite from "./pages/partner/PartnerWrite";
 import PartnerList from "./pages/partner/PartnerList";
 import PartnerUpdate from "./pages/partner/PartnerUpdate";
 import PartnerDetail from "./pages/partner/PartnerDetail";
-import ApplyList from "./pages/admin/ApplyList";
+
 import ApplyReq from "./pages/admin/ApplyReq";
 import AdminRoute from "./rolecomponents/AdminRoute";
 import RoleErrorPage from "./rolecomponents/RoleErrorPage";
@@ -24,9 +24,19 @@ import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 import ProvisionPage from "./pages/user/ProvisionPage";
 import UpdateInfoPage from "./pages/user/UpdateInfoPage";
 
+import AdminPage from "./pages/admin/AdminPage";
+
+import ReviewList from "./pages/userreview/ReviewList";
+import EatableTimeLine from "./pages/userreview/EatableTimeLine";
+import DetailTab from "./pages/userreview/DetailTab";
+import ReviewImg from "./pages/userreview/ReviewImg";
+import ReviewWrite from "./pages/userreview/ReviewWrite";
+import ReviewDetail from "./pages/userreview/ReviewDetail";
+
+
 
 const EatableApp = () => {
- 
+
 
   return (
     <div>
@@ -50,33 +60,33 @@ const EatableApp = () => {
             <Route
               path="/partnerwrite"
               element={
-                <AdminRoute>
-                  <PartnerWrite />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerWrite />
+                // </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerlist"
               element={
-                <AdminRoute>
-                  <PartnerList />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerList />
+                // </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerupdate/:id"
               element={
-                <AdminRoute>
-                  <PartnerUpdate />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerUpdate />
+                // </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerdetail/:id"
               element={
-                <AdminRoute>
-                  <PartnerDetail />
-                </AdminRoute>
+                // <AdminRoute>
+                <PartnerDetail />
+                // </AdminRoute>
               }
             ></Route>
 
@@ -85,7 +95,7 @@ const EatableApp = () => {
               path="/applylist"
               element={
                 <AdminRoute>
-                  <ApplyList />
+                  <AdminPage />
                 </AdminRoute>
               }
             ></Route>
@@ -131,7 +141,6 @@ const EatableApp = () => {
               path="/reservation"
               element={
                 <MemberRoute>
-                  {" "}
                   <Reservation />
                 </MemberRoute>
               }
@@ -140,6 +149,20 @@ const EatableApp = () => {
               path="/reservationOk"
               element={<MemberRoute>{/* <ApplyReq /> */}</MemberRoute>}
             ></Route>
+
+
+
+              {/* 민호 */}
+            <Route path="/reviewlist" Component={ReviewList}></Route>
+            <Route path="/eatabletimeline" Component={EatableTimeLine}></Route>
+            <Route path="/detailtab" Component={DetailTab}></Route>
+            <Route path="/reviewimg" Component={ReviewImg}></Route>
+            <Route path="/reviewwrite" Component={ReviewWrite}></Route>
+            <Route path="/reviewdetail" Component={ReviewDetail}></Route>
+
+
+
+
           </Routes>
         </Container>
       </AuthProvider>
