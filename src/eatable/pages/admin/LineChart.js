@@ -65,8 +65,8 @@ const LineChart = () => {
   const userListsByDate = {}; // 각 날짜별 가입자 수를 저장할 객체
 
   userLists.forEach(user => {
-    const regDate = new Date(user.regDate); // 사용자의 가입일
-    const dateString = regDate.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
+    const createdAt = new Date(user.createdAt); // 사용자의 가입일
+    const dateString = createdAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
     userListsByDate[dateString] = (userListsByDate[dateString] || 0) + 1; // 해당 날짜의 가입자 수를 증가시킴
   });
 
