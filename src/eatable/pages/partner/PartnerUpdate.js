@@ -24,7 +24,8 @@ const PartnerUpdate = () => {
         reserveInfo: '',
         parking: '',
         corkCharge: '',
-        dog: ''
+        dog: '',
+        files: []
     });
 
     const [errorMessages, setErrorMessages] = useState({
@@ -38,22 +39,16 @@ const PartnerUpdate = () => {
         dog: ''
     });
 
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setPost(prevState => ({
-            ...prevState,
-            [name]: value,
-        }));
+    const errorMessageMap = {
+        favorite: '업종은 반드시 골라야 합니다',
+        storeInfo: '가게 정보는 필수입니다',
+        tableCnt: '테이블 수는 필수입니다',
+        openTime: '영업 시간은 필수입니다',
+        reserveInfo: '예약 주의 사항은 필수입니다',
+        parking: '주차 정보는 필수입니다',
+        corkCharge: '콜키지 정보는 필수입니다',
+        dog: '애완견 정보는 필수입니다',
     };
-
-    useEffect(() => {
-
-        console.log('=====================================================');
-        console.log(post);
-        console.log('=====================================================');
-
-    }, [post]);
 
     const favoriteGroups = [
         ['한식', '중식', '일식'],
@@ -66,6 +61,46 @@ const PartnerUpdate = () => {
         ['치킨', '레스토랑', '피자'],
         ['백반', '국수', '비건']
     ];
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setPost(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
+
+    const [files, setFiles] = useState([]);
+
+    const handleAddFile = () => {
+        const newFiles = [...files, null];
+        setFiles(newFiles);
+        setPost(prevPost => ({
+            ...prevPost,
+            files: newFiles
+        }));
+    };
+
+    const handleFileChange = (index, file) => {
+        if (file) {
+            const newFiles = [...files];
+            newFiles[index] = file;
+            setFiles(newFiles);
+
+            setPost(prevPost => ({
+                ...prevPost,
+                files: newFiles
+            }));
+        }
+    };
+
+    // useEffect(() => {
+
+    //     console.log('=====================================================');
+    //     console.log(post);
+    //     console.log('=====================================================');
+
+    // }, [post]);
 
     useEffect(() => {
         fetch('http://localhost:8080/api/partner/detail/' + id)
@@ -174,17 +209,44 @@ const PartnerUpdate = () => {
             hasError = false;
         }
 
+        // if (!post.files || post.files.length === 0 || post.files.every(file => file === null)) {
+        //     alert('첨부 파일을 선택해주세요.');
+        //     hasError = false;
+        // }
+
 
         if (!hasError) {
             return;
         }
 
+        const formData = new FormData();
+        formData.append('id', post.id);
+        formData.append(' storeName', post.storeName);
+        formData.append('partnerName', post.partnerName);
+        formData.append('partnerPhone', post.partnerPhone);
+        formData.append('storePhone', post.storePhone);
+        formData.append('storeInfo', post.storeInfo);
+        formData.append('tableCnt', post.tableCnt);
+        formData.append('openTime', post.openTime);
+        formData.append('reserveInfo', post.reserveInfo);
+        formData.append('favorite', post.favorite);
+        formData.append('parking', post.parking);
+        formData.append('corkCharge', post.corkCharge);
+        formData.append('dog', post.dog);
+
+        // post.files가 정의되었을 때에만 파일을 formData에 추가
+        if (post.files) {
+            post.files.forEach((file) => {
+                if (file) {
+                    formData.append('files', file);
+                }
+            });
+        }
+
+
         fetch('http://localhost:8080/api/partner/update', {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-            },
-            body: JSON.stringify(post),
+            body: formData,
         })
             .then((response) => {
                 console.log('response', response);
@@ -230,21 +292,6 @@ const PartnerUpdate = () => {
             <h2 className="display-6">업체 등록</h2>
             <hr />
             <form onSubmit={postUpdate}>
-                {/* ID 입력 부분 */}
-                {/* <div className="mt-3">
-                    <label htmlFor="id">
-                        <h5>id</h5>
-                    </label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="id"
-                        placeholder=""
-                        name="id"
-                        value={'id 입력예정'}
-                        readOnly
-                    />
-                </div> */}
 
                 {/* 나머지 입력 부분들 */}
                 {['storeName', 'partnerName', 'partnerPhone', 'storePhone'].map((fieldName, index) => (
@@ -303,7 +350,7 @@ const PartnerUpdate = () => {
                                             value={food}
                                             name="favorite"
                                             onChange={handleCheckboxChange}
-                                            checked={post.favorite && post.favorite.includes(food) || ''}
+                                            checked={post.favorite && post.favorite.includes(food) || ''} 
                                         />
                                         <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
                                             {food}
@@ -449,28 +496,38 @@ const PartnerUpdate = () => {
                     ))}
                 </div>
 
-                {/* 권한 선택 부분 */}
-                {/* <div className="mt-3">
-                        <label htmlFor="job">
-                        <h5>권한</h5>
-                        </label>
-                        <select
-                        className={`form-select ${post.job ? 'has-value' : ''}`}
-                        name="job"
-                        id="job"
-                        onChange={handleChange}
-                        // value={'post.job'}
-                        >
-                        <option value="">
-                        -- 권한을 선택해 주세요 --
-                        </option>
-                        <option value="user">유저</option>
-                        <option value="user,partner">파트너</option>
-                        </select>
-                    </div> */}
-
-
-
+                {/* 첨부파일 */}
+                <div className="mt-3">
+                    <label htmlFor="files">
+                        <h5>첨부파일:</h5>
+                    </label>
+                    <div id="files">
+                        {files.map((file, index) => (
+                            <div key={index} className="input-group mb-3">
+                                <input
+                                    type="file"
+                                    name='file'
+                                    className="form-control"
+                                    onChange={(e) => handleFileChange(index, e.target.files[0])}
+                                />
+                                <button
+                                    className="btn btn-outline-danger"
+                                    type="button"
+                                    onClick={() => {
+                                        const newFiles = [...files];
+                                        newFiles.splice(index, 1);
+                                        setFiles(newFiles);
+                                    }}
+                                >
+                                    삭제
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    <button type="button" id="btnAdd" className="btn btn-secondary mt-2" onClick={handleAddFile}>
+                        추가
+                    </button>
+                </div>
 
                 {/* 하단 버튼 */}
                 <div className="d-flex justify-content-end my-3">

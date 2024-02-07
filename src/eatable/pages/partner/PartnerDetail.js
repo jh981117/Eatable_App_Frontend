@@ -256,23 +256,17 @@ const PartnerDetail = () => {
         ))}
       </div>
 
-
-
-      {/* 권한 선택 부분
-      <div className="mt-3">
-        <label htmlFor="job">
-          <h5>권한</h5>
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="job"
-          placeholder=""
-          name="job"
-          value={'권한 입력예정'}
-          readOnly
-        />
-      </div> */}
+      {/* 이미지 파일 표시 */}
+      <div className="mt-3" style={{ overflowX: 'auto' }}>
+        <h5>첨부 이미지</h5>
+        <div className="mt-3" style={{ whiteSpace: 'nowrap' }}> {/* 내부 요소를 한 줄에 배치하기 위해 whiteSpace: nowrap; 속성 추가 */}
+          {post.fileList && post.fileList.map((file, index) => (
+            <div key={index} style={{ display: 'inline-block', marginRight: '10px' }}> {/* 이미지를 가로로 배열하기 위해 display: inline-block; 속성 추가 */}
+              <img src={file.imageUrl} alt={file.filename} style={{ maxWidth: '200px', maxHeight: '200px' }} />
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* 하단 링크 */}
       <div className="d-flex justify-content-end my-3">
