@@ -23,7 +23,7 @@ const SignoutPage = () => {
   return (
     <Container>
       <Row className="justify-content-center mt-5">
-        <Col md={6}>
+        <Col md={12}>
           <Form>
             <Form.Group controlId="formPassword">
               <Form.Label>비밀번호 확인</Form.Label>

@@ -83,6 +83,7 @@ const PartnerWrite = () => {
       .then((data) => {
         if (data !== null) {
           alert('제출완료');
+          
           navigate(`/partnerdetail/${data.id}`);
         } else {
           alert('제출실패');
