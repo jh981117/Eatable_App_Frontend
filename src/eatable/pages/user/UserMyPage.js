@@ -5,7 +5,7 @@ import { Nav, Button } from 'react-bootstrap';
 import UserInfoPage from './UserInfoPage';
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
-import SignoutPage from "./SignupPage";
+import SignoutPage from "./SignoutPage";
 
 const UserMyPage = () => {
   

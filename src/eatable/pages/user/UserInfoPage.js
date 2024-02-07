@@ -1,15 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Card, Col, Container, ListGroup, Row, Tab, Tabs, Image, Button, } from "react-bootstrap";
+import { Card, Col, Container, ListGroup, Row, Tab, Tabs, Image, Button, Form, } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
 import ReservePage from "./ReservePage";
 import ReservedPage from "./ReservedPage";
+import { Link, json, useNavigate } from "react-router-dom";
+import UpdateInfoPage from "./UpdateInfoPage";
+import SignoutPage from "./SignoutPage";
+import { Input } from "@material-ui/core";
+
+
+
 const UserInfoPage = () => {
 
+
+
+    const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
+    const [edit, setEdit] = useState(false);
+
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const fileInputRef = useRef();
-  const { setAuth } = useAuth();
+  const {auth, setAuth ,updateProfile} = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -27,6 +39,7 @@ const UserInfoPage = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+         
         });
 
         if (!response.ok) {
@@ -45,12 +58,41 @@ const UserInfoPage = () => {
 
     fetchProfile();
   }, []);
+
+
+
   if (error) {
     return <div>Error fetching profile: {error.message}</div>;
   }
   if (!profile) {
     return <div>Loading...</div>; // 또는 로딩 표시, 에러 메시지 등
   }
+
+
+
+//   const handleDrop = () => {
+//     const confirm = window.confirm("정말 탈퇴하시겠습니까?");
+//     if (confirm) {
+//         // 아이디 삭제되는부분 작성해야됨.
+//         alert("회원탈퇴가 완료되었습니다.");
+//     } else {
+//         return;
+//     }
+//   }
+
+  const fieldEdit = (field) => {
+    setEdit(state => ({
+        ...state,
+        [field]: !state[field]
+    }))
+  }
+
+  const changeValue = (e, field) => {
+    setProfile({
+        ...profile,
+        [field]: e.target.value
+    });
+  };
 
   //프로필 업데이트
 
@@ -71,6 +113,37 @@ const UserInfoPage = () => {
       handleImageUpload(file);
     }
   };
+
+  const handleUpdate = async (e, field) => {
+    
+    try {
+        const response = await fetch("http://localhost:8080/api/user/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({    
+            ...profile,
+            [field]: auth.profile[field]
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    setAuth((data1) => ({
+        ...data1,
+        profile: data,
+    }));
+    updateProfile();
+} catch (error) {
+    console.error("Error:", error);
+    setError(error);
+}
+};
+
 
   const handleImageUpload = async () => {
     const formData = new FormData();
@@ -108,6 +181,13 @@ const UserInfoPage = () => {
     }
   };
 
+  const updateOk = (field) => {
+    fieldEdit(field);
+    console.log(field.value);
+    handleUpdate(field)
+  }
+
+
     return (
         <Row>
         <Col className="d-flex align-items-center">
@@ -116,22 +196,25 @@ const UserInfoPage = () => {
                 <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleImageChange}/>
                 <div className="d-flex align-items-center">
                     <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer" }}/>
-                    <div className="d-flex align-items-center ml-3">
-                        닉네임 : {profile.nickName}<br/>
-                        내 소개 : 지워야되는부분 {profile.bio}<br/>
-                        온도 : 위치는 여긴데... 구현은???
+                    <div className="flex align-items-center ml-3">
+                        
+                        닉네임 : {edit.nickName ? <Input type="text" value={auth.profile.nickName} onChange={(e) => changeValue(e, 'nickName')}/> : <span>{profile.nickName}</span>}<Button onClick={() => fieldEdit('nickName')}>{edit.nickName ? '취소' : '수정'}</Button>{edit.nickName && <Button onClick={() => updateOk('nickName')}>확인</Button>}<br/>
+                        내 소개 : {edit.bio ? <Input type="text" value={auth.profile.bio} onChange={(e) => changeValue(e, 'bio')}/> : <span>{profile.bio}</span>}<Button onClick={() => fieldEdit('bio')}>{edit.bio ? '취소' : '수정'}</Button>{edit.bio && <Button onClick={() => updateOk('bio')}>확인</Button>}<br/>
+                        온도 : <Input type="text" name="1" value={"1"}/>
+                        
                     </div>
                 </div>
                 <div>
                 <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
                   <Tab eventKey="profile" title="프로필">
                     <ListGroup variant="flush">
-                      <ListGroup.Item>아이디 : {profile.username}</ListGroup.Item>
-                      <ListGroup.Item>닉네임 : {profile.nickName}</ListGroup.Item>
-                      <ListGroup.Item>이름 : {profile.name}</ListGroup.Item>
-                      <ListGroup.Item>연락처 : {profile.phone}</ListGroup.Item>
-                      <ListGroup.Item>이메일 : {profile.email}</ListGroup.Item>
-                      <Button>회원탈퇴</Button>
+                      <ListGroup.Item>아이디 : <Input type="text" value={profile.username} readOnly/></ListGroup.Item>
+                      <ListGroup.Item>닉네임 : {edit.nickName ? <Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, 'nickName')}/> : <span>{profile.nickName}</span>}<Button onClick={() => fieldEdit('nickName')}>{edit.nickName ? '취소' : '변경'}</Button>{edit.nickName && <Button onClick={() => updateOk('nickName')}>확인</Button>}</ListGroup.Item>
+                      <ListGroup.Item>이름 : <Input type="text" value={profile.name} readOnly/></ListGroup.Item>
+                      <ListGroup.Item>연락처 : {edit.phone ? <Input type="text" value={profile.phone} onChange={(e) => changeValue(e,'phone')}/> : <span>{profile.phone}</span>}<Button onClick={() => fieldEdit('phone')}>{edit.phone ? '취소' : '변경'}</Button>{edit.phone && <Button onClick={() => updateOk('phone')}>확인</Button>}</ListGroup.Item>
+                      <ListGroup.Item>이메일 : <Input type="text" value={profile.email} readOnly/></ListGroup.Item>
+                      {/* <Button onClick={updateInfo}>수정</Button> */}
+                      {/* <Button onClick={dropOK}>회원탈퇴</Button> */}
                     </ListGroup>
                   </Tab>
                   <Tab eventKey="reserve" title="예약 현황">
@@ -148,7 +231,6 @@ const UserInfoPage = () => {
                     </ListGroup>
                   </Tab>
                 </Tabs>
-                <div>내 취향 선택하기</div>
               </div>
             </Card.Body>
           </Card>

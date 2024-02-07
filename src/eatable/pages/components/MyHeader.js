@@ -14,7 +14,7 @@ const MyHeader = () => {
 
   console.log(auth);
   const handleLogout = () => {
-    setAuth({ isLoggedIn: false, user: null, profile: null }); // 프로필 정보도 초기화
+    setAuth(""); // 프로필 정보도 초기화
     localStorage.removeItem("token");
     // 필요한 경우 localStorage에서 다른 인증 관련 데이터도 제거
   };
@@ -35,7 +35,7 @@ const MyHeader = () => {
     margin: "0", // 마진 없애기
     marginRight: "5px",
   };
-
+  console.log(auth)
   return (
     <Navbar bg="light" variant="light" style={navbarStyle}>
       <Container>
@@ -63,7 +63,7 @@ const MyHeader = () => {
               어드민페이지
             </Button>
           </Link>
-          {auth.isLoggedIn ? (
+          {auth ? (
             <>
               <Link to="/usermypage" className="d-flex align-items-center">
                 {/* 세로 가운데 정렬 */}
