@@ -30,7 +30,7 @@ const FollowPage = () => {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div>
+      <div className="d-flex col-3">
         <h5>팔로잉 목록</h5>
         <ul>
           {followingList.map(user => (
@@ -39,7 +39,7 @@ const FollowPage = () => {
         </ul>
       </div>
 
-      <div>
+      <div className="d-flex col-3">
         <h5>팔로워 목록</h5>
         <ul>
           {followersList.map(user => (
