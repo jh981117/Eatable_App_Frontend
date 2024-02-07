@@ -61,6 +61,7 @@ const LoginPage = () => {
           const data = await response.json();
           console.log("로그인 성공", data);
           alert("로그인 성공!");
+         
 
           saveTokenToLocalStorage(data.token); // JWT 저장
           // JWT에서 사용자 정보 추출 (예: 닉네임)
@@ -88,7 +89,7 @@ const LoginPage = () => {
           
 
           
-       
+
         } else {
           console.error("로그인 실패:", response.status);
           alert("로그인 실패!");
