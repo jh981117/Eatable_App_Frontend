@@ -261,7 +261,7 @@ const PartnerWrite = () => {
             id="id"
             placeholder=""
             name="id"
-
+            
             readOnly
           />
         </div>

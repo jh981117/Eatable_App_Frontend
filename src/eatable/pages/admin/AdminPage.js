@@ -6,8 +6,10 @@ import BarChartNewp from './BarChartNewp';
 import ApplyList from './ApplyList';
 import CancelList from './CancelList';
 import BarChartNews from './BarChartNews';
+import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {  
+  const navigate =useNavigate();
     return (
         <div>
            <Tabs defaultActiveKey="apply">
@@ -46,10 +48,7 @@ const AdminPage = () => {
                 </Row>
               </Container>  
             </Tab>
-          </Tabs>    
-          <Button variant="outline-primary me-2" >
-                  입점신청폼1
-          </Button>
+          </Tabs>            
           <Button variant="outline-primary" >
                   입점신청폼2
           </Button>

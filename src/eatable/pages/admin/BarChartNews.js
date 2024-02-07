@@ -24,11 +24,12 @@ ChartJS.register(
 
     useEffect(()=>{
       fetch("http://localhost:8080/api/partner/totallist")
-        .then((response) => response.json())
-        .then((data) => {
-          setStoreLists(data);
-        });
-  },[])
+
+          .then(response => response.json())
+          .then(data => {
+            setStoreLists(data);    
+          });
+         },[])
   console.log("1",storeLists)
   
     const options = {
@@ -68,10 +69,10 @@ ChartJS.register(
 
   storeLists.forEach(store => {
     const createdAt = new Date(store.createdAt); // 사용자의 가입일
-    const dateString = createdAt.toLocaleDateString("ko-KR", {
-      month: "short",
-      day: "numeric",
-    }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
+
+    const dateString = createdAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
+   
+
     storeListsByDate[dateString] = (storeListsByDate[dateString] || 0) + 1; // 해당 날짜의 가입자 수를 증가시킴
   });
 

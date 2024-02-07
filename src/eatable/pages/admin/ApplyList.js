@@ -1,14 +1,24 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Container, Row, Col,Button, Form, Modal, Table} from 'react-bootstrap';
 import emailjs from "@emailjs/browser";
+import { useNavigate } from 'react-router-dom';
+
 
 
 const ApplyList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [lists, setLists] = useState([]);   
     const [button, setButton] = useState([]);
-    const handleClose = () => setModalOpen(false);
-    const handleOpen = () => setModalOpen(true);
+    const [index, setIndex] = useState(null); // 선택된 행의 인덱스 상태 추가
+    const navi = useNavigate();
+    const handleClose = () => {
+      setModalOpen(false);       
+    };
+
+    const handleOpen = (index) => {
+      setModalOpen(true); 
+      setIndex(index);  
+    };
 
     const handleReject = (index) => {
       const updatelist = [...lists];
@@ -19,6 +29,18 @@ const ApplyList = () => {
         [index]: true,
       }));
     }
+
+    const handleApprove = () => {
+      const updatedList = [...lists];
+      updatedList[index].partnerReqState = "접수 승인"; 
+      setLists(updatedList);
+      setButton(s => ({
+        ...s,
+        [index]: true, 
+      }));
+      setModalOpen(false); 
+    };
+  
     const form = useRef();
 
     useEffect(()=>{
@@ -31,18 +53,18 @@ const ApplyList = () => {
               setLists(list);
           });
   },[])
+ 
+    // const sendEmail = (e) => {
+    //   e.preventDefault();  
 
-    const sendEmail = (e) => {
-      e.preventDefault();  
-
-      emailjs.sendForm('service_fch3yro1', 'template_76jxtmb1', form.current, 'ORegbfZuljHYVzE1s1')
-        .then((result) => {
-            console.log(result.text);
-        }, (error) => {
-            console.log(error.text);
-        });
-        setModalOpen(false);
-    };
+    //   emailjs.sendForm('service_fch3yro1', 'template_76jxtmb1', form.current, 'ORegbfZuljHYVzE1s1')
+    //     .then((result) => {
+    //         console.log(result.text);
+    //     }, (error) => {
+    //         console.log(error.text);
+    //     });
+    //     setModalOpen(false);
+    // };
 
     return (
       <div>  
@@ -67,7 +89,7 @@ const ApplyList = () => {
                 <td>{list.id}</td>
                 <td>{list.storeName}</td>
                 <td>{list.managerName}</td>
-                <td style={{ color: list.partnerReqState === '접수 거절' ? 'red' : (list.partnerReqState ==='접수 완료'?'green' :'blue' )}}>
+                <td style={{ color: list.partnerReqState === '접수 거절' ? 'red' : (list.partnerReqState ==='접수 승인'?'green' :'blue' )}}>
                   {list.partnerReqState}
                   </td>
                 <td>{list.phone}</td>
@@ -76,9 +98,12 @@ const ApplyList = () => {
               <div className={'btn-wrapper'}>
               {!button[index] && (
                   <>
-                    <Button variant="outline-primary me-2" onClick={handleOpen}>승인</Button>
+                    <Button variant="outline-primary me-2" onClick={() => handleOpen(index)}>승인</Button>
                     <Button variant="outline-danger" onClick={() => handleReject(index)}>거절</Button>
                   </>
+                )}
+                {button[index] && (
+                  <Button variant="outline-success me-2" onClick={() => navi('/partnerwrite')}>입점신청</Button>
                 )}
               </div>
               </td>
@@ -93,12 +118,12 @@ const ApplyList = () => {
         <Modal show={modalOpen}>      
             <Modal.Body>정말 승인 하시겠습니까?</Modal.Body>
               <Modal.Footer>
-                  <Form ref={form} onSubmit={sendEmail}>
+                  <Form ref={form} >
                     <Form.Control type="hidden" name="user_name" value="부트스트랩" />
                     <Form.Control type="hidden" name="user_email" value="imsen4@naver.com" />
                     <Form.Control type="hidden" name="to_email" value="imsen456@gmail.com" />
                     <Form.Control as="textarea" style={{ display: 'none' }} name="message" value="부트스트랩 이게 맞냐 어?" />
-                    <Button className="finalOk" type="submit" variant="outline-primary me-2">
+                    <Button variant="outline-primary me-2"  onClick={handleApprove}>
                       확인
                     </Button>
                   </Form> 
