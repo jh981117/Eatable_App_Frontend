@@ -22,13 +22,22 @@ ChartJS.register(
    const BarChartNewp = () => {
     const [userLists, setUserLists] = useState([]);
 
-    useEffect(()=>{
+    useEffect(() => {
       fetch("http://localhost:8080/api/user/list")
           .then(response => response.json())
           .then(data => {
-            setUserLists(data);    
+              // ROLE_ADMIN을 가진 사용자 필터링
+              console.log(data)
+              const authfilter = data.filter(user => {
+                  return !user.roles.map(role => role.roleName).includes("ROLE_ADMIN");
+              });
+              console.log(authfilter)
+              setUserLists(authfilter);
+          })
+          .catch(error => {
+              console.error("Error fetching user list:", error);
           });
-  },[])
+  }, []);
   
     const options = {
       responsive: false,
@@ -66,8 +75,8 @@ ChartJS.register(
   const userListsByDate = {}; // 각 날짜별 가입자 수를 저장할 객체
 
   userLists.forEach(user => {
-    const regDate = new Date(user.regDate); // 사용자의 가입일
-    const dateString = regDate.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
+    const createdAt = new Date(user.createdAt); // 사용자의 가입일
+    const dateString = createdAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
     userListsByDate[dateString] = (userListsByDate[dateString] || 0) + 1; // 해당 날짜의 가입자 수를 증가시킴
   });
 
