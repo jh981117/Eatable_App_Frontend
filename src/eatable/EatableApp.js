@@ -10,31 +10,23 @@ import PartnerWrite from "./pages/partner/PartnerWrite";
 import PartnerList from "./pages/partner/PartnerList";
 import PartnerUpdate from "./pages/partner/PartnerUpdate";
 import PartnerDetail from "./pages/partner/PartnerDetail";
-
 import ApplyReq from "./pages/admin/ApplyReq";
 import AdminRoute from "./rolecomponents/AdminRoute";
 import RoleErrorPage from "./rolecomponents/RoleErrorPage";
 import MemberRoute from "./rolecomponents/MemberRoute";
 import MyHeader from "./pages/components/MyHeader";
-
-
 import Reservation from "./pages/userDetails/reservation/Reservation";
 import { AuthProvider } from "./rolecomponents/AuthContext";
-import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 import ProvisionPage from "./pages/user/ProvisionPage";
-
 import UserDetail from "./pages/userDetails/UserDetail";
-
-import UpdateInfoPage from "./pages/user/UpdateInfoPage";
-
 import AdminPage from "./pages/admin/AdminPage";
-
 import ReviewList from "./pages/userreview/ReviewList";
 import EatableTimeLine from "./pages/userreview/EatableTimeLine";
 import DetailTab from "./pages/userreview/DetailTab";
 import ReviewImg from "./pages/userreview/ReviewImg";
 import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
+import PartnerMyPage from "./pages/partner/PartnerMyPage";
 
 
 
@@ -162,6 +154,7 @@ const EatableApp = () => {
             <Route path="/reviewimg" Component={ReviewImg}></Route>
             <Route path="/reviewwrite" Component={ReviewWrite}></Route>
             <Route path="/reviewdetail" Component={ReviewDetail}></Route>
+            <Route path="/partnermypage" Component={PartnerMyPage}></Route>
 
 
 
