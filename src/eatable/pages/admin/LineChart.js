@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,41 +22,76 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
-  responsive: false,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-  },
-};
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-const generateRandomNumber = () => Math.floor(Math.random() * (1000));
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() =>  generateRandomNumber()),
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() =>  generateRandomNumber()),
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
 
 const LineChart = () => {
-    return <Line options={options} data={data} height="400px" width="1000px"/>;
+  const [userLists, setUserLists] = useState([]);
+  useEffect(()=>{
+    fetch("http://localhost:8080/api/user/list")
+        .then(response => response.json())
+        .then(data => {
+          setUserLists(data);    
+        });
+},[])
+  const options = {
+    responsive: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Chart.js Line Chart',
+      },
+    },
+  };
+  const getWeekDates = () => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 현재 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)    
+    const mondayDate = new Date(today); // 오늘의 날짜를 복사하여 시작 날짜로 설정
+    mondayDate.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1)); // 이번 주 월요일로 설정
+  
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(mondayDate);
+      date.setDate(mondayDate.getDate() + i);
+      weekDates.push(date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }));
+    }
+    return weekDates;
+  };
+  
+  const labels = getWeekDates(); 
+ 
+  const userListsByDate = {}; // 각 날짜별 가입자 수를 저장할 객체
+
+  userLists.forEach(user => {
+    const createdAt = new Date(user.createdAt); // 사용자의 가입일
+    const dateString = createdAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
+    userListsByDate[dateString] = (userListsByDate[dateString] || 0) + 1; // 해당 날짜의 가입자 수를 증가시킴
+  });
+
+   // 각 날짜별 총 가입자 수를 누적해서 구함
+   const totalListsByDate = {};
+   let totalSum = 0;
+   labels.forEach(date => {
+    totalSum += (userListsByDate[date] || 0);
+     totalListsByDate[date] = totalSum;
+   });
+
+   const data = {
+    labels,
+    datasets: [
+      {
+        label: '총가입자수',
+        data: labels.map(date => totalListsByDate[date] || 0),
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      }    
+    ]
+    
+  };
+  console.log(data);
+    return <Line options={options} data={data} height="600px" width="1000px"/>;
   }
 
   export default LineChart;

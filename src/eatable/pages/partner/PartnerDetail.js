@@ -2,6 +2,7 @@ import { Button } from 'react-bootstrap';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+
 const PartnerDetail = () => {
   const navigate = useNavigate();
   let { id } = useParams();
@@ -91,7 +92,7 @@ const PartnerDetail = () => {
             id={fieldName}
             placeholder={fieldName === 'partnerPhone' ? '전화번호를 입력하세요   ex) 01042364123' : fieldName === 'storePhone' ? '전화번호를 입력하세요   ex) 0242364123' : '이름을 입력하세요'}
             name={fieldName}
-            value={post[fieldName] || ''} // 값이 정의되지 않았을 때는 빈 문자열을 사용
+            value={post[fieldName] || ''}
             readOnly
           />
         </div>
@@ -131,7 +132,6 @@ const PartnerDetail = () => {
             업종 <small>(1개이상 선택)</small>
           </h5>
         </label>
-
         {favoriteGroups.map((group, index) => (
           <div key={index} className="row">
             {group.map((food, i) => (
@@ -142,7 +142,7 @@ const PartnerDetail = () => {
                     type="checkbox"
                     value={food}
                     name="favorite"
-                    checked={post.favorite && post.favorite.includes(food) || ''} // post.favorite가 존재하고, 해당 음식이 선택되었는지 확인
+                    checked={post.favorite && post.favorite.includes(food) || ''}
                     readOnly
                   />
                   <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
@@ -155,37 +155,134 @@ const PartnerDetail = () => {
         ))}
       </div>
 
-      {/* 권한 선택 부분
+      {/* 텍스트 입력 */}
       <div className="mt-3">
-        <label htmlFor="job">
-          <h5>권한</h5>
+        <label htmlFor="storeInfo">
+          <h5>
+            매장소개
+          </h5>
+        </label>
+        <textarea
+          placeholder="여기에 입력하세요"
+          id="storeInfo" name="storeInfo" value={post.storeInfo} readOnly
+        ></textarea>
+      </div>
+
+      {/* 테이블수 */}
+      <div className="mt-3">
+        <label htmlFor="tableCnt">
+          <h5>테이블수</h5>
+        </label>
+        <input
+          type="number"
+          className="form-control"
+          id="tableCnt"
+          placeholder="테이블수를 입력하세요"
+          name="tableCnt"
+          min="0"
+          value={post.tableCnt} readOnly
+        />
+      </div>
+
+      {/* 영업시간 */}
+      <div className="mt-3">
+        <label htmlFor="openTime">
+          <h5>
+            영업시간 <small>(정기휴무)</small>
+          </h5>
         </label>
         <input
           type="text"
           className="form-control"
-          id="job"
-          placeholder=""
-          name="job"
-          value={'권한 입력예정'}
+          id="openTime"
+          placeholder="영업시간을 입력하세요"
+          name="openTime"
+          value={post.openTime}
           readOnly
         />
-      </div> */}
+      </div>
+
+      {/* 텍스트 입력 */}
+      <div className="mt-3">
+        <label htmlFor="reserveInfo">
+          <h5>
+            예약주의사항
+          </h5>
+        </label>
+        <textarea
+          placeholder="여기에 입력하세요"
+          id="reserveInfo" name="reserveInfo" value={post.reserveInfo} readOnly
+        ></textarea>
+      </div>
+
+      {/* radio타입 입력 */}
+      <div className="mt-3">
+        {['parking', 'corkCharge', 'dog'].map((item, index) => (
+          <div key={index} className="form-group">
+            <label htmlFor={`${item}Available`}>
+              {item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}
+            </label>
+            <div className="d-flex">
+              <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={item}
+                  id={`${item}Available`}
+                  value="TRUE"
+                  checked={post[item] === 'TRUE'}
+                  style={{ marginRight: '5px' }}
+                />
+                <label className="form-check-label" htmlFor={`${item}Available`} style={{ marginRight: '10px' }}>
+                  가능
+                </label>
+              </div>
+              <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={item}
+                  id={`${item}NotAvailable`}
+                  value="FALSE"
+                  checked={post[item] === 'FALSE'}
+                  style={{ marginRight: '5px' }}
+                />
+                <label className="form-check-label" htmlFor={`${item}NotAvailable`} >
+                  불가능
+                </label>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 이미지 파일 표시 */}
+      <div className="mt-3" style={{ overflowX: 'auto' }}>
+        <h5>첨부 이미지</h5>
+        <div className="mt-3" style={{ whiteSpace: 'nowrap' }}> {/* 내부 요소를 한 줄에 배치하기 위해 whiteSpace: nowrap; 속성 추가 */}
+          {post.fileList && post.fileList.map((file, index) => (
+            <div key={index} style={{ display: 'inline-block', marginRight: '10px' }}> {/* 이미지를 가로로 배열하기 위해 display: inline-block; 속성 추가 */}
+              <img src={file.imageUrl} alt={file.filename} style={{ maxWidth: '200px', maxHeight: '200px' }} />
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* 하단 링크 */}
-      <div className="d-flex my-3">
-        <Button className="btn btn-outline-dark ms-2" onClick={updatePost}>
+      <div className="d-flex justify-content-end my-3">
+        <Button className="button-link" onClick={updatePost}>
           수정
         </Button>
-        <Link className="btn btn-outline-dark ms-2" to="/partnerlist">
+        <Link className="button-link" to="/partnerlist">
           목록
         </Link>
         <Button
           variant="none"
-          className="btn btn-outline-danger ms-2" onClick={deletePost}
+          className="button-link" onClick={deletePost}
         >
           삭제
         </Button>
-        <Link className="btn btn-outline-dark ms-2" to="/partnerwrite">
+        <Link className="button-link" to="/partnerwrite">
           작성
         </Link>
       </div>

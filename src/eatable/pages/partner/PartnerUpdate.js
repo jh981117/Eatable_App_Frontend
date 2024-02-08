@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './components/PartnerWrite.css';
-import { GpsFixed } from '@material-ui/icons';
 
 
-const PartnerWrite = () => {
+const PartnerUpdate = () => {
     const navigate = useNavigate();
 
     let { id } = useParams();
@@ -19,23 +18,37 @@ const PartnerWrite = () => {
         lng: '',
         area: '',
         zipCode: '',
+        storeInfo: '',
+        tableCnt: '',
+        openTime: '',
+        reserveInfo: '',
+        parking: '',
+        corkCharge: '',
+        dog: '',
+        files: []
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setPost(prevState => ({
-            ...prevState,
-            [name]: value,
-        }));
+    const [errorMessages, setErrorMessages] = useState({
+        favorite: '',
+        storeInfo: '',
+        tableCnt: '',
+        openTime: '',
+        reserveInfo: '',
+        parking: '',
+        corkCharge: '',
+        dog: ''
+    });
+
+    const errorMessageMap = {
+        favorite: '업종은 반드시 골라야 합니다',
+        storeInfo: '가게 정보는 필수입니다',
+        tableCnt: '테이블 수는 필수입니다',
+        openTime: '영업 시간은 필수입니다',
+        reserveInfo: '예약 주의 사항은 필수입니다',
+        parking: '주차 정보는 필수입니다',
+        corkCharge: '콜키지 정보는 필수입니다',
+        dog: '애완견 정보는 필수입니다',
     };
-
-    useEffect(() => {
-
-        console.log('=====================================================');
-        console.log(post);
-        console.log('=====================================================');
-
-    }, [post]);
 
     const favoriteGroups = [
         ['한식', '중식', '일식'],
@@ -48,6 +61,46 @@ const PartnerWrite = () => {
         ['치킨', '레스토랑', '피자'],
         ['백반', '국수', '비건']
     ];
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setPost(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
+
+    const [files, setFiles] = useState([]);
+
+    const handleAddFile = () => {
+        const newFiles = [...files, null];
+        setFiles(newFiles);
+        setPost(prevPost => ({
+            ...prevPost,
+            files: newFiles
+        }));
+    };
+
+    const handleFileChange = (index, file) => {
+        if (file) {
+            const newFiles = [...files];
+            newFiles[index] = file;
+            setFiles(newFiles);
+
+            setPost(prevPost => ({
+                ...prevPost,
+                files: newFiles
+            }));
+        }
+    };
+
+    // useEffect(() => {
+
+    //     console.log('=====================================================');
+    //     console.log(post);
+    //     console.log('=====================================================');
+
+    // }, [post]);
 
     useEffect(() => {
         fetch('http://localhost:8080/api/partner/detail/' + id)
@@ -78,12 +131,122 @@ const PartnerWrite = () => {
     const postUpdate = (e) => {
         e.preventDefault();
 
+        // 초기화
+        setErrorMessages({
+            favorite: '',
+            storeInfo: '',
+            tableCnt: '',
+            openTime: '',
+            reserveInfo: '',
+            parking: '',
+            corkCharge: '',
+            dog: ''
+        });
+
+        let hasError = true;
+
+        if (post.favorite.length === 0) {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                favorite: '업종은 반드시 골라야 합니다',
+            }));
+            hasError = false;
+        }
+
+        if (post.storeInfo === null || post.storeInfo === '') {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                storeInfo: '가게 정보는 필수입니다',
+            }));
+            hasError = false;
+        }
+
+        if (post.tableCnt === null || post.tableCnt === '') {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                tableCnt: '테이블 수는 필수입니다',
+            }));
+            hasError = false;
+        }
+
+        if (post.openTime === null || post.openTime === '') {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                openTime: '영업 시간은 필수입니다',
+            }));
+            hasError = false;
+        }
+
+        if (post.reserveInfo === null || post.reserveInfo === '') {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                reserveInfo: '예약 주의 사항은 필수입니다',
+            }));
+            hasError = false;
+        }
+
+        if (post.parking === null || post.parking === '') {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                parking: '주차 정보는 필수입니다',
+            }));
+            hasError = false;
+        }
+
+        if (post.corkCharge === null || post.corkCharge === '') {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                corkCharge: '콜키지 정보는 필수입니다',
+            }));
+            hasError = false;
+        }
+
+        if (post.dog === null || post.dog === '') {
+            setErrorMessages((prevErrors) => ({
+                ...prevErrors,
+                dog: '애완견 정보는 필수입니다',
+            }));
+            hasError = false;
+        }
+
+        // if (!post.files || post.files.length === 0 || post.files.every(file => file === null)) {
+        //     alert('첨부 파일을 선택해주세요.');
+        //     hasError = false;
+        // }
+
+
+        if (!hasError) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('id', post.id);
+        formData.append(' storeName', post.storeName);
+        formData.append('partnerName', post.partnerName);
+        formData.append('partnerPhone', post.partnerPhone);
+        formData.append('storePhone', post.storePhone);
+        formData.append('storeInfo', post.storeInfo);
+        formData.append('tableCnt', post.tableCnt);
+        formData.append('openTime', post.openTime);
+        formData.append('reserveInfo', post.reserveInfo);
+        formData.append('favorite', post.favorite);
+        formData.append('parking', post.parking);
+        formData.append('corkCharge', post.corkCharge);
+        formData.append('dog', post.dog);
+
+        // post.files가 정의되었을 때에만 파일을 formData에 추가
+        if (post.files) {
+            post.files.forEach((file) => {
+                if (file) {
+                    formData.append('files', file);
+                }
+            });
+        }
+
+
         fetch('http://localhost:8080/api/partner/update', {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-            },
-            body: JSON.stringify(post),
+            body: formData,
         })
             .then((response) => {
                 console.log('response', response);
@@ -124,185 +287,11 @@ const PartnerWrite = () => {
         }));
     };
 
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_KEY}&libraries=places`;
-        script.async = true;
-        document.body.appendChild(script);
-
-        script.onload = () => {
-            initialize();
-        };
-
-        return () => {
-            document.body.removeChild(script);
-        };
-
-
-
-    }, []);
-
-    const handleSetPost = (key, value) => {
-        setPost(prevState => ({
-            ...prevState,
-            [key]: value
-        }));
-    };
-
-    const initialize = () => {
-        const input = document.getElementById('autocomplete_search');
-        const autocomplete = new window.google.maps.places.Autocomplete(input);
-
-        autocomplete.addListener('place_changed', function () {
-            const place = autocomplete.getPlace();
-
-            // 장소 없을때---------------------------------------------------
-            if (!place.geometry || !place.geometry.location) {
-                const service = new window.google.maps.places.AutocompleteService();
-                service.getPlacePredictions({ input: input.value }, function (predictions, status) {
-
-                    if (status === 'OK' && predictions) {
-                        const placeService = new window.google.maps.places.PlacesService(document.createElement('div'));
-
-                        input.value = predictions[0].description;
-
-                        placeService.getDetails({ placeId: predictions[0].place_id }, function (placeDetails, placeStatus) {
-                            if (placeStatus === 'OK') {
-                                handleSetPost('lat', placeDetails.geometry.location.lat());
-                                handleSetPost('lng', placeDetails.geometry.location.lng());
-                                handleSetPost('area', placeDetails.formatted_address);
-
-                                document.getElementById('lat').value = placeDetails.geometry.location.lat();
-                                document.getElementById('lng').value = placeDetails.geometry.location.lng();
-                                document.getElementById('area').value = placeDetails.formatted_address;
-
-                                for (let i = 0; i < placeDetails.address_components.length; i++) {
-                                    const addressType = placeDetails.address_components[i].types[0];
-                                    if (addressType === 'postal_code') {
-                                        handleSetPost('zipCode', placeDetails.address_components[i].long_name);
-                                        document.getElementById('zipCode').value = placeDetails.address_components[i].long_name;
-                                        break;
-                                    }
-                                }
-                            } else {
-                                alert('근접한 장소의 세부 정보를 가져올 수 없습니다.');
-                            }
-                        });
-                    }
-                });
-                return;
-            }
-            // -----------------------------------------------------------
-
-            handleSetPost('lat', place.geometry.location.lat());
-            handleSetPost('lng', place.geometry.location.lng());
-            handleSetPost('area', place.formatted_address);
-
-            document.getElementById('lat').value = place.geometry.location.lat();
-            document.getElementById('lng').value = place.geometry.location.lng();
-            document.getElementById('area').value = place.formatted_address;
-
-
-            const geocoder = new window.google.maps.Geocoder();
-            geocoder.geocode({ 'location': place.geometry.location }, function (results, status) {
-                if (status === 'OK') {
-                    if (results[0]) {
-                        for (let i = 0; i < results[0].address_components.length; i++) {
-                            const addressType = results[0].address_components[i].types[0];
-                            if (addressType === 'postal_code') {
-                                handleSetPost('zipCode', results[0].address_components[i].long_name);
-                                document.getElementById('zipCode').value = results[0].address_components[i].long_name;
-                                break;
-                            }
-                        }
-                    } else {
-                        alert('우편번호를 찾을 수 없습니다.');
-                    }
-                } else {
-                    alert('Geocoder에 문제가 발생했습니다.');
-                }
-            });
-
-        });
-
-        input.addEventListener('keydown', function (event) {
-            if (event.keyCode === 13) {
-                event.preventDefault();
-            }
-        });
-    };
-
-    const findMyLocation = (event) => {
-        event.preventDefault();
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-
-                    handleSetPost('lat', latitude);
-                    handleSetPost('lng', longitude);
-
-                    document.getElementById('lat').value = latitude;
-                    document.getElementById('lng').value = longitude;
-
-                    const geocoder = new window.google.maps.Geocoder();
-                    const latLng = new window.google.maps.LatLng(latitude, longitude);
-                    geocoder.geocode({ 'location': latLng }, function (results, status) {
-                        if (status === 'OK') {
-                            if (results[0]) {
-                                for (let i = 0; i < results[0].address_components.length; i++) {
-                                    const addressType = results[0].address_components[i].types[0];
-                                    if (addressType === 'postal_code') {
-                                        handleSetPost('zipCode', results[0].address_components[i].long_name);
-                                        document.getElementById('zipCode').value = results[0].address_components[i].long_name;
-                                        break;
-                                    }
-                                }
-
-                                handleSetPost('area', results[0].formatted_address);
-                                document.getElementById('area').value = results[0].formatted_address;
-
-                                document.getElementById('autocomplete_search').value = results[0].formatted_address;
-                            } else {
-                                alert('Postal code not found.');
-                            }
-                        } else {
-                            alert('Geocoder failed due to: ' + status);
-                        }
-                    });
-                },
-                () => {
-                    alert('Unable to retrieve your location.');
-                }
-            );
-        } else {
-            alert('Geolocation is not supported by your browser.');
-        }
-    };
-
-
     return (
         <div className="mt-3" id='partnerwrite'>
             <h2 className="display-6">업체 등록</h2>
             <hr />
             <form onSubmit={postUpdate}>
-                {/* ID 입력 부분 */}
-                <div className="mt-3">
-                    <label htmlFor="id">
-                        <h5>id</h5>
-                    </label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="id"
-                        placeholder=""
-                        name="id"
-                        value={'id 입력예정'}
-                        readOnly
-                    />
-                </div>
 
                 {/* 나머지 입력 부분들 */}
                 {['storeName', 'partnerName', 'partnerPhone', 'storePhone'].map((fieldName, index) => (
@@ -317,7 +306,8 @@ const PartnerWrite = () => {
                             placeholder={fieldName === 'partnerPhone' ? '전화번호를 입력하세요   ex) 01042364123' : fieldName === 'storePhone' ? '전화번호를 입력하세요   ex) 0242364123' : '이름을 입력하세요'}
                             name={fieldName}
                             onChange={handleChange}
-                            value={post[fieldName] || ''} // 값이 정의되지 않았을 때는 빈 문자열을 사용
+                            value={post[fieldName] || ''}
+                            readOnly
                         />
                     </div>
                 ))}
@@ -329,15 +319,15 @@ const PartnerWrite = () => {
                     </label>
                     <div>
                         <div className="act">
-                            <input id="autocomplete_search" name="autocomplete_search" type="text" className="form-control" placeholder="Search" />
-                            <button onClick={findMyLocation}><GpsFixed /></button>
+                            {/* <input id="autocomplete_search" name="autocomplete_search" type="text" className="form-control" placeholder="Search" readOnly /> */}
+                            {/* <button onClick={findMyLocation}><GpsFixed /></button> */}
                         </div>
                         {/* 위도, 경도 입력 */}
-                        <input type="text" name="lat" id="lat" placeholder="lat" onChange={handleChange} value={post.lat} />
-                        <input type="text" name="lng" id="lng" placeholder="lng" onChange={handleChange} value={post.lng} />
+                        <input type="text" name="lat" id="lat" placeholder="lat" onChange={handleChange} value={post.lat} hidden />
+                        <input type="text" name="lng" id="lng" placeholder="lng" onChange={handleChange} value={post.lng} hidden />
                         {/* 주소와 우편번호 입력 */}
-                        <input type="text" name="area" id="area" className="form-control" placeholder="Address" onChange={handleChange} value={post.area} />
-                        <input type="text" name="zipCode" id="zipCode" className="form-control" placeholder="zipCode" onChange={handleChange} value={post.zipCode} />
+                        <input type="text" name="area" id="area" className="form-control" placeholder="Address" onChange={handleChange} value={post.area} readOnly />
+                        <input type="text" name="zipCode" id="zipCode" className="form-control" placeholder="zipCode" onChange={handleChange} value={post.zipCode} readOnly />
                     </div>
                 </div>
 
@@ -360,7 +350,7 @@ const PartnerWrite = () => {
                                             value={food}
                                             name="favorite"
                                             onChange={handleCheckboxChange}
-                                            checked={post.favorite && post.favorite.includes(food) || ''} // post.favorite가 존재하고, 해당 음식이 선택되었는지 확인
+                                            checked={post.favorite && post.favorite.includes(food) || ''} 
                                         />
                                         <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
                                             {food}
@@ -371,44 +361,191 @@ const PartnerWrite = () => {
                         </div>
                     ))}
                 </div>
+                <div>
+                    {errorMessages.favorite && (
+                        <span className="text-danger">{errorMessages.favorite}</span>
+                    )}
+                </div>
 
-                {/* 권한 선택 부분 */}
+                {/* 텍스트 입력 */}
                 <div className="mt-3">
-                    <label htmlFor="job">
-                        <h5>권한</h5>
+                    <label htmlFor="storeInfo">
+                        <h5>
+                            매장소개
+                        </h5>
                     </label>
-                    <select
-                        className={`form-select ${post.job ? 'has-value' : ''}`}
-                        name="job"
-                        id="job"
+                    <textarea
                         onChange={handleChange}
-                    // value={'post.job'}
-                    >
-                        <option value="">
-                            -- 권한을 선택해 주세요 --
-                        </option>
-                        <option value="user">유저</option>
-                        <option value="user,partner">파트너</option>
-                    </select>
+                        placeholder="매장소개를 입력하세요"
+                        id="storeInfo" name="storeInfo" value={post.storeInfo}
+                    ></textarea>
+                </div>
+                <div>
+                    {errorMessages.storeInfo && (
+                        <span className="text-danger">{errorMessages.storeInfo}</span>
+                    )}
+                </div>
+
+                {/* 테이블수 */}
+                <div className="mt-3">
+                    <label htmlFor="tableCnt">
+                        <h5>테이블수</h5>
+                    </label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="tableCnt"
+                        placeholder="테이블수를 입력하세요"
+                        name="tableCnt"
+                        min="0"
+                        onChange={handleChange}
+                        value={post.tableCnt}
+                    />
+                </div>
+                <div>
+                    {errorMessages.tableCnt && (
+                        <span className="text-danger">{errorMessages.tableCnt}</span>
+                    )}
+                </div>
+
+                {/* 영업시간 */}
+                <div className="mt-3">
+                    <label htmlFor="openTime">
+                        <h5>
+                            영업시간 <small>(정기휴무)</small>
+                        </h5>
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="openTime"
+                        placeholder="영업시간을 입력하세요"
+                        name="openTime"
+                        onChange={handleChange}
+                        value={post.openTime}
+                    />
+                </div>
+                <div>
+                    {errorMessages.openTime && (
+                        <span className="text-danger">{errorMessages.openTime}</span>
+                    )}
+                </div>
+
+                {/* 텍스트 입력 */}
+                <div className="mt-3">
+                    <label htmlFor="reserveInfo">
+                        <h5>
+                            예약주의사항
+                        </h5>
+                    </label>
+                    <textarea
+                        onChange={handleChange}
+                        placeholder="여기에 입력하세요"
+                        id="reserveInfo" name="reserveInfo" value={post.reserveInfo}
+                    ></textarea>
+                </div>
+                <div>
+                    {errorMessages.reserveInfo && (
+                        <span className="text-danger">{errorMessages.reserveInfo}</span>
+                    )}
+                </div>
+
+                {/* radio타입 입력 */}
+                <div className="mt-3">
+                    {['parking', 'corkCharge', 'dog'].map((item, index) => (
+                        <div key={index} className="form-group">
+                            <label htmlFor={`${item}Radio`}>
+                                {item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}
+                            </label>
+                            <div className="d-flex">
+                                <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                                    <input
+                                        className="form-check-input"
+                                        type="radio"
+                                        name={item}
+                                        id={`${item}Available`}
+                                        value="TRUE"
+                                        onChange={handleChange}
+                                        checked={post[item] === 'TRUE'}
+                                        style={{ marginRight: '5px' }}
+                                    />
+                                    <label className="form-check-label" htmlFor={`${item}Available`} style={{ marginRight: '10px' }}>
+                                        가능
+                                    </label>
+                                </div>
+                                <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                                    <input
+                                        className="form-check-input"
+                                        type="radio"
+                                        name={item}
+                                        id={`${item}NotAvailable`}
+                                        value="FALSE"
+                                        onChange={handleChange}
+                                        checked={post[item] === 'FALSE'}
+                                        style={{ marginRight: '5px' }}
+                                    />
+                                    <label className="form-check-label" htmlFor={`${item}NotAvailable`} >
+                                        불가능
+                                    </label>
+                                </div>
+                            </div>
+                            {errorMessages[item] && (
+                                <span className="text-danger">{errorMessages[item]}</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {/* 첨부파일 */}
+                <div className="mt-3">
+                    <label htmlFor="files">
+                        <h5>첨부파일:</h5>
+                    </label>
+                    <div id="files">
+                        {files.map((file, index) => (
+                            <div key={index} className="input-group mb-3">
+                                <input
+                                    type="file"
+                                    name='file'
+                                    className="form-control"
+                                    onChange={(e) => handleFileChange(index, e.target.files[0])}
+                                />
+                                <button
+                                    className="btn btn-outline-danger"
+                                    type="button"
+                                    onClick={() => {
+                                        const newFiles = [...files];
+                                        newFiles.splice(index, 1);
+                                        setFiles(newFiles);
+                                    }}
+                                >
+                                    삭제
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    <button type="button" id="btnAdd" className="btn btn-secondary mt-2" onClick={handleAddFile}>
+                        추가
+                    </button>
                 </div>
 
                 {/* 하단 버튼 */}
-                <div className="my-3 d-flex">
-                    <button type="submit" className="btn btn-outline-dark">
+                <div className="d-flex justify-content-end my-3">
+                    <button type="submit" className="button-link">
                         수정완료
                     </button>
 
                     <button
                         type="button"
-                        className="btn btn-outline-dark ms-1"
+                        className="button-link"
                         onClick={() => {
-                            navigate(-1);
+                            navigate(-1) ? navigate(-1) : navigate("/home");
                         }}
                     >
                         이전으로
                     </button>
 
-                    <Link className="btn btn-outline-dark ms-1" to="/partnerlist">
+                    <Link className="button-link" to="/partnerlist">
                         목록
                     </Link>
 
@@ -419,4 +556,4 @@ const PartnerWrite = () => {
     );
 };
 
-export default PartnerWrite;
+export default PartnerUpdate;
