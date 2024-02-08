@@ -22,6 +22,9 @@ import Reservation from "./pages/userDetails/reservation/Reservation";
 import { AuthProvider } from "./rolecomponents/AuthContext";
 import ReservationOk from "./pages/userDetails/reservation/ReservationOk";
 import ProvisionPage from "./pages/user/ProvisionPage";
+
+import UserDetail from "./pages/userDetails/UserDetail";
+
 import UpdateInfoPage from "./pages/user/UpdateInfoPage";
 
 import AdminPage from "./pages/admin/AdminPage";
@@ -32,6 +35,7 @@ import DetailTab from "./pages/userreview/DetailTab";
 import ReviewImg from "./pages/userreview/ReviewImg";
 import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
+
 
 
 
@@ -131,8 +135,8 @@ const EatableApp = () => {
 
             {/* 유저디테일   스토어디테일  유저권한 */}
             <Route
-              path="/userDetail"
-              element={<MemberRoute> {/* <UserDetail /> */}</MemberRoute>}
+              path="/userDetail/:id"
+              element={<MemberRoute><UserDetail /></MemberRoute>}
             ></Route>
 
             {/* 예약 페이지 유저권한  */}

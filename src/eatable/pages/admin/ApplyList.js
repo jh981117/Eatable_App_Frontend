@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Form, Modal, Table } from 'react-bootstrap';
+import { Container, Row, Col,Button, Form, Modal, Table} from 'react-bootstrap';
 import emailjs from "@emailjs/browser";
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,15 @@ const ApplyList = () => {
     const [index, setIndex] = useState(null); // 선택된 행의 인덱스 상태 추가
     const [selectedState, setSelectedState] = useState('ALL');
     const navi = useNavigate();
+
+  //   useEffect(()=>{
+  //     fetch("http://localhost:8080/api/req/totalList")
+  //         .then(response => response.json())
+  //         .then(data => {
+  //             console.log("||||||||||" + data);
+  //             setLists(data);
+  //         });
+  // },[])
 
     const update = (id) => {          
       fetch(`http://localhost:8080/api/req/update/${id}`, {

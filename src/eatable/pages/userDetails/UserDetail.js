@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import MenuSection from './menuComponents/MenuSection';
@@ -7,18 +7,51 @@ const UserDetail = () => {
 
     const navigate = useNavigate();
 
-    let {id} = useParams();
+    let { id } = useParams();
+console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
 
     const goReservation = () => {
         navigate("/reservation/")}
+
+
+    const [detail, setDetails] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:8080/api/partner/detail/${id}`)
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    return null;
+                }
+            })
+            .then(data => {
+                if (data !== null) {
+                    console.log(data);
+                    setDetails(data);
+                }
+            })
+    }, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
+
+    console.log(detail);
+
+    
+    
 
     return (
         <Container>
             <Row>
                 <Col>
                     <div>매장사진</div>
+                    <div>{detail.fileList && detail.fileList[0] && detail.fileList[0].imageUrl}</div>
                     <hr />
                     <div>매장정보</div>
+                    <h2>{detail.storeName}</h2>
+                    <h6>주소:</h6>
+                    <h6>평점:</h6>
+                    <h6>전화번호: {detail.storePhone}</h6>
+                    <h6>테이블 수: {detail.tableCnt}</h6>
+                    <h6>{detail.reserveInfo}</h6>
                     <hr />
                     <div>매장예약현황</div>
                     <div style={{ whiteSpace: 'pre-line' }}>
