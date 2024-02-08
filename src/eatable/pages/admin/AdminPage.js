@@ -48,11 +48,8 @@ const AdminPage = () => {
                 </Row>
               </Container>  
             </Tab>
-          </Tabs>            
-          <Button variant="outline-primary" >
-                  입점신청폼2
-          </Button>
-        </div>
+          </Tabs>           
+       </div>
     );
 };
 
