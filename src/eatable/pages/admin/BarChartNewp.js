@@ -81,7 +81,7 @@ ChartJS.register(
     labels,
     datasets: [
       {
-        label: '일일신규가게수',
+        label: '일일신규가입자수',
         data: labels.map(date => userListsByDate[date] || 0), // 각 날짜별 가입자 수를 매핑
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
       } 

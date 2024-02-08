@@ -66,6 +66,14 @@ import './ApplyReq.css';
               return null;
             }
           })
+          .then((data) => {
+            if (data !== null) {
+              alert('제출완료');           
+              
+            } else {
+              alert('제출실패');
+            }
+          });
         
         }
    
