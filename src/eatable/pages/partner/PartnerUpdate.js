@@ -112,33 +112,35 @@ const PartnerUpdate = () => {
         fileInput.setAttribute('accept', 'image/*');
         fileInput.click();
 
+        // 파일 선택 이벤트 리스너
         fileInput.onchange = (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onloadend = () => {
-                const updatedFiles = post.fileList.map(image => {
-                    if (image.id === imageId) {
-                        return { id: imageId, imageUrl: reader.result };
-                    }
-                    return image;
-                });
-                setPost(prevPost => ({
-                    ...prevPost,
-                    fileList: updatedFiles
-                }));
-
                 const formData = new FormData();
-                formData.append("files", file);
+                formData.append("file", file);
 
-                fetch('http://localhost:8080/api/partner/updateImageUrl', {
+                // 이미지 ID를 URL에 포함하여 서버로 전송
+                fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
                     method: 'PUT',
                     body: formData,
                 })
                     .then(response => {
                         if (response.ok) {
                             console.log('이미지 URL 업데이트 성공');
-                            // 서버로부터 응답을 받은 후 추가적인 작업을 수행할 수 있습니다.
+
+                            const newImageList = post.fileList.map(image => {
+                                if (image.id === imageId) {
+                                    return { id: imageId, imageUrl: reader.result };
+                                }
+                                return image;
+                            });
+
+                            setPost(prevPost => ({
+                                ...prevPost,
+                                fileList: newImageList
+                            }));
                         } else {
                             console.error('이미지 URL 업데이트 실패');
                         }
@@ -149,8 +151,6 @@ const PartnerUpdate = () => {
             };
         };
     };
-
-
 
     useEffect(() => {
 
