@@ -32,16 +32,15 @@ const PartnerWrite = () => {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name: fieldName, value } = e.target;
     setPost(prevState => ({
       ...prevState,
-      [name]: value,
+      [fieldName]: value,
     }));
 
-    // 입력란의 값이 변경될 때 해당 입력란의 에러 메시지를 초기화
     setErrorMessages(prevState => ({
       ...prevState,
-      [name]: '', // 해당 입력란의 에러 메시지 초기화
+      [fieldName]: '',
     }));
   };
 
@@ -83,7 +82,7 @@ const PartnerWrite = () => {
       .then((data) => {
         if (data !== null) {
           alert('제출완료');
-          
+
           navigate(`/partnerdetail/${data.id}`);
         } else {
           alert('제출실패');
@@ -261,7 +260,7 @@ const PartnerWrite = () => {
             id="id"
             placeholder=""
             name="id"
-            
+
             readOnly
           />
         </div>
