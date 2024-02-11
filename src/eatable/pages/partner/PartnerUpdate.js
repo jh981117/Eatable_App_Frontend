@@ -121,33 +121,33 @@ const PartnerUpdate = () => {
                 const formData = new FormData();
                 formData.append("file", file);
 
-                // 이미지 ID를 URL에 포함하여 서버로 전송
-                fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
-                    method: 'PUT',
-                    body: formData,
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log('이미지 URL 업데이트 성공');
+                // 이미지 업데이트 요청 전에 이미지 리스트를 업데이트합니다.
+                const newImageList = post.fileList.map(image => {
+                    if (image.id === imageId) {
+                        return { id: imageId, imageUrl: reader.result };
+                    }
+                    return image;
+                });
 
-                            const newImageList = post.fileList.map(image => {
-                                if (image.id === imageId) {
-                                    return { id: imageId, imageUrl: reader.result };
-                                }
-                                return image;
-                            });
+                setPost(prevPost => ({
+                    ...prevPost,
+                    fileList: newImageList
+                }));
 
-                            setPost(prevPost => ({
-                                ...prevPost,
-                                fileList: newImageList
-                            }));
-                        } else {
-                            console.error('이미지 URL 업데이트 실패');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('이미지 URL 업데이트 중 오류 발생:', error);
-                    });
+                //     fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
+                //         method: 'PUT',
+                //         body: formData,
+                //     })
+                //         .then(response => {
+                //             if (response.ok) {
+                //                 console.log('이미지 URL 업데이트 성공');
+                //             } else {
+                //                 console.error('이미지 URL 업데이트 실패');
+                //             }
+                //         })
+                //         .catch(error => {
+                //             console.error('이미지 URL 업데이트 중 오류 발생:', error);
+                //         });
             };
         };
     };
