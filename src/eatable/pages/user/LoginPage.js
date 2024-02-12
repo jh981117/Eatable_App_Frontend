@@ -85,7 +85,15 @@ const LoginPage = () => {
 
 
 
-          navigate(-1) ? navigate(-1) : navigate("/home"); // 이전 페이지로 돌아가기
+              const attemptedUrl = sessionStorage.getItem("attemptedUrl");
+      if (attemptedUrl) {
+        navigate(attemptedUrl);
+        sessionStorage.removeItem("attemptedUrl"); // 더 이상 필요 없으므로 삭제
+      } else {
+        // 기본 페이지로 리디렉션
+        navigate("/");
+      }
+    
           
 
           

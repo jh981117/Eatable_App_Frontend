@@ -62,22 +62,14 @@ const PartnerDetail = () => {
 
   return (
     <div className="mt-3" id='partnerwrite'>
-      <h2 className="display-6">업체 등록</h2>
+      <h2 className="display-6">파트너디테일</h2>
       <hr />
       {/* ID 입력 부분 */}
       <div className="mt-3">
         <label htmlFor="id">
-          <h5>id</h5>
+          <h5>매장No.{post.id}</h5>
+          <h5>파트너No.{post.userId}</h5>
         </label>
-        <input
-          type="text"
-          className="form-control"
-          id="id"
-          placeholder=""
-          name="id"
-          value={'id 입력예정'}
-          readOnly
-        />
       </div>
 
       {/* 나머지 입력 부분들 */}

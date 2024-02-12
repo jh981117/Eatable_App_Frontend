@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import PartnerDetail from "../partner/PartnerDetail";
 
 const MyHeader = () => {
   const { auth, setAuth, updateProfile } = useAuth();
