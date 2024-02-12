@@ -2,14 +2,13 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import PartnerDetail from "../partner/PartnerDetail";
 
 const MyHeader = () => {
   const { auth, setAuth, updateProfile } = useAuth();
   
   useEffect(() => {
     updateProfile();
-    // 의존성 배열에 auth 상태를 포함시킴으로써 auth 상태가 변경될 때마다 updateProfile 함수가 호출됩니다.
+    
   }, []);
 
   console.log(auth);

@@ -17,28 +17,35 @@ const Tbody = (p) => {
       }}
     >
       <td>
-        <span>{post.id}</span>
+        <small>{post.id}</small>
       </td>
       <td>
-        <span>{post.storeName}</span>
+        <small>{post.storeName}</small>
       </td>
       <td>
-        <span>{(post.address && post.address.area) || ""}</span>
+        <small>{(post.address && post.address.area) || ""}</small>
       </td>
       <td>
-        <span>{post.partnerName}</span>
+        <small>{post.partnerName}</small>
       </td>
       <td>
-        <span>{post.partnerPhone}</span>
+        <small>{post.partnerPhone}</small>
       </td>
       <td>
-        <span>{post.storePhone}</span>
+        <small>{post.storePhone}</small>
       </td>
       <td>
-        <span>{post.favorite}</span>
+        {!post.favorite ? ( <small>--</small>): (<small>{post.favorite}</small> ) }
       </td>
       <td>
-        <span>{post.regDate}</span>
+        <small>{post.createdAt}</small>
+      </td>
+      <td>
+        {post.createdAt === post.updatedAt ? (
+          <small>--</small>
+        ) : (
+          <small>{post.updatedAt}</small>
+        )}
       </td>
     </tr>
   );
@@ -91,21 +98,40 @@ const PartnerList = () => {
           type="text"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
-          placeholder="검색어를 입력하세요"
+          placeholder="매장찾기"
         />
       </div>
 
       <Table bordered hover className="partner-table mt-4">
         <thead>
           <tr>
-            <th>id</th>
-            <th>매장이름</th>
-            <th>매장주소</th>
-            <th>관리자이름</th>
-            <th>관리자연락처</th>
-            <th>매장연락처</th>
-            <th>업종</th>
-            <th>작성일</th>
+            <th>
+              <small>id</small>
+            </th>
+            <th>
+              <small>매장이름</small>
+            </th>
+            <th>
+              <small>매장주소</small>
+            </th>
+            <th>
+              <small>관리자</small>
+            </th>
+            <th>
+              <small>관리자연락처</small>
+            </th>
+            <th>
+              <small>매장연락처</small>
+            </th>
+            <th>
+              <small>업종</small>
+            </th>
+            <th>
+              <small>작성일</small>
+            </th>
+            <th>
+              <small>수정일</small>
+            </th>
           </tr>
         </thead>
 

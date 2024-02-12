@@ -119,6 +119,7 @@ const ApplyList = () => {
         }));
         const reqList = [...list1, ...list2, ...list3];
         setLists(reqList);
+        console.log(reqList);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
@@ -128,6 +129,13 @@ const ApplyList = () => {
     selectedState === "ALL"
       ? lists
       : lists.filter((item) => item.partnerReqState === selectedState);
+
+  //// 주석은나중에 지워주세요!///
+  const clickUserId = (userId) => {
+    navi(`/partnerwrite/${userId}`);
+    console.log(userId);
+  };
+  console.log(filteredLists , "이건가")
 
   return (
     <div>
@@ -153,6 +161,7 @@ const ApplyList = () => {
                   <th>상태</th>
                   <th>전화번호</th>
                   <th>신청날짜</th>
+                  <th>유저아이디</th>
                 </tr>
               </thead>
 
@@ -176,11 +185,12 @@ const ApplyList = () => {
                     </td>
                     <td>{list.phone}</td>
                     <td>{list.regDate}</td>
+                    <td>{list.user}</td>
                     <td style={{ maxWidth: "65px", minWidth: "65px" }}>
                       {list.partnerReqState === "접수 승인" && (
                         <Button
                           variant="outline-success me-2"
-                          onClick={() => navi("/partnerwrite")}
+                          onClick={() => clickUserId(list.userId)}
                         >
                           입점신청
                         </Button>
