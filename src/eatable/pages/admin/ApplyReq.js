@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, {useEffect, useState } from "react";
 import { Button, Container, Form, Table } from "react-bootstrap";
 import './ApplyReq.css';
 
@@ -12,9 +12,10 @@ import './ApplyReq.css';
       user_id:'',
     })
     const [error,setError] = useState('');
-    const [storeName,setStoreName] = useState('');
+    const [storeName,setStoreName] = useState('');    
     const [managerName,setManagerName] = useState('');
     const [phone,setPhone] = useState('');
+
     const changeValue = (e) => {
       setApply({
           ...apply, 

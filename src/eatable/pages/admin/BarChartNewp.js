@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { CSSTransition } from 'react-transition-group';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import {Col, Container, Row, Table } from 'react-bootstrap';
 
 ChartJS.register(
   CategoryScale,
@@ -19,9 +22,33 @@ ChartJS.register(
   Legend
 );
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+`;
+
+const AnimatedTable = styled(Table)`
+  opacity: 0;
+  animation: ${({ show }) => (show ? fadeIn : fadeOut)} 0.3s ease-in-out forwards;
+`;
+
    const BarChartNewp = () => {
     const [userLists, setUserLists] = useState([]);
-
+    const [selectDate, setSelectDate] = useState(null);
+    
     useEffect(() => {
       fetch("http://localhost:8080/api/user/list")
           .then(response => response.json())
@@ -88,8 +115,59 @@ ChartJS.register(
     ],
   };
 
-    return <Bar options={options} data={data} height="600px" width="1000px"/>;
+  const BarClick = (event, elements) => {
+    if (elements.length > 0) {
+      const clickedDate = labels[elements[0].index];
+      setSelectDate(date => (date === clickedDate ? null : clickedDate));
+    }
+  };
 
-  }
+  return (
+    <div>
+    <Bar options={{ ...options, onClick: BarClick }} data={data} height="600px" width="1000px" />
+    <CSSTransition
+      in={!!selectDate}
+      timeout={300}
+      classNames="table"
+      unmountOnExit
+    >
+      <Container>     
+        <Row>
+          <Col>
+            <AnimatedTable show={!!selectDate} striped bordered hover size="sm" className="list_table">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>가입아이디</th>
+                  <th>이름</th>
+                  <th>전화번호</th>
+                  <th>이메일</th>
+                  <th>신청날짜</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userLists
+                  .filter(user => new Date(user.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) === selectDate)
+                  .map(user => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.username}</td>
+                      <td>{user.name}</td>
+                      <td>{user.phone}</td>
+                      <td>{user.email}</td>
+                      <td>{new Date(user.createdAt).toLocaleString('ko-KR')}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </AnimatedTable>
+          </Col>
+        </Row>
+      </Container>
+    </CSSTransition>
+  </div>
+  );
+};
+
+  
 
   export default BarChartNewp;
