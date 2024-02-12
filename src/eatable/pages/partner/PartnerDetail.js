@@ -7,7 +7,25 @@ const PartnerDetail = () => {
   const navigate = useNavigate();
   let { id } = useParams();
 
-  const [post, setPost] = useState({});
+  const [post, setPost] = useState({
+    storeName: '',
+    partnerName: '',
+    partnerPhone: '',
+    storePhone: '',
+    favorite: '',
+    lat: '',
+    lng: '',
+    area: '',
+    zipCode: '',
+    storeInfo: '',
+    tableCnt: '',
+    openTime: '',
+    reserveInfo: '',
+    parking: '',
+    corkCharge: '',
+    dog: '',
+    fileList: []
+  });
 
   const favoriteGroups = [
     ['한식', '중식', '일식'],
@@ -224,6 +242,7 @@ const PartnerDetail = () => {
                   value="TRUE"
                   checked={post[item] === 'TRUE'}
                   style={{ marginRight: '5px' }}
+                  readOnly
                 />
                 <label className="form-check-label" htmlFor={`${item}Available`} style={{ marginRight: '10px' }}>
                   가능
@@ -238,6 +257,7 @@ const PartnerDetail = () => {
                   value="FALSE"
                   checked={post[item] === 'FALSE'}
                   style={{ marginRight: '5px' }}
+                  readOnly
                 />
                 <label className="form-check-label" htmlFor={`${item}NotAvailable`} >
                   불가능
@@ -253,7 +273,7 @@ const PartnerDetail = () => {
         <h5>첨부 이미지</h5>
         <div className="mt-3" style={{ whiteSpace: 'nowrap' }}> {/* 내부 요소를 한 줄에 배치하기 위해 whiteSpace: nowrap; 속성 추가 */}
           {post.fileList && post.fileList.map((file, index) => (
-            <div key={index} style={{ display: 'inline-block', marginRight: '10px' }}> {/* 이미지를 가로로 배열하기 위해 display: inline-block; 속성 추가 */}
+            <div className="gallery--box" key={index} style={{ display: 'inline-block', marginRight: '10px' }}> {/* 이미지를 가로로 배열하기 위해 display: inline-block; 속성 추가 */}
               <img src={file.imageUrl} alt={file.filename} style={{ maxWidth: '200px', maxHeight: '200px' }} />
             </div>
           ))}

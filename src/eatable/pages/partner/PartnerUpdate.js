@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './components/PartnerWrite.css';
-
+import { useDropzone } from 'react-dropzone';
 
 const PartnerUpdate = () => {
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ const PartnerUpdate = () => {
         parking: '',
         corkCharge: '',
         dog: '',
-        files: []
+        fileList: []
     });
 
     const [errorMessages, setErrorMessages] = useState({
@@ -39,68 +39,126 @@ const PartnerUpdate = () => {
         dog: ''
     });
 
-    const errorMessageMap = {
-        favorite: '업종은 반드시 골라야 합니다',
-        storeInfo: '가게 정보는 필수입니다',
-        tableCnt: '테이블 수는 필수입니다',
-        openTime: '영업 시간은 필수입니다',
-        reserveInfo: '예약 주의 사항은 필수입니다',
-        parking: '주차 정보는 필수입니다',
-        corkCharge: '콜키지 정보는 필수입니다',
-        dog: '애완견 정보는 필수입니다',
-    };
-
-    const favoriteGroups = [
-        ['한식', '중식', '일식'],
-        ['이탈리아', '프랑스', '유러피안'],
-        ['퓨전', '스페인', '아메리칸'],
-        ['스시', '한우', '소고기구이'],
-        ['와인', '코스요리', '고기요리'],
-        ['한정식', '파스타', '해물'],
-        ['다이닝바', '브런치', '카페'],
-        ['치킨', '레스토랑', '피자'],
-        ['백반', '국수', '비건']
-    ];
-
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name: fieldName, value } = e.target;
         setPost(prevState => ({
             ...prevState,
-            [name]: value,
+            [fieldName]: value,
+        }));
+
+        setErrorMessages(prevState => ({
+            ...prevState,
+            [fieldName]: '',
         }));
     };
 
-    const [files, setFiles] = useState([]);
+    const onDrop = useCallback((acceptedFiles) => {
+        if (acceptedFiles.length) {
+            for (const file of acceptedFiles) {
+                console.log(file.name);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = (event) => {
+                    const newId = Math.random().toString(36).substr(2, 9);
+                    setPost(prevPost => ({
+                        ...prevPost,
+                        fileList: [...prevPost.fileList, { id: newId, imageUrl: event.target.result }]
+                    }));
+                }
+            }
+        }
+    }, []);
 
-    const handleAddFile = () => {
-        const newFiles = [...files, null];
-        setFiles(newFiles);
-        setPost(prevPost => ({
-            ...prevPost,
-            files: newFiles
-        }));
-    };
 
-    const handleFileChange = (index, file) => {
-        if (file) {
-            const newFiles = [...files];
-            newFiles[index] = file;
-            setFiles(newFiles);
+    const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
+    const removeFile = (imageId) => {
+        if (window.confirm("정말 삭제하시겠습니까?")) {
+            const newFiles = post.fileList.filter(image => image.id !== imageId);
             setPost(prevPost => ({
                 ...prevPost,
-                files: newFiles
+                fileList: newFiles
             }));
+
+            fetch(`http://localhost:8080/api/partner/remove/${imageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 이미지 삭제 성공 시, 화면에서 업데이트
+                        const newFiles = post.fileList.filter(image => image.id !== imageId);
+                        setPost(prevPost => ({
+                            ...prevPost,
+                            fileList: newFiles
+                        }));
+                        console.log('이미지 삭제 성공');
+                    } else {
+                        // 이미지 삭제 실패
+                        console.error('이미지 삭제 실패');
+                    }
+                })
+                .catch(error => {
+                    console.error('이미지 삭제 중 오류 발생:', error);
+                });
         }
     };
 
-    // useEffect(() => {
+    const handleImageClick = (imageId) => {
+        const fileInput = document.createElement('input');
+        fileInput.setAttribute('type', 'file');
+        fileInput.setAttribute('accept', 'image/*');
+        fileInput.click();
 
-    //     console.log('=====================================================');
-    //     console.log(post);
-    //     console.log('=====================================================');
+        // 파일 선택 이벤트 리스너
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = () => {
+                const formData = new FormData();
+                formData.append("file", file);
 
-    // }, [post]);
+                // 이미지 업데이트 요청 전에 이미지 리스트를 업데이트합니다.
+                const newImageList = post.fileList.map(image => {
+                    if (image.id === imageId) {
+                        return { id: imageId, imageUrl: reader.result };
+                    }
+                    return image;
+                });
+
+                setPost(prevPost => ({
+                    ...prevPost,
+                    fileList: newImageList
+                }));
+
+                //     fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
+                //         method: 'PUT',
+                //         body: formData,
+                //     })
+                //         .then(response => {
+                //             if (response.ok) {
+                //                 console.log('이미지 URL 업데이트 성공');
+                //             } else {
+                //                 console.error('이미지 URL 업데이트 실패');
+                //             }
+                //         })
+                //         .catch(error => {
+                //             console.error('이미지 URL 업데이트 중 오류 발생:', error);
+                //         });
+            };
+        };
+    };
+
+    useEffect(() => {
+
+        console.log('=====================================================');
+        console.log(post);
+        console.log('=====================================================');
+
+    }, [post]);
 
     useEffect(() => {
         fetch('http://localhost:8080/api/partner/detail/' + id)
@@ -131,89 +189,27 @@ const PartnerUpdate = () => {
     const postUpdate = (e) => {
         e.preventDefault();
 
-        // 초기화
-        setErrorMessages({
-            favorite: '',
-            storeInfo: '',
-            tableCnt: '',
-            openTime: '',
-            reserveInfo: '',
-            parking: '',
-            corkCharge: '',
-            dog: ''
-        });
-
         let hasError = true;
 
-        if (post.favorite.length === 0) {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                favorite: '업종은 반드시 골라야 합니다',
-            }));
-            hasError = false;
-        }
+        const checkField = (fieldName, errorMessage) => {
+            if (post[fieldName] === null || post[fieldName] === '') {
+                setErrorMessages(prevErrors => ({
+                    ...prevErrors,
+                    [fieldName]: errorMessage,
+                }));
+                hasError = false;
+            }
+        };
 
-        if (post.storeInfo === null || post.storeInfo === '') {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                storeInfo: '가게 정보는 필수입니다',
-            }));
-            hasError = false;
-        }
-
-        if (post.tableCnt === null || post.tableCnt === '') {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                tableCnt: '테이블 수는 필수입니다',
-            }));
-            hasError = false;
-        }
-
-        if (post.openTime === null || post.openTime === '') {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                openTime: '영업 시간은 필수입니다',
-            }));
-            hasError = false;
-        }
-
-        if (post.reserveInfo === null || post.reserveInfo === '') {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                reserveInfo: '예약 주의 사항은 필수입니다',
-            }));
-            hasError = false;
-        }
-
-        if (post.parking === null || post.parking === '') {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                parking: '주차 정보는 필수입니다',
-            }));
-            hasError = false;
-        }
-
-        if (post.corkCharge === null || post.corkCharge === '') {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                corkCharge: '콜키지 정보는 필수입니다',
-            }));
-            hasError = false;
-        }
-
-        if (post.dog === null || post.dog === '') {
-            setErrorMessages((prevErrors) => ({
-                ...prevErrors,
-                dog: '애완견 정보는 필수입니다',
-            }));
-            hasError = false;
-        }
-
-        // if (!post.files || post.files.length === 0 || post.files.every(file => file === null)) {
-        //     alert('첨부 파일을 선택해주세요.');
-        //     hasError = false;
-        // }
-
+        // 호출 부분을 아래와 같이 변경합니다.
+        checkField('favorite', '업종은 반드시 골라야 합니다');
+        checkField('storeInfo', '가게 정보는 필수입니다');
+        checkField('tableCnt', '테이블 수는 필수입니다');
+        checkField('openTime', '영업 시간은 필수입니다');
+        checkField('reserveInfo', '예약 주의 사항은 필수입니다');
+        checkField('parking', '주차 정보는 필수입니다');
+        checkField('corkCharge', '콜키지 정보는 필수입니다');
+        checkField('dog', '애완견 정보는 필수입니다');
 
         if (!hasError) {
             return;
@@ -221,7 +217,7 @@ const PartnerUpdate = () => {
 
         const formData = new FormData();
         formData.append('id', post.id);
-        formData.append(' storeName', post.storeName);
+        formData.append('storeName', post.storeName);
         formData.append('partnerName', post.partnerName);
         formData.append('partnerPhone', post.partnerPhone);
         formData.append('storePhone', post.storePhone);
@@ -234,15 +230,24 @@ const PartnerUpdate = () => {
         formData.append('corkCharge', post.corkCharge);
         formData.append('dog', post.dog);
 
-        // post.files가 정의되었을 때에만 파일을 formData에 추가
-        if (post.files) {
-            post.files.forEach((file) => {
-                if (file) {
-                    formData.append('files', file);
-                }
-            });
-        }
+        for (const fileData of post.fileList) {
+            if (fileData) {
+                if (fileData.imageUrl.startsWith('data:image')) {
+                    const byteCharacters = atob(fileData.imageUrl.split(',')[1]);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'image/png' });
+                    const file = new File([blob], 'image.png', { type: 'image/png' });
 
+                    formData.append('files', file);
+                } else {
+                    formData.append('files', fileData);
+                }
+            }
+        }
 
         fetch('http://localhost:8080/api/partner/update', {
             method: 'PUT',
@@ -284,6 +289,11 @@ const PartnerUpdate = () => {
         setPost(prevState => ({
             ...prevState,
             favorite: newFavorites.join(','),
+        }));
+
+        setErrorMessages(prevState => ({
+            ...prevState,
+            favorite: '',
         }));
     };
 
@@ -339,7 +349,17 @@ const PartnerUpdate = () => {
                         </h5>
                     </label>
 
-                    {favoriteGroups.map((group, index) => (
+                    {[
+                        ['한식', '중식', '일식'],
+                        ['이탈리아', '프랑스', '유러피안'],
+                        ['퓨전', '스페인', '아메리칸'],
+                        ['스시', '한우', '소고기구이'],
+                        ['와인', '코스요리', '고기요리'],
+                        ['한정식', '파스타', '해물'],
+                        ['다이닝바', '브런치', '카페'],
+                        ['치킨', '레스토랑', '피자'],
+                        ['백반', '국수', '비건']
+                    ].map((group, index) => (
                         <div key={index} className="row">
                             {group.map((food, i) => (
                                 <div key={i} className="col-md-4">
@@ -350,7 +370,7 @@ const PartnerUpdate = () => {
                                             value={food}
                                             name="favorite"
                                             onChange={handleCheckboxChange}
-                                            checked={post.favorite && post.favorite.includes(food) || ''} 
+                                            checked={post.favorite && post.favorite.includes(food) || ''}
                                         />
                                         <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
                                             {food}
@@ -498,35 +518,32 @@ const PartnerUpdate = () => {
 
                 {/* 첨부파일 */}
                 <div className="mt-3">
-                    <label htmlFor="files">
-                        <h5>첨부파일:</h5>
+                    <label>
+                        <h5>
+                            첨부파일
+                        </h5>
                     </label>
-                    <div id="files">
-                        {files.map((file, index) => (
-                            <div key={index} className="input-group mb-3">
-                                <input
-                                    type="file"
-                                    name='file'
-                                    className="form-control"
-                                    onChange={(e) => handleFileChange(index, e.target.files[0])}
-                                />
-                                <button
-                                    className="btn btn-outline-danger"
-                                    type="button"
-                                    onClick={() => {
-                                        const newFiles = [...files];
-                                        newFiles.splice(index, 1);
-                                        setFiles(newFiles);
-                                    }}
-                                >
-                                    삭제
-                                </button>
-                            </div>
-                        ))}
+                    <div className="dropzoneContainer">
+                        <div className={'gallery--box ' + (post.fileList.length > 0 && 'true')} {...getRootProps()}>
+                            <input type="file" {...getInputProps()} />
+                            <div className="plus--btn">+</div>
+                            {post.fileList.length === 0 &&
+                                <div className="no--case" >
+                                    <span className="text" > Drop files here or click to upload.</span><br />
+                                </div>
+                            }
+                        </div>
+                        {
+                            post.fileList.map((image, idx) =>
+                                <div key={idx} className="gallery--list">
+                                    <div className="gallery--box" >
+                                        <img src={image.imageUrl} alt={""} onClick={() => handleImageClick(image.id)} />
+                                    </div>
+                                    <div className="minus--btn" onClick={() => removeFile(image.id)}>-</div>
+                                </div>
+                            )
+                        }
                     </div>
-                    <button type="button" id="btnAdd" className="btn btn-secondary mt-2" onClick={handleAddFile}>
-                        추가
-                    </button>
                 </div>
 
                 {/* 하단 버튼 */}
