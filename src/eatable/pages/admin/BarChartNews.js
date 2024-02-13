@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { CSSTransition } from 'react-transition-group';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import {Col, Container, Row, Table } from 'react-bootstrap';
 
 ChartJS.register(
   CategoryScale,
@@ -19,10 +22,35 @@ ChartJS.register(
   Legend
 );
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+`;
+
+const AnimatedTable = styled(Table)`
+  opacity: 0;
+  animation: ${({ show }) => (show ? fadeIn : fadeOut)} 0.3s ease-in-out forwards;
+`;
+
    const BarChartNews = () => {
     const [storeLists, setStoreLists] = useState([]);
+    const [selectDate, setSelectDate] = useState(null);
 
     useEffect(()=>{
+
       fetch("http://localhost:8080/api/partner/totallist")
 
           .then(response => response.json())
@@ -87,8 +115,61 @@ ChartJS.register(
     ],
   };
 
-    return <Bar options={options} data={data} height="600px" width="1000px"/>;
+   const BarClick = (event, elements) => {
+    if (elements.length > 0) {
+      const clickedDate = labels[elements[0].index];
+      setSelectDate(date => (date === clickedDate ? null : clickedDate));
+    }
+  };
 
+  return (
+    <div>
+    <Bar options={{ ...options, onClick: BarClick }} data={data} height="600px" width="1000px" />
+    <CSSTransition
+      in={!!selectDate}
+      timeout={300}
+      classNames="table"
+      unmountOnExit
+    >
+      <Container>     
+        <Row>
+          <Col>
+            <AnimatedTable show={!!selectDate} striped bordered hover size="sm" className="list_table">
+              <thead>
+                <tr>
+                  <th>id</th>                  
+                  <th>매장이름</th>
+                  <th>매장주소</th>
+                  <th>관리자이름</th>
+                  <th>관리자연락처</th>
+                  <th>매장연락처</th>
+                  <th>업종</th>
+                  <th>작성일</th>
+                </tr>
+              </thead>
+              <tbody>
+                {storeLists
+                  .filter(store => new Date(store.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) === selectDate)
+                  .map(store => (
+                    <tr key={store.id}>
+                      <td>{store.id}</td>
+                      <td>{store.storeName}</td>
+                      <td>{store.area}</td>
+                      <td>{store.partnerName}</td>
+                      <td>{store.partnerPhone}</td>
+                      <td>{store.storePhone}</td>
+                      <td>{store.storeInfo}</td>                    
+                      <td>{new Date(store.createdAt).toLocaleString('ko-KR')}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </AnimatedTable>
+          </Col>
+        </Row>
+      </Container>
+    </CSSTransition>
+  </div>
+  );
   }
 
   export default BarChartNews;
