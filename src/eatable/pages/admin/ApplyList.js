@@ -130,12 +130,13 @@ const ApplyList = () => {
       ? lists
       : lists.filter((item) => item.partnerReqState === selectedState);
 
+  console.log(filteredLists, "1111");
   //// 주석은나중에 지워주세요!///
   const clickUserId = (userId) => {
     navi(`/partnerwrite/${userId}`);
     console.log(userId);
   };
-  console.log(filteredLists , "이건가")
+  console.log(filteredLists, "이건가");
 
   return (
     <div>
@@ -161,7 +162,7 @@ const ApplyList = () => {
                   <th>상태</th>
                   <th>전화번호</th>
                   <th>신청날짜</th>
-                  <th>유저아이디</th>
+                  <th>Y/N</th>
                 </tr>
               </thead>
 
@@ -171,6 +172,7 @@ const ApplyList = () => {
                     <td>{list.id}</td>
                     <td>{list.storeName}</td>
                     <td>{list.managerName}</td>
+
                     <td
                       style={{
                         color:
@@ -184,8 +186,7 @@ const ApplyList = () => {
                       {list.partnerReqState}
                     </td>
                     <td>{list.phone}</td>
-                    <td>{list.regDate}</td>
-                    <td>{list.user}</td>
+                    <td>{list.createdAt}</td>
                     <td style={{ maxWidth: "65px", minWidth: "65px" }}>
                       {list.partnerReqState === "접수 승인" && (
                         <Button
