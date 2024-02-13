@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GeoJson } from './components/GeoJson';
+import MarkerClusterer from '@googlemaps/markerclustererplus';
 
 const GoogleMap = () => {
     const mapRef = useRef(null);
@@ -9,6 +10,8 @@ const GoogleMap = () => {
     const hoveredPolygonRef = useRef(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [post, setPost] = useState([]);
+    const clusterRef = useRef(null); // 클러스터 참조
+    const markers = [];
 
     useEffect(() => {
         if (!isLoaded) {
@@ -115,22 +118,39 @@ const GoogleMap = () => {
                 const marker = new window.google.maps.Marker({
                     position: { lat: lat, lng: lng }, // 마커의 위치를 설정합니다.
                     map: map, // 마커를 표시할 지도를 설정합니다.
-                    title: item.storeName
+                    title: item.storeName,
+                    label: {
+                        text: item.storeName,
+                        fontWeight: 'bold',
+                        fontSize: '12px'
+                    } // 마커 옆에 표시할 텍스트입니다.
                 });
+
+                // 마커 배열에 추가
+                markers.push(marker);
+
+
 
                 // 마커를 클릭했을 때 정보 창 열기
                 marker.addListener('click', function () {
                     const infoWindow = new window.google.maps.InfoWindow({
                         content: `
-                            <div>
+                            < div >
                                 <p>ID: ${item.id}</p>
                                 <p>Store Name: ${item.storeName}</p>
                                 <img src="${item.fileList[0].imageUrl}" alt="Image" style="max-width: 200px; max-height: 200px;">
-                            </div>
+                            </>
                         `
                     });
                     infoWindow.open(map, marker);
                 });
+            });
+
+            // 클러스터 생성 및 마커 추가
+            clusterRef.current = new MarkerClusterer(map, markers, {
+                imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+                gridSize: 60,
+                zoomOnClick: true
             });
         }
     }, [isLoaded, post]);
@@ -158,7 +178,7 @@ const GoogleMap = () => {
 
 
     return (
-        <div ref={mapRef} style={{ height: "700px", width: "100%" }}>
+        <div ref={mapRef} style={{ height: "800px", width: "100%" }}>
             {/* 여기에 지도가 표시됩니다. */}
         </div>
     );
