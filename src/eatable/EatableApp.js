@@ -27,7 +27,7 @@ import ReviewImg from "./pages/userreview/ReviewImg";
 import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
 import PartnerMyPage from "./pages/partner/PartnerMyPage";
-
+import GoogleMap from "./pages/partner/GoogleMap";
 
 
 
@@ -52,6 +52,14 @@ const EatableApp = () => {
             <Route path="/usermypage" element={<MemberRoute><UserMyPage /></MemberRoute>}></Route>
 
             {/* 파트너페이지 어드민권환 */}
+            <Route
+              path="/googleMap"
+              element={
+                // <AdminRoute>
+                <GoogleMap/>
+                // </AdminRoute>
+              }
+            ></Route>
             <Route
               path="/partnerwrite"
               element={
