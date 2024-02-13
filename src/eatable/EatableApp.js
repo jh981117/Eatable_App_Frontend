@@ -28,6 +28,9 @@ import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
 import PartnerMyPage from "./pages/partner/PartnerMyPage";
 import GoogleMap from "./pages/partner/GoogleMap";
+import UserPartnerPage from "./pages/user/UserPartnerPage";
+
+
 
 
 
@@ -62,6 +65,9 @@ const EatableApp = () => {
             ></Route>
             <Route
               path="/partnerwrite"
+
+              path="/partnerwrite/:userId"
+
               element={
                 // <AdminRoute>
                 <PartnerWrite />
@@ -105,10 +111,10 @@ const EatableApp = () => {
             <Route
               path="/applyreq"
               element={
-                <AdminRoute>
+                <MemberRoute>
                   {" "}
                   <ApplyReq />
-                </AdminRoute>
+                </MemberRoute>
               }
             ></Route>
             <Route
@@ -162,7 +168,8 @@ const EatableApp = () => {
             <Route path="/reviewimg" Component={ReviewImg}></Route>
             <Route path="/reviewwrite" Component={ReviewWrite}></Route>
             <Route path="/reviewdetail" Component={ReviewDetail}></Route>
-            <Route path="/partnermypage" Component={PartnerMyPage}></Route>
+            <Route path="/userpartnerpage" Component={UserPartnerPage}></Route>
+          
 
 
 

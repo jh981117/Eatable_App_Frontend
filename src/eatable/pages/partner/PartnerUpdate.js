@@ -2,9 +2,19 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './components/PartnerWrite.css';
 import { useDropzone } from 'react-dropzone';
+import { jwtDecode } from 'jwt-decode';
 
 const PartnerUpdate = () => {
     const navigate = useNavigate();
+
+     const token = localStorage.getItem("token");
+     let isAdmin = false;
+
+     if (token) {
+       const decoded = jwtDecode(token);
+       const roles = decoded.auth ? decoded.auth.split(",") : [];
+       isAdmin = roles.includes("ROLE_ADMIN");
+     }
 
     let { id } = useParams();
 
@@ -298,278 +308,367 @@ const PartnerUpdate = () => {
     };
 
     return (
-        <div className="mt-3" id='partnerwrite'>
-            <h2 className="display-6">업체 등록</h2>
-            <hr />
-            <form onSubmit={postUpdate}>
+      <div className="mt-3" id="partnerwrite">
+        <h2 className="display-6">매장관리 - 수정</h2>
+        <hr />
+        <form onSubmit={postUpdate}>
+          {/* 나머지 입력 부분들 */}
+          {["storeName", "partnerName", "partnerPhone", "storePhone"].map(
+            (fieldName, index) => (
+              <div key={index} className="mt-3">
+                <label htmlFor={fieldName}>
+                  <h5>
+                    {fieldName === "storeName"
+                      ? "매장이름"
+                      : fieldName === "partnerName"
+                      ? "관리자이름"
+                      : fieldName === "partnerPhone"
+                      ? "관리자 전화번호"
+                      : "매장 전화번호"}
+                  </h5>
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id={fieldName}
+                  placeholder={
+                    fieldName === "partnerPhone"
+                      ? "전화번호를 입력하세요   ex) 01042364123"
+                      : fieldName === "storePhone"
+                      ? "전화번호를 입력하세요   ex) 0242364123"
+                      : "이름을 입력하세요"
+                  }
+                  name={fieldName}
+                  onChange={handleChange}
+                  value={post[fieldName] || ""}
+                  readOnly
+                />
+              </div>
+            )
+          )}
 
-                {/* 나머지 입력 부분들 */}
-                {['storeName', 'partnerName', 'partnerPhone', 'storePhone'].map((fieldName, index) => (
-                    <div key={index} className="mt-3">
-                        <label htmlFor={fieldName}>
-                            <h5>{fieldName === 'storeName' ? '매장이름' : fieldName === 'partnerName' ? '관리자이름' : fieldName === 'partnerPhone' ? '관리자 전화번호' : '매장 전화번호'}</h5>
-                        </label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id={fieldName}
-                            placeholder={fieldName === 'partnerPhone' ? '전화번호를 입력하세요   ex) 01042364123' : fieldName === 'storePhone' ? '전화번호를 입력하세요   ex) 0242364123' : '이름을 입력하세요'}
-                            name={fieldName}
-                            onChange={handleChange}
-                            value={post[fieldName] || ''}
-                            readOnly
-                        />
-                    </div>
-                ))}
+          {/* 매장주소 입력 부분 */}
+          <div className="mt-3">
+            <label htmlFor="address">
+              <h5>매장주소</h5>
+            </label>
+            <div>
+              <div className="act">
+                {/* <input id="autocomplete_search" name="autocomplete_search" type="text" className="form-control" placeholder="Search" readOnly /> */}
+                {/* <button onClick={findMyLocation}><GpsFixed /></button> */}
+              </div>
+              {/* 위도, 경도 입력 */}
+              <input
+                type="text"
+                name="lat"
+                id="lat"
+                placeholder="lat"
+                onChange={handleChange}
+                value={post.lat}
+                hidden
+              />
+              <input
+                type="text"
+                name="lng"
+                id="lng"
+                placeholder="lng"
+                onChange={handleChange}
+                value={post.lng}
+                hidden
+              />
+              {/* 주소와 우편번호 입력 */}
+              <input
+                type="text"
+                name="area"
+                id="area"
+                className="form-control"
+                placeholder="Address"
+                onChange={handleChange}
+                value={post.area}
+                readOnly
+              />
+              <input
+                type="text"
+                name="zipCode"
+                id="zipCode"
+                className="form-control"
+                placeholder="zipCode"
+                onChange={handleChange}
+                value={post.zipCode}
+                readOnly
+              />
+            </div>
+          </div>
 
-                {/* 매장주소 입력 부분 */}
-                <div className="mt-3">
-                    <label htmlFor="address">
-                        <h5>매장주소</h5>
-                    </label>
-                    <div>
-                        <div className="act">
-                            {/* <input id="autocomplete_search" name="autocomplete_search" type="text" className="form-control" placeholder="Search" readOnly /> */}
-                            {/* <button onClick={findMyLocation}><GpsFixed /></button> */}
-                        </div>
-                        {/* 위도, 경도 입력 */}
-                        <input type="text" name="lat" id="lat" placeholder="lat" onChange={handleChange} value={post.lat} hidden />
-                        <input type="text" name="lng" id="lng" placeholder="lng" onChange={handleChange} value={post.lng} hidden />
-                        {/* 주소와 우편번호 입력 */}
-                        <input type="text" name="area" id="area" className="form-control" placeholder="Address" onChange={handleChange} value={post.area} readOnly />
-                        <input type="text" name="zipCode" id="zipCode" className="form-control" placeholder="zipCode" onChange={handleChange} value={post.zipCode} readOnly />
-                    </div>
-                </div>
+          {/* 업종 선택 부분 */}
+          <div className="mt-3">
+            <label>
+              <h5>
+                업종 <small>(1개이상 선택)</small>
+              </h5>
+            </label>
 
-                {/* 업종 선택 부분 */}
-                <div className="mt-3">
-                    <label>
-                        <h5>
-                            업종 <small>(1개이상 선택)</small>
-                        </h5>
-                    </label>
-
-                    {[
-                        ['한식', '중식', '일식'],
-                        ['이탈리아', '프랑스', '유러피안'],
-                        ['퓨전', '스페인', '아메리칸'],
-                        ['스시', '한우', '소고기구이'],
-                        ['와인', '코스요리', '고기요리'],
-                        ['한정식', '파스타', '해물'],
-                        ['다이닝바', '브런치', '카페'],
-                        ['치킨', '레스토랑', '피자'],
-                        ['백반', '국수', '비건']
-                    ].map((group, index) => (
-                        <div key={index} className="row">
-                            {group.map((food, i) => (
-                                <div key={i} className="col-md-4">
-                                    <div className="form-check">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            value={food}
-                                            name="favorite"
-                                            onChange={handleCheckboxChange}
-                                            checked={post.favorite && post.favorite.includes(food) || ''}
-                                        />
-                                        <label className="form-check-label" htmlFor={`favorite${index}${i}`}>
-                                            {food}
-                                        </label>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </div>
-                <div>
-                    {errorMessages.favorite && (
-                        <span className="text-danger">{errorMessages.favorite}</span>
-                    )}
-                </div>
-
-                {/* 텍스트 입력 */}
-                <div className="mt-3">
-                    <label htmlFor="storeInfo">
-                        <h5>
-                            매장소개
-                        </h5>
-                    </label>
-                    <textarea
-                        onChange={handleChange}
-                        placeholder="매장소개를 입력하세요"
-                        id="storeInfo" name="storeInfo" value={post.storeInfo}
-                    ></textarea>
-                </div>
-                <div>
-                    {errorMessages.storeInfo && (
-                        <span className="text-danger">{errorMessages.storeInfo}</span>
-                    )}
-                </div>
-
-                {/* 테이블수 */}
-                <div className="mt-3">
-                    <label htmlFor="tableCnt">
-                        <h5>테이블수</h5>
-                    </label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="tableCnt"
-                        placeholder="테이블수를 입력하세요"
-                        name="tableCnt"
-                        min="0"
-                        onChange={handleChange}
-                        value={post.tableCnt}
-                    />
-                </div>
-                <div>
-                    {errorMessages.tableCnt && (
-                        <span className="text-danger">{errorMessages.tableCnt}</span>
-                    )}
-                </div>
-
-                {/* 영업시간 */}
-                <div className="mt-3">
-                    <label htmlFor="openTime">
-                        <h5>
-                            영업시간 <small>(정기휴무)</small>
-                        </h5>
-                    </label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="openTime"
-                        placeholder="영업시간을 입력하세요"
-                        name="openTime"
-                        onChange={handleChange}
-                        value={post.openTime}
-                    />
-                </div>
-                <div>
-                    {errorMessages.openTime && (
-                        <span className="text-danger">{errorMessages.openTime}</span>
-                    )}
-                </div>
-
-                {/* 텍스트 입력 */}
-                <div className="mt-3">
-                    <label htmlFor="reserveInfo">
-                        <h5>
-                            예약주의사항
-                        </h5>
-                    </label>
-                    <textarea
-                        onChange={handleChange}
-                        placeholder="여기에 입력하세요"
-                        id="reserveInfo" name="reserveInfo" value={post.reserveInfo}
-                    ></textarea>
-                </div>
-                <div>
-                    {errorMessages.reserveInfo && (
-                        <span className="text-danger">{errorMessages.reserveInfo}</span>
-                    )}
-                </div>
-
-                {/* radio타입 입력 */}
-                <div className="mt-3">
-                    {['parking', 'corkCharge', 'dog'].map((item, index) => (
-                        <div key={index} className="form-group">
-                            <label htmlFor={`${item}Radio`}>
-                                {item === 'corkCharge' ? '콜키지' : item === 'dog' ? '애완견' : '주차정보'}
-                            </label>
-                            <div className="d-flex">
-                                <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
-                                    <input
-                                        className="form-check-input"
-                                        type="radio"
-                                        name={item}
-                                        id={`${item}Available`}
-                                        value="TRUE"
-                                        onChange={handleChange}
-                                        checked={post[item] === 'TRUE'}
-                                        style={{ marginRight: '5px' }}
-                                    />
-                                    <label className="form-check-label" htmlFor={`${item}Available`} style={{ marginRight: '10px' }}>
-                                        가능
-                                    </label>
-                                </div>
-                                <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
-                                    <input
-                                        className="form-check-input"
-                                        type="radio"
-                                        name={item}
-                                        id={`${item}NotAvailable`}
-                                        value="FALSE"
-                                        onChange={handleChange}
-                                        checked={post[item] === 'FALSE'}
-                                        style={{ marginRight: '5px' }}
-                                    />
-                                    <label className="form-check-label" htmlFor={`${item}NotAvailable`} >
-                                        불가능
-                                    </label>
-                                </div>
-                            </div>
-                            {errorMessages[item] && (
-                                <span className="text-danger">{errorMessages[item]}</span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {/* 첨부파일 */}
-                <div className="mt-3">
-                    <label>
-                        <h5>
-                            첨부파일
-                        </h5>
-                    </label>
-                    <div className="dropzoneContainer">
-                        <div className={'gallery--box ' + (post.fileList.length > 0 && 'true')} {...getRootProps()}>
-                            <input type="file" {...getInputProps()} />
-                            <div className="plus--btn">+</div>
-                            {post.fileList.length === 0 &&
-                                <div className="no--case" >
-                                    <span className="text" > Drop files here or click to upload.</span><br />
-                                </div>
-                            }
-                        </div>
-                        {
-                            post.fileList.map((image, idx) =>
-                                <div key={idx} className="gallery--list">
-                                    <div className="gallery--box" >
-                                        <img src={image.imageUrl} alt={""} onClick={() => handleImageClick(image.id)} />
-                                    </div>
-                                    <div className="minus--btn" onClick={() => removeFile(image.id)}>-</div>
-                                </div>
-                            )
+            {[
+              ["한식", "중식", "일식"],
+              ["이탈리아", "프랑스", "유러피안"],
+              ["퓨전", "스페인", "아메리칸"],
+              ["스시", "한우", "소고기구이"],
+              ["와인", "코스요리", "고기요리"],
+              ["한정식", "파스타", "해물"],
+              ["다이닝바", "브런치", "카페"],
+              ["치킨", "레스토랑", "피자"],
+              ["백반", "국수", "비건"],
+            ].map((group, index) => (
+              <div key={index} className="row">
+                {group.map((food, i) => (
+                  <div key={i} className="col-md-4">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value={food}
+                        name="favorite"
+                        onChange={handleCheckboxChange}
+                        checked={
+                          (post.favorite && post.favorite.includes(food)) || ""
                         }
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor={`favorite${index}${i}`}
+                      >
+                        {food}
+                      </label>
                     </div>
-                </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div>
+            {errorMessages.favorite && (
+              <span className="text-danger">{errorMessages.favorite}</span>
+            )}
+          </div>
 
-                {/* 하단 버튼 */}
-                <div className="d-flex justify-content-end my-3">
-                    <button type="submit" className="button-link">
-                        수정완료
-                    </button>
+          {/* 텍스트 입력 */}
+          <div className="mt-3">
+            <label htmlFor="storeInfo">
+              <h5>매장소개</h5>
+            </label>
+            <textarea
+              onChange={handleChange}
+              placeholder="매장소개를 입력하세요"
+              id="storeInfo"
+              name="storeInfo"
+              value={post.storeInfo}
+            ></textarea>
+          </div>
+          <div>
+            {errorMessages.storeInfo && (
+              <span className="text-danger">{errorMessages.storeInfo}</span>
+            )}
+          </div>
 
-                    <button
-                        type="button"
-                        className="button-link"
-                        onClick={() => {
-                            navigate(-1) ? navigate(-1) : navigate("/home");
-                        }}
+          {/* 테이블수 */}
+          <div className="mt-3">
+            <label htmlFor="tableCnt">
+              <h5>테이블수</h5>
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              id="tableCnt"
+              placeholder="테이블수를 입력하세요"
+              name="tableCnt"
+              min="0"
+              onChange={handleChange}
+              value={post.tableCnt}
+            />
+          </div>
+          <div>
+            {errorMessages.tableCnt && (
+              <span className="text-danger">{errorMessages.tableCnt}</span>
+            )}
+          </div>
+
+          {/* 영업시간 */}
+          <div className="mt-3">
+            <label htmlFor="openTime">
+              <h5>
+                영업시간 <small>(정기휴무)</small>
+              </h5>
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="openTime"
+              placeholder="영업시간을 입력하세요"
+              name="openTime"
+              onChange={handleChange}
+              value={post.openTime}
+            />
+          </div>
+          <div>
+            {errorMessages.openTime && (
+              <span className="text-danger">{errorMessages.openTime}</span>
+            )}
+          </div>
+
+          {/* 텍스트 입력 */}
+          <div className="mt-3">
+            <label htmlFor="reserveInfo">
+              <h5>예약주의사항</h5>
+            </label>
+            <textarea
+              onChange={handleChange}
+              placeholder="여기에 입력하세요"
+              id="reserveInfo"
+              name="reserveInfo"
+              value={post.reserveInfo}
+            ></textarea>
+          </div>
+          <div>
+            {errorMessages.reserveInfo && (
+              <span className="text-danger">{errorMessages.reserveInfo}</span>
+            )}
+          </div>
+
+          {/* radio타입 입력 */}
+          <div className="mt-3">
+            {["parking", "corkCharge", "dog"].map((item, index) => (
+              <div key={index} className="form-group">
+                <label htmlFor={`${item}Radio`}>
+                  {item === "corkCharge"
+                    ? "콜키지"
+                    : item === "dog"
+                    ? "애완견"
+                    : "주차정보"}
+                </label>
+                <div className="d-flex">
+                  <div
+                    className="form-check"
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name={item}
+                      id={`${item}Available`}
+                      value="TRUE"
+                      onChange={handleChange}
+                      checked={post[item] === "TRUE"}
+                      style={{ marginRight: "5px" }}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`${item}Available`}
+                      style={{ marginRight: "10px" }}
                     >
-                        이전으로
-                    </button>
-
-                    <Link className="button-link" to="/partnerlist">
-                        목록
-                    </Link>
-
+                      가능
+                    </label>
+                  </div>
+                  <div
+                    className="form-check"
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name={item}
+                      id={`${item}NotAvailable`}
+                      value="FALSE"
+                      onChange={handleChange}
+                      checked={post[item] === "FALSE"}
+                      style={{ marginRight: "5px" }}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`${item}NotAvailable`}
+                    >
+                      불가능
+                    </label>
+                  </div>
                 </div>
-            </form>
-            {/* 하단 버튼 */}
-        </div >
+                {errorMessages[item] && (
+                  <span className="text-danger">{errorMessages[item]}</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* 첨부파일 */}
+          <div className="mt-3">
+            <label>
+              <h5>첨부파일</h5>
+            </label>
+            <div className="dropzoneContainer">
+              <div
+                className={
+                  "gallery--box " + (post.fileList.length > 0 && "true")
+                }
+                {...getRootProps()}
+              >
+                <input type="file" {...getInputProps()} />
+                <div className="plus--btn">+</div>
+                {post.fileList.length === 0 && (
+                  <div className="no--case">
+                    <span className="text">
+                      {" "}
+                      Drop files here or click to upload.
+                    </span>
+                    <br />
+                  </div>
+                )}
+              </div>
+              {post.fileList.map((image, idx) => (
+                <div key={idx} className="gallery--list">
+                  <div className="gallery--box">
+                    <img
+                      src={image.imageUrl}
+                      alt={""}
+                      onClick={() => handleImageClick(image.id)}
+                    />
+                  </div>
+                  <div
+                    className="minus--btn"
+                    onClick={() => removeFile(image.id)}
+                  >
+                    -
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 하단 버튼 */}
+          <div className="d-flex justify-content-end my-3">
+            <button type="submit" className="button-link">
+              수정완료
+            </button>
+
+            <button
+              type="button"
+              className="button-link"
+              onClick={() => {
+                navigate(-1) ? navigate(-1) : navigate("/home");
+              }}
+            >
+              뒤로가기
+            </button>
+
+            <div>
+              {/* 관리자 권한이 있을때만 보여줌 */}
+              {isAdmin && (
+                <Link className="button-link" to="/partnerlist">
+                  목록
+                </Link>
+              )}
+            </div>
+          </div>
+        </form>
+        {/* 하단 버튼 */}
+      </div>
     );
 };
 
