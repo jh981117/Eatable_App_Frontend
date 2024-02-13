@@ -72,59 +72,76 @@ const CancelList = () => {
   const filteredLists = selectedState === 'ALL' ? lists : lists.filter(item => item.partnerReqState === selectedState);
 
     return (
-      <div>  
+      <div>
         <Container>
-        <Row>
-          <Col>
-            <Form.Select style={{width: '13%'}} onChange={handleSelectChange}>    
-              <option value="ALL">모두 보기</option>         
-              <option value="취소 대기중">취소 대기중</option>
-              <option value="취소 승인">접수 승인</option>
-            </Form.Select>
-          </Col>
-        </Row>               
-            <Row>
-              <Col >
-              <Table striped bordered hover size='sm' className="list_table">
-            <thead>
-              <tr>
-                <th>id</th>
-                <th>업체명</th>
-                <th>문의자명</th>
-                <th>상태</th>
-                <th>전화번호</th>
-                <th>신청날짜</th>       
-              </tr>
-            </thead>
-            
-            <tbody>      
-            {filteredLists.map((list, index) => (
-              <tr key={index}>      
-                <td>{list.id}</td>
-                <td>{list.storeName}</td>
-                <td>{list.managerName}</td>
-                <td style={{ color: list.partnerReqState === '취소 대기중' ? 'red' : 'blue' }}>
-                   {list.partnerReqState === 'CLOSE' ? '취소 승인' : list.partnerReqState}                  
-                  </td>
-                <td>{list.phone}</td>
-                <td>{list.regDate}</td>
-              <td style={{maxWidth: '34px', minWidth:'34px'}}>
-              <div className={'btn-wrapper'}>
-              {list.partnerReqState === '취소 대기중' && (
-                  <>
-                    <Button variant="outline-primary"  onClick={() => cancelOk(index)}>승인</Button>               
-                  </>
-                )}
-              </div>
-              </td>
-            </tr>
-            ))}  
-            </tbody>
-          </Table>   
-              </Col>
-            </Row>
-        </Container>         
+          <Row>
+            <Col>
+              <Form.Select
+                style={{ width: "13%" }}
+                onChange={handleSelectChange}
+              >
+                <option value="ALL">모두 보기</option>
+                <option value="취소 대기중">취소 대기중</option>
+                <option value="취소 승인">접수 승인</option>
+              </Form.Select>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Table striped bordered hover size="sm" className="list_table">
+                <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>업체명</th>
+                    <th>문의자명</th>
+                    <th>상태</th>
+                    <th>전화번호</th>
+                    <th>신청날짜</th>
+                    <th>Y/N</th>
+                  </tr>
+                </thead>
 
+                <tbody>
+                  {filteredLists.map((list, index) => (
+                    <tr key={index}>
+                      <td>{list.id}</td>
+                      <td>{list.storeName}</td>
+                      <td>{list.managerName}</td>
+                      <td
+                        style={{
+                          color:
+                            list.partnerReqState === "취소 대기중"
+                              ? "red"
+                              : "blue",
+                        }}
+                      >
+                        {list.partnerReqState === "CLOSE"
+                          ? "취소 승인"
+                          : list.partnerReqState}
+                      </td>
+                      <td>{list.phone}</td>
+                      <td>{list.createdAt}</td>
+                      <td style={{ maxWidth: "34px", minWidth: "34px" }}>
+                        <div className={"btn-wrapper"}>
+                          {list.partnerReqState === "취소 대기중" && (
+                            <>
+                              <Button
+                                variant="outline-primary"
+                                onClick={() => cancelOk(index)}
+                              >
+                                승인
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
 };

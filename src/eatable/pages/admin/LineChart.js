@@ -30,9 +30,14 @@ const LineChart = () => {
     fetch("http://localhost:8080/api/user/list")
         .then(response => response.json())
         .then(data => {
-          setUserLists(data);    
+          const authfilter = data.filter(user => {
+            return !user.roles.map(role => role.roleName).includes("ROLE_ADMIN");
         });
+          setUserLists(authfilter);    
+        });
+        
 },[])
+console.log(userLists)
   const options = {
     responsive: false,
     plugins: {
