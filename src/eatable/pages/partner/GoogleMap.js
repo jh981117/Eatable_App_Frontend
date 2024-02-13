@@ -14,16 +14,42 @@ const GoogleMap = () => {
     const markers = [];
 
     useEffect(() => {
-        if (!isLoaded) {
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_KEY}&libraries=geometry`;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/partner/totallist');
+                if (response.status === 200) {
+                    const data = await response.json();
+                    console.log(data);
+                    setPost(data); // 데이터를 상태 변수에 설정
+                } else {
+                    console.error('Failed to fetch data');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        // 데이터 가져오기
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const loadGoogleMapsAPI = () => {
+            if (!isLoaded && !window.google) { // 추가 수정: window.google이 존재하지 않을 때만 스크립트 추가
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_KEY}&libraries=geometry&callback=initMap`;
+                script.async = true;
+                script.defer = true;
+                window.initMap = () => {
+                    setIsLoaded(true);
+                };
+                document.body.appendChild(script);
+            } else if (!isLoaded && window.google) {
                 setIsLoaded(true);
-            };
-            document.body.appendChild(script);
-        }
+            }
+        };
+
+        loadGoogleMapsAPI();
     }, [isLoaded]);
 
     useEffect(() => {
@@ -129,8 +155,6 @@ const GoogleMap = () => {
                 // 마커 배열에 추가
                 markers.push(marker);
 
-
-
                 // 마커를 클릭했을 때 정보 창 열기
                 marker.addListener('click', function () {
                     const infoWindow = new window.google.maps.InfoWindow({
@@ -149,31 +173,11 @@ const GoogleMap = () => {
             // 클러스터 생성 및 마커 추가
             clusterRef.current = new MarkerClusterer(map, markers, {
                 imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-                gridSize: 60,
+                gridSize: 160,
                 zoomOnClick: true
             });
         }
     }, [isLoaded, post]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/api/partner/totallist');
-                if (response.status === 200) {
-                    const data = await response.json();
-                    console.log(data);
-                    setPost(data); // 데이터를 상태 변수에 설정
-                } else {
-                    console.error('Failed to fetch data');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        // 데이터 가져오기
-        fetchData();
-    }, []);
 
 
 
