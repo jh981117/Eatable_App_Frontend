@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 const ApplyList = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null); // 선택된 항목 상태 추가
+  const [selectedList, setSelectedList] = useState(null); // 선택된 항목 상태 추가
   const [lists, setLists] = useState([]);
   const [selectedState, setSelectedState] = useState("ALL");
   const [disable, setDisable] = useState(JSON.parse(localStorage.getItem("disableState")) || []);
@@ -54,13 +54,12 @@ const ApplyList = () => {
     });
   };
 
-  const handleOpenModal = (item) => {
-    setSelectedItem(item);
+  const handleOpenModal = (list) => {
+    setSelectedList(list);
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedItem(null);
     setModalOpen(false);
   };
 
@@ -240,7 +239,7 @@ const ApplyList = () => {
         <Modal.Body>정말 승인 하시겠습니까?</Modal.Body>
         <Modal.Footer>
           <Form>
-            <Button variant="outline-primary me-2" onClick={() => handleApprove(selectedItem.id)}>
+            <Button variant="outline-primary me-2" onClick={() => handleApprove(selectedList.id)}>
               확인
             </Button>
           </Form>
