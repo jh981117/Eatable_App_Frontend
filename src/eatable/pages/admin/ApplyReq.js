@@ -2,6 +2,7 @@ import React, {useEffect, useState } from "react";
 import { Button, Container, Form, Table } from "react-bootstrap";
 import './ApplyReq.css';
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -22,6 +23,7 @@ import { jwtDecode } from "jwt-decode";
     const [phone, setPhone] = useState("");
 
     const [isPartner, setIsPartner] = useState(null); // 파트너 여부 상태 추가
+    const navi = useNavigate();
 
     useEffect(() => {
       const token = localStorage.getItem("token");
@@ -99,6 +101,7 @@ import { jwtDecode } from "jwt-decode";
         .then((data) => {
           if (data !== null) {
             alert("제출완료");
+            navi("/")
           } else {
             alert("제출실패");
           }

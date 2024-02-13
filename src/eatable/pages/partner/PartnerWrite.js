@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './components/PartnerWrite.css';
 import { GpsFixed } from '@material-ui/icons';
-
+import emailjs from "@emailjs/browser";
+import { Form } from 'react-bootstrap';
 
 const PartnerWrite = () => {
   const navigate = useNavigate();
@@ -105,6 +106,24 @@ const PartnerWrite = () => {
           alert("제출실패");
         }
       });
+  };
+
+  //email js//
+  const form = useRef();
+
+  const sendEmail = e => {
+    e.preventDefault();
+
+    emailjs.sendForm("service_fch3yro1", "template_76jxtmb1", form.current, "ORegbfZuljHYVzE1s1").then(
+      result => {
+        alert("성공적으로 이메일이 전송되었습니다.");
+        form.current.reset();
+      },
+      error => {
+        console.log(error.text);
+        alert("이메일이 전송이 실패되었습니다.");
+      },
+    );
   };
 
   ////////구분선//////////////
@@ -439,9 +458,29 @@ const PartnerWrite = () => {
 
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">
-          <button type="submit" className="button-link">
-            작성완료
-          </button>
+          <Form ref={form}  onSubmit={sendEmail}> 
+            <Form.Control type="hidden" name="user_name" value="부트스트랩" />
+            <Form.Control
+              type="hidden"
+              name="user_email"
+              value="imsen4@naver.com"
+            />
+            <Form.Control
+              type="hidden"
+              name="to_email"
+              value="imsen456@gmail.com"
+            />
+            <Form.Control
+              as="textarea"
+              style={{ display: "none" }}
+              name="message"
+              value="부트스트랩 이게 맞냐 어?"
+            />
+            <button type="submit" className="button-link" onClick={sendEmail}>
+              작성완료
+            </button>
+          </Form>
+       
           <Link to="/partnerlist" className="button-link">
             목록
           </Link>
