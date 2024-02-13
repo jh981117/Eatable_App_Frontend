@@ -130,6 +130,7 @@ const ApplyList = () => {
   const filteredLists =
     selectedState === "ALL"? lists : lists.filter((item) => item.partnerReqState === selectedState);
 
+  console.log(filteredLists, "1111");
   
     const clickUserId = (userId, index) => {
       setDisable((prevDisable) => ({
@@ -145,7 +146,7 @@ const ApplyList = () => {
       console.log(userId);
     };
   
-  console.log(filteredLists , "이건가")
+  console.log(filteredLists, "이건가");
 
   return (
     <div>
@@ -171,7 +172,7 @@ const ApplyList = () => {
                   <th>상태</th>
                   <th>전화번호</th>
                   <th>신청날짜</th>
-                  <th>유저아이디</th>
+                  <th>Y/N</th>
                 </tr>
               </thead>
 
@@ -181,6 +182,7 @@ const ApplyList = () => {
                     <td>{list.id}</td>
                     <td>{list.storeName}</td>
                     <td>{list.managerName}</td>
+
                     <td
                       style={{
                         color:

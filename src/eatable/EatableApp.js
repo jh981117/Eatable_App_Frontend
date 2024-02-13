@@ -26,6 +26,7 @@ import DetailTab from "./pages/userreview/DetailTab";
 import ReviewImg from "./pages/userreview/ReviewImg";
 import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
+import UserPartnerPage from "./pages/user/UserPartnerPage";
 
 
 
@@ -153,6 +154,7 @@ const EatableApp = () => {
             <Route path="/reviewimg" Component={ReviewImg}></Route>
             <Route path="/reviewwrite" Component={ReviewWrite}></Route>
             <Route path="/reviewdetail" Component={ReviewDetail}></Route>
+            <Route path="/userpartnerpage" Component={UserPartnerPage}></Route>
           
 
 

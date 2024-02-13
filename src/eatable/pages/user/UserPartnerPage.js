@@ -23,37 +23,86 @@ const UserPartnerPage = () => {
   };
 
   useEffect(() => {
-    const userId = getUserIdFromToken();
-    if (!userId) {
-      console.error("유저 ID를 찾을 수 없습니다.");
-      return;
+    if (stores.fileList && stores.fileList.length > 0) {
+      setSelectedImage(stores.fileList[0].imageUrl); // 첫 번째 이미지를 선택된 이미지로 설정
+    } else {
+      setSelectedImage(
+        "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+      ); // 기본 이미지 설정
     }
+  }, [stores.fileList]); // store.fileList가 변경될 때마다 효과를 다시 실행
 
-    fetch("http://localhost:8080/api/partner/by-user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId }),
+  
+
+   const fetchStores = (userId) => {
+  fetch("http://localhost:8080/api/partner/by-user", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ userId }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      setStores(data);
+      if (data.length > 0 && data[0].fileList.length > 0) {
+        setSelectedImage(data[0].fileList[0].imageUrl);
+      }
     })
-      .then((response) => response.json())
-      .then((data) => {
-        setStores(data);
-        if (data.length > 0 && data[0].fileList.length > 0) {
-          setSelectedImage(data[0].fileList[0].imageUrl);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching partners:", error);
-      });
-  }, []);
-  console.log(stores, "???!");
+    .catch((error) => {
+      console.error("Error fetching partners:", error);
+    });
+};
+
+useEffect(() => {
+  const userId = getUserIdFromToken();
+  if (!userId) {
+    console.error("유저 ID를 찾을 수 없습니다.");
+    return;
+  }
+  fetchStores(userId); // 매장 정보를 불러오는 함수 호출
+}, []);
+
+  console.log(stores, "???!!!!!!!");
 
   const updatePost = (id) => {
     navigate("/partnerupdate/" + id);
     console.log(id);
   };
 
+const cancelPartner = async (userId) => {
+  // 사용자에게 확인 받기
+  const isConfirmed = window.confirm("정말 입점취소 하시겠습니까?");
+  if (isConfirmed) {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/req/cancelPartner",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+
+      if (response.status === 201) {
+        alert("입점취소 신청 완료");
+        fetchStores(userId); // 입점 취소 후 매장 정보를 다시 불러옴
+      } else {
+        alert("입점취소 신청 실패");
+      }
+    } catch (error) {
+      console.error("입점취소 신청 중 오류 발생:", error);
+      alert("입점취소 신청 중 오류 발생");
+    }
+  } else {
+    console.log("입점취소 신청이 취소되었습니다.");
+  }
+};
+
+
+  
   return (
     <div>
       <Container>
@@ -104,25 +153,38 @@ const UserPartnerPage = () => {
                   />
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                  {store.fileList.map((file, fIndex) => (
+                  {store.fileList && store.fileList.length > 0 ? (
+                    store.fileList.map((file, fIndex) => (
+                      <img
+                        key={fIndex}
+                        src={file.imageUrl}
+                        alt={`Store Image ${fIndex + 1}`}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          cursor: "pointer",
+                          borderRadius: "40px", // 모서리를 둥글게
+                        }}
+                        onClick={() => setSelectedImage(file.imageUrl)}
+                      />
+                    ))
+                  ) : (
                     <img
-                      key={fIndex}
-                      src={file.imageUrl}
-                      alt={`Store Image ${fIndex + 1}`}
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+                      alt="Default Store Image"
                       style={{
                         width: "50px",
                         height: "50px",
                         objectFit: "cover",
-                        cursor: "pointer",
                         borderRadius: "40px", // 모서리를 둥글게
                       }}
-                      onClick={() => setSelectedImage(file.imageUrl)}
                     />
-                  ))}
+                  )}
                 </div>
 
                 <p>
-                  매장상태 : {store.partnerState === "TRUE" ? "OPEN" : "Close"}
+                  매장상태 : {store.partnerState === "TRUE" ? "OPEN" : "WITING" ? "입점 취소중" : "CLOSE" }
                 </p>
 
                 <p>관리자 이름 : {store.partnerName}</p>
@@ -138,6 +200,12 @@ const UserPartnerPage = () => {
                   onClick={() => updatePost(store.id)}
                 >
                   수정
+                </Button>
+                <Button
+                  className="button-link"
+                  onClick={() => cancelPartner(store.userId)}
+                >
+                  입점취소
                 </Button>
               </div>
             ))}
