@@ -114,7 +114,7 @@ const PartnerWrite = () => {
   const sendEmail = e => {
     e.preventDefault();
 
-    emailjs.sendForm("service_fch3yro", "template_76jxtmb", form.current, "ORegbfZuljHYVzE1s").then(
+    emailjs.sendForm("service_fch3yro1", "template_76jxtmb1", "ORegbfZuljHYVzE1s1").then(
       result => {
         alert("성공적으로 이메일이 전송되었습니다.");        
       },
