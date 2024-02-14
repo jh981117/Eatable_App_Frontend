@@ -58,11 +58,13 @@ const EatableApp = () => {
               path="/googleMap"
               element={
                 // <AdminRoute>
-                <GoogleMap/>
+                <GoogleMap />
                 // </AdminRoute>
               }
             ></Route>
+
             <Route            
+
               path="/partnerwrite/:userId"
               element={
                 // <AdminRoute>
@@ -157,7 +159,7 @@ const EatableApp = () => {
 
 
 
-              {/* 민호 */}
+            {/* 민호 */}
             <Route path="/reviewlist" Component={ReviewList}></Route>
             <Route path="/eatabletimeline" Component={EatableTimeLine}></Route>
             <Route path="/detailtab" Component={DetailTab}></Route>
@@ -165,7 +167,7 @@ const EatableApp = () => {
             <Route path="/reviewwrite" Component={ReviewWrite}></Route>
             <Route path="/reviewdetail" Component={ReviewDetail}></Route>
             <Route path="/userpartnerpage" Component={UserPartnerPage}></Route>
-          
+
 
 
 
