@@ -13,11 +13,11 @@ import { useNavigate } from "react-router-dom";
 
 const ApplyList = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedList, setSelectedList] = useState(null); // 선택된 항목 상태 추가
   const [lists, setLists] = useState([]);
-  const [index, setIndex] = useState(null); // 선택된 행의 인덱스 상태 추가
   const [selectedState, setSelectedState] = useState("ALL");
-  const [disable, setDisable] = useState( JSON.parse(localStorage.getItem("disableState")) || [])
-  
+  const [disable, setDisable] = useState(JSON.parse(localStorage.getItem("disableState")) || []);
+
   const navi = useNavigate();
 
   const update = (id) => {
@@ -53,37 +53,39 @@ const ApplyList = () => {
       }
     });
   };
-  const handleClose = () => {
-    setModalOpen(false);
-  };
 
-  const handleOpen = (index) => {
+  const handleOpenModal = (list) => {
+    setSelectedList(list);
     setModalOpen(true);
-    setIndex(index);
   };
 
-  const handleReject = (index) => {
-    const updatedList = [...lists];
-    updatedList[index].partnerReqState = "접수 거절";
-    setLists(updatedList);
-    rejectUpdate(updatedList[index].id);
-  };
-
-  const handleApprove = () => {
-    const updatedList = [...lists];
-    updatedList[index].partnerReqState = "접수 승인";
-    setLists(updatedList);
-    update(updatedList[index].id);
+  const handleCloseModal = () => {
     setModalOpen(false);
-   
+  };
+
+  const handleReject = (id) => {
+    const updatedList = lists.map((item) =>
+      item.id === id ? { ...item, partnerReqState: "접수 거절" } : item
+    );
+    setLists(updatedList);
+    rejectUpdate(id);
+    handleCloseModal();
+  };
+
+  const handleApprove = (id) => {
+    const updatedList = lists.map((item) =>
+      item.id === id ? { ...item, partnerReqState: "접수 승인" } : item
+    );
+    setLists(updatedList);
+    update(id);
+    handleCloseModal();
   };
 
   const handleSelectChange = (e) => {
     setSelectedState(e.target.value);
   };
-  
+
   useEffect(() => {
-   
     const disableState = JSON.parse(localStorage.getItem("disableState"));
     if (disableState) {
       setDisable(disableState);
@@ -119,41 +121,42 @@ const ApplyList = () => {
         setLists(reqList);
         console.log(reqList);
       })
-      .catch((error) => console.error("Error fetching data:", error));  
-    
-  },[]);
- 
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("disableState", JSON.stringify(disable));
   }, [disable]);
+
   // 선택된 상태에 따라 리스트 필터링
   const filteredLists =
-    selectedState === "ALL"? lists : lists.filter((item) => item.partnerReqState === selectedState);
+    selectedState === "ALL"
+      ? lists
+      : lists.filter((item) => item.partnerReqState === selectedState);
 
-  console.log(filteredLists, "1111");
-  
-    const clickUserId = (userId, index) => {
-      setDisable((prevDisable) => ({
-        ...prevDisable,
-        [index]: true,
-      }));
-  
-      // Redirect after setting disable
-      setTimeout(() => {
-        navi(`/partnerwrite/${userId}`);
-      }, 0);
-  
-      console.log(userId);
-    };
-  
-  console.log(filteredLists, "이건가");
+  const clickUserId = (userId, id) => {
+    setDisable((prevDisable) => ({
+      ...prevDisable,
+      [id]: true,
+    }));
+
+    // Redirect after setting disable
+    setTimeout(() => {
+      navi(`/partnerwrite/${userId}`);
+    }, 0);
+
+    console.log(userId);
+  };
 
   return (
     <div>
       <Container>
         <Row>
           <Col>
-            <Form.Select style={{ width: "13%" }} onChange={handleSelectChange}>
+            <Form.Select
+              style={{ width: "13%" }}
+              onChange={handleSelectChange}
+            >
               <option value="ALL">모두 보기</option>
               <option value="접수 대기중">접수 대기중</option>
               <option value="접수 승인">접수 승인</option>
@@ -172,21 +175,24 @@ const ApplyList = () => {
                   <th>상태</th>
                   <th>전화번호</th>
                   <th>신청날짜</th>
-                  <th>Y/N</th>
+                  <th>유저아이디</th>
                 </tr>
               </thead>
 
               <tbody>
-                {filteredLists.map((list, index) => (
-                  <tr key={index}>
+                {filteredLists.map((list) => (
+                  <tr key={list.id}>
                     <td>{list.id}</td>
                     <td>{list.storeName}</td>
                     <td>{list.managerName}</td>
-
                     <td
                       style={{
                         color:
-                          list.partnerReqState === "접수 거절"? "red": list.partnerReqState === "접수 승인"? "green": "blue",
+                          list.partnerReqState === "접수 거절"
+                            ? "red"
+                            : list.partnerReqState === "접수 승인"
+                            ? "green"
+                            : "blue",
                       }}
                     >
                       {list.partnerReqState}
@@ -198,8 +204,8 @@ const ApplyList = () => {
                       {list.partnerReqState === "접수 승인" && (
                         <Button
                           variant="outline-success me-2"
-                          onClick={() => clickUserId(list.userId,index)}      
-                          disabled={disable[index]}                                          
+                          onClick={() => clickUserId(list.userId, list.id)}
+                          disabled={disable[list.id]}
                         >
                           입점신청
                         </Button>
@@ -208,13 +214,13 @@ const ApplyList = () => {
                         <>
                           <Button
                             variant="outline-primary me-2"
-                            onClick={() => handleOpen(index)}
+                            onClick={() => handleOpenModal(list)}
                           >
                             승인
                           </Button>
                           <Button
                             variant="outline-danger"
-                            onClick={() => handleReject(index)}
+                            onClick={() => handleReject(list.id)}
                           >
                             거절
                           </Button>
@@ -229,15 +235,15 @@ const ApplyList = () => {
         </Row>
       </Container>
 
-      <Modal show={modalOpen}>
+      <Modal show={modalOpen} onHide={handleCloseModal}>
         <Modal.Body>정말 승인 하시겠습니까?</Modal.Body>
         <Modal.Footer>
-          <Form>          
-            <Button variant="outline-primary me-2" onClick={handleApprove}>
+          <Form>
+            <Button variant="outline-primary me-2" onClick={() => handleApprove(selectedList.id)}>
               확인
             </Button>
           </Form>
-          <Button variant="outline-secondary" onClick={handleClose}>
+          <Button variant="outline-secondary" onClick={handleCloseModal}>
             닫기
           </Button>
         </Modal.Footer>
