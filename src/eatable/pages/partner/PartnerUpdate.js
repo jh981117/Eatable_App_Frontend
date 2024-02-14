@@ -143,6 +143,24 @@ const PartnerUpdate = () => {
                     ...prevPost,
                     fileList: newImageList
                 }));
+                fetch(`http://localhost:8080/api/partner/remove/${imageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 이미지 삭제 성공 시, 화면에서 업데이트
+                        console.log('이미지 삭제 성공');
+                    } else {
+                        // 이미지 삭제 실패
+                        console.error('이미지 삭제 실패');
+                    }
+                })
+                .catch(error => {
+                    console.error('이미지 삭제 중 오류 발생:', error);
+                });
 
                 //     fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
                 //         method: 'PUT',
