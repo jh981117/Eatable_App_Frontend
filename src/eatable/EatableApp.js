@@ -62,9 +62,10 @@ const EatableApp = () => {
                 // </AdminRoute>
               }
             ></Route>
-            <Route
-              path="/partnerwrite/:userId"
 
+            <Route            
+
+              path="/partnerwrite/:userId"
               element={
                 // <AdminRoute>
                 <PartnerWrite />

@@ -182,7 +182,9 @@ const GoogleMap = () => {
 
 
     return (
-        <div ref={mapRef} style={{ height: "800px", width: "100%" }}>
+
+        <div ref={mapRef} style={{ height: "500px", width: "100%" }}>
+
             {/* 여기에 지도가 표시됩니다. */}
         </div>
     );

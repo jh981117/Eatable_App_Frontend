@@ -114,10 +114,9 @@ const PartnerWrite = () => {
   const sendEmail = e => {
     e.preventDefault();
 
-    emailjs.sendForm("service_fch3yro1", "template_76jxtmb1", form.current, "ORegbfZuljHYVzE1s1").then(
+    emailjs.sendForm("service_fch3yro1", "template_76jxtmb1", "ORegbfZuljHYVzE1s1").then(
       result => {
-        alert("성공적으로 이메일이 전송되었습니다.");
-        form.current.reset();
+        alert("성공적으로 이메일이 전송되었습니다.");        
       },
       error => {
         console.log(error.text);
@@ -476,7 +475,7 @@ const PartnerWrite = () => {
               name="message"
               value="부트스트랩 이게 맞냐 어?"
             />
-            <button type="submit" className="button-link" onClick={sendEmail}>
+            <button type="submit" className="button-link" onClick={(e) => {handleSubmit(e); sendEmail(e);}}>
               작성완료
             </button>
           </Form>
