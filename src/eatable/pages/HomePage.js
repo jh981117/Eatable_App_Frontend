@@ -8,6 +8,17 @@ const HomePage = () => {
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [imageIndex, setImageIndex] = useState(0); // 이미지 인덱스 상태
+  const images = [
+    "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877698462-111.png",
+    "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877700672-222.png",
+  ]; // 이미지 URL 배열
+
+  const changeImage = () => {
+    setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
+  };
+
+  console.log(partners);
   useEffect(() => {
     const loadPartners = async () => {
       if (isLoading || !hasMore) return;
@@ -62,31 +73,60 @@ const HomePage = () => {
   return (
     <Container className="d-flex flex-column align-items-center mt-5">
       {partners.map((partner) => (
-        <Link
-          to={`/store/${partner.id}`}
+        <div
           key={partner.id}
           className="text-center mb-3"
-          style={{ width: "100%", textDecoration: "none", color: "inherit" }}
+          style={{ width: "100%" }}
         >
+          {/* 이미지 섹션 */}
           <Image
-            src={partner.fileList[0]?.imageUrl}
+            src={
+              partner.fileList[0]
+                ? partner.fileList[0]?.imageUrl
+                : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+            }
             alt="Partner"
             style={{
-              width: "400px",
-              height: "400px",
+              width: "200px", // 이미지 크기 조정
+              height: "200px",
               borderRadius: "5%",
               objectFit: "cover",
+              marginBottom: "10px",
             }}
           />
-          <p className="mt-2">{partner.storeName}</p>
-        </Link>
+          <Link
+            to={`/store/${partner.id}`}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <h3>{partner.storeName}</h3>
+          </Link>
+          <div>평점</div>
+          <div className="d-flex justify-content-between align-items-center">
+            <span>조회수: {partner.viewCnt}</span>
+            <button onClick={changeImage}>이미지 변경</button>
+          </div>
+          {/* 이미지 변경 섹션 */}
+          <div className="mt-2">
+            <Image
+              src={images[imageIndex]}
+              alt="Dynamic Image"
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "5%",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+        </div>
       ))}
+
       {isLoading && (
         <div className="d-flex justify-content-center">
           <Spinner animation="border" />
         </div>
       )}
-      {!isLoading && !hasMore && <p>No more partners</p>}
+      {!isLoading && !hasMore && <p>END</p>}
     </Container>
   );
 };

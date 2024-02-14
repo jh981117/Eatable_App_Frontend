@@ -9,6 +9,7 @@ import SignoutPage from "./SignoutPage";
 import { jwtDecode } from "jwt-decode";
 import PartnerDetail from "../partner/PartnerDetail";
 import UserPartnerPage from "./UserPartnerPage";
+import { de } from "date-fns/locale";
 
 
 const checkPartnerRole = () => {
