@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Card, Container, Image, Spinner } from "react-bootstrap";
+import {  Container, Image, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
+import GoogleMap from "./partner/GoogleMap";
 
 const HomePage = () => {
   const [partners, setPartners] = useState([]);
@@ -71,44 +72,59 @@ const HomePage = () => {
   }, [hasMore, isLoading]);
 
   return (
-    <Container className="d-flex flex-column align-items-center mt-5">
-      {partners.map((partner) => (
-        <div
-          key={partner.id}
-          className="text-center mb-3"
-          style={{ width: "100%" }}
-        >
-          {/* 이미지 섹션 */}
-          <Image
-            src={
-              partner.fileList[0]
-                ? partner.fileList[0]?.imageUrl
-                : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
-            }
-            alt="Partner"
-            style={{
-              width: "200px", // 이미지 크기 조정
-              height: "200px",
-              borderRadius: "5%",
-              objectFit: "cover",
-              marginBottom: "10px",
-            }}
-          />
-          <Link
-            to={`/store/${partner.id}`}
-            style={{ textDecoration: "none", color: "inherit" }}
+    <div>
+      <Container>
+        <GoogleMap />
+        {partners.map((partner) => (
+          <div
+            key={partner.id}
+            className="text-center mb-3"
+            style={{ width: "100%" }}
           >
-            <h3>{partner.storeName}</h3>
-          </Link>
-          <div>평점</div>
-          <div className="d-flex justify-content-between align-items-center">
-            <span>조회수: {partner.viewCnt}</span>
-            <button onClick={changeImage}>이미지 변경</button>
-          </div>
-          {/* 이미지 변경 섹션 */}
-          <div className="mt-2">
+            {/* 이미지 섹션 */}
+
             <Image
-              src={images[imageIndex]}
+              src={
+                partner.fileList[0]
+                  ? partner.fileList[0]?.imageUrl
+                  : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+              }
+              alt="Partner"
+              style={{
+                width: "200px", // 이미지 크기 조정
+                height: "200px",
+                borderRadius: "5%",
+                objectFit: "cover",
+                marginBottom: "10px",
+              }}
+            />
+
+            <Link
+              to={`/store/${partner.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <h3>{partner.storeName}</h3>
+            </Link>
+            <div>평점</div>
+            <div className="d-flex justify-content-between align-items-center">
+              <span>조회수: {partner.viewCnt}</span>
+            </div>
+            {/* 이미지 변경 섹션 */}
+            <div className="mt-2">
+                <Image
+                  onClick={changeImage}
+                  src={images[imageIndex]}
+                  alt="Dynamic Image"
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "5%",
+                    objectFit: "cover",
+                  }}
+                />
+            </div>
+            <Image
+              src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
               alt="Dynamic Image"
               style={{
                 width: "30px",
@@ -118,16 +134,16 @@ const HomePage = () => {
               }}
             />
           </div>
-        </div>
-      ))}
+        ))}
 
-      {isLoading && (
-        <div className="d-flex justify-content-center">
-          <Spinner animation="border" />
-        </div>
-      )}
-      {!isLoading && !hasMore && <p>END</p>}
-    </Container>
+        {isLoading && (
+          <div className="d-flex justify-content-center">
+            <Spinner animation="border" />
+          </div>
+        )}
+        {!isLoading && !hasMore && <p>END</p>}
+      </Container>
+    </div>
   );
 };
 

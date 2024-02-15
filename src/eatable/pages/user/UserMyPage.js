@@ -18,6 +18,7 @@ const checkPartnerRole = () => {
 
   try {
     const decoded = jwtDecode(token); // 토큰 디코딩
+    console.log(decoded)
     const roles = decoded.auth ? decoded.auth.split(",") : [];
     console.log(decoded)
     return roles.includes("ROLE_PARTNER"); // ROLE_PARTNER 권한이 있는지 확인
