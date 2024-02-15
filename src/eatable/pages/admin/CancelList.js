@@ -1,109 +1,136 @@
-import React, {  useState, useEffect } from 'react';
-import { Container, Row, Col,Button, Table, Form} from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Table,
+  Form,
+  Pagination,
+} from "react-bootstrap";
 
+const CancelList = () => {
+  const [lists, setLists] = useState([]);
+  const [selectedState, setSelectedState] = useState("ALL");
+  const [page, setPage] = useState(0); // 현재 페이지
+  const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
+  const number = 2;
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber);
+  };
+  const cancleUpdate = (id) => {
+    fetch(`http://localhost:8080/api/req/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+      body: JSON.stringify({ partnerReqState: "CLOSE" }),
+    }).then((response) => {
+      console.log(`response`, response);
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        return null;
+      }
+    });
+  };
 
+  const cancelOk = (id) => {
+    const updatedList = lists.map((item) =>
+      item.id === id ? { ...item, partnerReqState: "접수 완료" } : item
+    );
+    const listId = updatedList.find((item) => item.id === id);
+    console.log(listId);
+    setLists(updatedList);
+    cancleUpdate(id);
+    console.log(updatedList);
 
-const CancelList = () => {  
-    const [lists, setLists] = useState([]);   
-    const [selectedState, setSelectedState] = useState('ALL');
-   const cancleUpdate = (id) => {          
-      fetch(`http://localhost:8080/api/req/update/${id}`, {
-        method:'PUT',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-        },
-        body: JSON.stringify({partnerReqState: 'CLOSE'}),
+    fetch(`http://localhost:8080/api/partner/stateUpdate/${listId.userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+      body: JSON.stringify({ partnerState: false }),
+    }).then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        return null;
+      }
+    });
+  };
+
+  const handleSelectChange = (e) => {
+    setSelectedState(e.target.value);
+  };
+
+  useEffect(() => {
+    fetch(`http://localhost:8080/api/req/totalListPage?page=${page}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        return response.json(); // 응답에서 JSON 데이터 추출
       })
-        .then((response) => {
-          console.log(`response`, response);
-          if (response.status === 200) {       
-            return response.json();
-          } else {
-            return null;
+      .then((data) => {
+        const filteredData = data.content.filter((item) =>
+          ["CLOSE", "CLOSE_READY"].includes(item.partnerReqState)
+        );
+        const stateListData = filteredData.map((item) => {
+          switch (item.partnerReqState) {
+            case "CLOSE_READY":
+              return { ...item, partnerReqState: "취소 대기중" };
+            case "CLOSE":
+              return { ...item, partnerReqState: "취소 승인" };
+            default:
+              return null;
           }
-        })
-    };
+        });
+        setLists(stateListData);
+        console.log("크기||||||", filteredData.length); // switch를 통과하는 항목의 수
+        setTotalPages(Math.ceil(filteredData.length / number)); // 총 페이지 수 설정
+        console.log("||||", data); // 필터링된 항목들을 기반으로 페이지 수 설정
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [page]);
 
-    const cancelOk = (index) => {
-      const updatelist = [...lists];
-      updatelist[index].partnerReqState = "CLOSE"
-      setLists(updatelist);
-      cancleUpdate(updatelist[index].id);
-      
-      // const partnerId = updatelist[index].partnerId;
-      // fetch(`http://localhost:8080/api/partner/update/${partnerId}`,{
-      //    method: 'PUT',
-      //    headers: {
-      //     'Content-Type': 'application/json;charset=utf-8',
-      //    },
-      //    body: JSON.stringify({partnerState: false}),
-      // })
-      // .then((response) => {
-      //   if(response.status === 200){
-      //     return response.json();
-      //   } else {
-      //     return null;
-      //   }
-      // })
-    } 
+  const filteredLists =
+    selectedState === "ALL"
+      ? lists
+      : lists.filter((item) => item.partnerReqState === selectedState);
 
-    const handleSelectChange = (e) => {
-      setSelectedState(e.target.value);
-    };
+  return (
+    <div>
+      <Container>
+        <Row>
+          <Col>
+            <Form.Select style={{ width: "13%" }} onChange={handleSelectChange}>
+              <option value="ALL">모두 보기</option>
+              <option value="취소 대기중">취소 대기중</option>
+              <option value="취소 승인">접수 승인</option>
+            </Form.Select>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Table striped bordered hover size="sm" className="list_table">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>업체명</th>
+                  <th>문의자명</th>
+                  <th>상태</th>
+                  <th>전화번호</th>
+                  <th>신청날짜</th>
+                  <th>Y/N</th>
+                </tr>
+              </thead>
 
-    useEffect(()=>{
-      Promise.all([
-            fetch("http://localhost:8080/api/req/stateList/CLOSE_READY"),
-            fetch("http://localhost:8080/api/req/stateList/CLOSE")
-          ])   
-          .then(responses =>Promise.all(responses.map(response => response.json())))
-          .then(data => {
-            const list1 = data[0].map(i => ({...i,
-              partnerReqState: i.partnerReqState === 'CLOSE_READY' ? '취소 대기중' : i.partnerReqState
-             }));
-            const list2 = data[1].map(i => ({...i,
-              partnerReqState: i.partnerReqState === 'CLOSE' ? '취소 승인' : i.partnerReqState
-            }));
-             const cancelList = [...list1,...list2];
-              setLists(cancelList);
-          });
-  },[])
-
-  const filteredLists = selectedState === 'ALL' ? lists : lists.filter(item => item.partnerReqState === selectedState);
-
-    return (
-      <div>
-        <Container>
-          <Row>
-            <Col>
-              <Form.Select
-                style={{ width: "13%" }}
-                onChange={handleSelectChange}
-              >
-                <option value="ALL">모두 보기</option>
-                <option value="취소 대기중">취소 대기중</option>
-                <option value="취소 승인">접수 승인</option>
-              </Form.Select>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Table striped bordered hover size="sm" className="list_table">
-                <thead>
-                  <tr>
-                    <th>id</th>
-                    <th>업체명</th>
-                    <th>문의자명</th>
-                    <th>상태</th>
-                    <th>전화번호</th>
-                    <th>신청날짜</th>
-                    <th>Y/N</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {filteredLists.map((list, index) => (
-                    <tr key={index}>
+              <tbody>
+                {filteredLists
+                  .slice(page * number, (page + 1) * number)
+                  .map((list) => (
+                    <tr key={list.id}>
                       <td>{list.id}</td>
                       <td>{list.storeName}</td>
                       <td>{list.managerName}</td>
@@ -127,7 +154,7 @@ const CancelList = () => {
                             <>
                               <Button
                                 variant="outline-primary"
-                                onClick={() => cancelOk(index)}
+                                onClick={() => cancelOk(list.id)}
                               >
                                 승인
                               </Button>
@@ -137,13 +164,38 @@ const CancelList = () => {
                       </td>
                     </tr>
                   ))}
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-        </Container>
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
+      </Container>
+
+      <div
+        className="justify-content-center"
+        style={{ display: "flex", justifyContent: "center" }}
+      >
+        <Pagination>
+          <Pagination.Prev
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 0}
+          />
+          {Array.from(Array(totalPages).keys()).map((pageNumber) => (
+            <Pagination.Item
+              key={pageNumber}
+              active={pageNumber === page}
+              onClick={() => handlePageChange(pageNumber)}
+            >
+              {pageNumber + 1}
+            </Pagination.Item>
+          ))}
+          <Pagination.Next
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages - 1}
+          />
+        </Pagination>
       </div>
-    );
+    </div>
+  );
 };
 
 export default CancelList;
