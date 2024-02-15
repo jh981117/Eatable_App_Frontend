@@ -79,9 +79,7 @@ const CancelList = () => {
             const totalPages = Math.ceil(filteredData.length / number);
             setTotalPages(totalPages);
             console.log("",totalPages)
-          setPage(0)
-  
-  
+          setPage(0) 
           })
           .catch((error) => {
             console.error('Error fetching data:', error);
