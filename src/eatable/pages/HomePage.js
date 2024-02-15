@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {  Container, Image, Spinner } from "react-bootstrap";
+import {  Button, Container, Image, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
 import GoogleMap from "./partner/GoogleMap";
 
 const HomePage = () => {
+  const [showMap, setShowMap] = useState(false);
   const [partners, setPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,9 +17,13 @@ const HomePage = () => {
   ]; // 이미지 URL 배열
 
   const changeImage = () => {
+
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
   };
 
+  const toggleMapDisplay = () => {
+    setShowMap(!showMap);
+  };
   console.log(partners);
   useEffect(() => {
     const loadPartners = async () => {
@@ -74,7 +79,11 @@ const HomePage = () => {
   return (
     <div>
       <Container>
-        <GoogleMap />
+        <Button onClick={toggleMapDisplay}>지도 표시</Button>
+        {showMap && <GoogleMap />}{" "}
+        {/* 조건부 렌더링으로 GoogleMap 컴포넌트 표시 제어 */}
+
+
         {partners.map((partner) => (
           <div
             key={partner.id}
@@ -111,17 +120,17 @@ const HomePage = () => {
             </div>
             {/* 이미지 변경 섹션 */}
             <div className="mt-2">
-                <Image
-                  onClick={changeImage}
-                  src={images[imageIndex]}
-                  alt="Dynamic Image"
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "5%",
-                    objectFit: "cover",
-                  }}
-                />
+              <Image
+                onClick={changeImage}
+                src={images[imageIndex]}
+                alt="Dynamic Image"
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "5%",
+                  objectFit: "cover",
+                }}
+              />
             </div>
             <Image
               src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
@@ -135,7 +144,6 @@ const HomePage = () => {
             />
           </div>
         ))}
-
         {isLoading && (
           <div className="d-flex justify-content-center">
             <Spinner animation="border" />
