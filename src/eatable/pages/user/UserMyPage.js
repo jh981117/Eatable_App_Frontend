@@ -7,9 +7,7 @@ import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import SignoutPage from "./SignoutPage";
 import { jwtDecode } from "jwt-decode";
-import PartnerDetail from "../partner/PartnerDetail";
 import UserPartnerPage from "./UserPartnerPage";
-import { de } from "date-fns/locale";
 
 
 const checkPartnerRole = () => {
@@ -57,8 +55,7 @@ const isPartner = () => {
         return <ReviewPage />;
       case "userFollow":
         return <FollowPage />;
-      case "signout":
-        return <SignoutPage />;
+
       case "store":
         return <UserPartnerPage />;
       default:
@@ -101,12 +98,7 @@ const isPartner = () => {
 
 
 
-            <Button
-              onClick={() => setActiveTab("signout")}
-              variant={activeTab === "signout" ? "primary" : "light"}
-            >
-              회원탈퇴
-            </Button>
+           
           </Nav>
         </Tab.Container>
       </Col>
