@@ -7,6 +7,7 @@ import ApplyList from './ApplyList';
 import CancelList from './CancelList';
 import BarChartNews from './BarChartNews';
 import { useNavigate } from 'react-router-dom';
+import History from './History';
 
 const AdminPage = () => {  
   const navigate =useNavigate();
@@ -45,6 +46,14 @@ const AdminPage = () => {
               <Container>       
                 <Row >
                   <Col className="d-flex justify-content-center mb-4" ><LineChart /></Col>
+                </Row>
+              </Container>  
+            </Tab>
+            <Tab eventKey="history" title="히스토리">
+              <h3>히스토리</h3>
+              <Container>       
+                <Row >
+                  <Col className="d-flex justify-content-center mb-4" ><History /></Col>
                 </Row>
               </Container>  
             </Tab>
