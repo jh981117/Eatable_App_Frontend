@@ -184,7 +184,10 @@ const cancelPartner = async (userId) => {
                 </div>
 
                 <p>
-                  매장상태 : {store.partnerState === "TRUE" ? "OPEN" : "WITING" ? "입점 취소중" : "CLOSE" }
+                  매장상태 : {store.partnerState === "TRUE" ? "OPEN" 
+                  : store.partnerState === "WAITING" ? "입점 취소중"
+                   : store.partnerState === "FALSE" ? "CLOSE" : ""
+ }
                 </p>
 
                 <p>관리자 이름 : {store.partnerName}</p>
