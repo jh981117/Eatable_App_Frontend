@@ -35,8 +35,8 @@ const CancelList = () => {
       item.id === id ? { ...item, partnerReqState: "접수 완료" } : item
     );
     const listId = updatedList.find(item => item.id === id);
-console.log(listId)
-    setLists(updatedList);
+    console.log(listId)
+      setLists(updatedList);
       cancleUpdate(id);
       console.log(updatedList)    
    
@@ -56,8 +56,58 @@ console.log(listId)
       })
     } 
 
-    const handleSelectChange = (e) => {
-      setSelectedState(e.target.value);
+    const handleSelectChange = (e) => {  
+      let url =`http://localhost:8080/api/req/totalListPage?page=${page}`;
+      let selectFilter;
+    
+      if (e === "취소 대기중") {
+        selectFilter = "CLOSE_READY";
+      } else if (e === "취소 승인") {
+        selectFilter = "CLOSE"; 
+      }
+      if (selectFilter) {
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch data');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const filteredData = data.content.filter(item => item.partnerReqState === selectFilter);
+            console.log("",filteredData)
+            const totalPages = Math.ceil(filteredData.length / number);
+            setTotalPages(totalPages);
+            console.log("",totalPages)
+          setPage(0)
+  
+  
+          })
+          .catch((error) => {
+            console.error('Error fetching data:', error);
+          });
+      } else {
+        fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const filteredData = data.content.filter(item => ["CLOSE", "CLOSE_READY"].includes(item.partnerReqState));
+          console.log("",filteredData)
+          const totalPages = Math.ceil(filteredData.length / number);
+          setTotalPages(totalPages);
+          console.log("",totalPages)
+          setPage(0)
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+      }
+    
+      setSelectedState(e);
     };
 
     useEffect(() => {   
@@ -87,7 +137,7 @@ console.log(listId)
           console.log("||||", data); // 필터링된 항목들을 기반으로 페이지 수 설정                  
         })
         .catch((error) => console.error("Error fetching data:", error));
-    }, [page]);
+    }, []);
   
   const filteredLists = selectedState === 'ALL' ? lists : lists.filter(item => item.partnerReqState === selectedState);
 
@@ -98,11 +148,11 @@ console.log(listId)
             <Col>
               <Form.Select
                 style={{ width: "13%" }}
-                onChange={handleSelectChange}
+                onChange={(e)=>handleSelectChange(e.target.value)}
               >
                 <option value="ALL">모두 보기</option>
                 <option value="취소 대기중">취소 대기중</option>
-                <option value="취소 승인">접수 승인</option>
+                <option value="취소 승인">취소 승인</option>
               </Form.Select>
             </Col>
           </Row>
@@ -122,7 +172,7 @@ console.log(listId)
                 </thead>
 
                 <tbody>
-                  {filteredLists.slice(page * number, (page + 1) * number).map((list) =>(
+                  {filteredLists.sort((a,b)=> b.id - a.id).slice(page * number, (page + 1) * number).map((list) =>(
                     <tr key={list.id}>
                       <td>{list.id}</td>
                       <td>{list.storeName}</td>

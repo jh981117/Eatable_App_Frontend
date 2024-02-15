@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import { FixedSizeList as List } from 'react-window';
 import {
   Container,
   Row,
@@ -10,7 +9,6 @@ import {
   Table,
   Pagination,
 } from "react-bootstrap";
-
 import { useNavigate } from "react-router-dom";
 import zIndex from "@material-ui/core/styles/zIndex";
 
@@ -246,7 +244,7 @@ const ApplyList = () => {
               </thead>
 
               <tbody>
-                {filteredLists.slice(page * number, (page + 1) * number).map((list) =>(
+                {filteredLists.sort((a,b)=> b.id - a.id).slice(page * number, (page + 1) * number).map((list) =>(
                   <tr key={list.id}>
                     <td>{list.id}</td>
                     <td>{list.storeName}</td>
@@ -254,11 +252,7 @@ const ApplyList = () => {
                     <td
                       style={{
                         color:
-                          list.partnerReqState === "접수 거절"
-                            ? "red"
-                            : list.partnerReqState === "접수 승인"
-                            ? "green"
-                            : "blue",
+                          list.partnerReqState === "접수 거절"? "red": list.partnerReqState === "접수 승인"? "green": "blue",
                       }}
                     >
                       {list.partnerReqState}
@@ -276,25 +270,26 @@ const ApplyList = () => {
                           입점신청
                         </Button>
                       )}
-                      {list.partnerReqState === "접수 대기중" && (
-                        <>
-                          <Button
-                            variant="outline-primary me-2"
-                            onClick={() => handleOpenModal(list)}
-                          >
-                            승인
-                          </Button>
-                          <Button
-                            variant="outline-danger"
-                            onClick={() => handleReject(list.id)}
-                          >
-                            거절
-                          </Button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                     
+                        {list.partnerReqState === "접수 대기중" && (
+                          <>
+                            <Button
+                              variant="outline-primary me-2"
+                              onClick={() => handleOpenModal(list)}
+                            >
+                              승인
+                            </Button>
+                            <Button
+                              variant="outline-danger"
+                              onClick={() => handleReject(list.id)}
+                            >
+                              거절
+                            </Button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </Table>
           
@@ -314,13 +309,14 @@ const ApplyList = () => {
             </Pagination>
           </div>
 
-
-
       <Modal show={modalOpen} onHide={handleCloseModal}>
         <Modal.Body>정말 승인 하시겠습니까?</Modal.Body>
         <Modal.Footer>
           <Form>
-            <Button variant="outline-primary me-2" onClick={() => handleApprove(selectedList.id)}>
+            <Button
+              variant="outline-primary me-2"
+              onClick={() => handleApprove(selectedList.id)}
+            >
               확인
             </Button>
           </Form>
