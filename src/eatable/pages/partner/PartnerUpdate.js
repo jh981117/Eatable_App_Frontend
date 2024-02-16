@@ -199,8 +199,137 @@ const PartnerUpdate = () => {
       });
   }, []);
 
+
+    const handleImageClick = (imageId) => {
+        const fileInput = document.createElement('input');
+        fileInput.setAttribute('type', 'file');
+        fileInput.setAttribute('accept', 'image/*');
+        fileInput.click();
+
+        // 파일 선택 이벤트 리스너
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = () => {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                // 이미지 업데이트 요청 전에 이미지 리스트를 업데이트합니다.
+                const newImageList = post.fileList.map(image => {
+                    if (image.id === imageId) {
+                        return { id: imageId, imageUrl: reader.result };
+                    }
+                    return image;
+                });
+
+                setPost(prevPost => ({
+                    ...prevPost,
+                    fileList: newImageList
+                }));
+                fetch(`http://localhost:8080/api/partner/remove/${imageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 이미지 삭제 성공 시, 화면에서 업데이트
+                        console.log('이미지 삭제 성공');
+                    } else {
+                        // 이미지 삭제 실패
+                        console.error('이미지 삭제 실패');
+                    }
+                })
+                .catch(error => {
+                    console.error('이미지 삭제 중 오류 발생:', error);
+                });
+
+                //     fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
+                //         method: 'PUT',
+                //         body: formData,
+                //     })
+                //         .then(response => {
+                //             if (response.ok) {
+                //                 console.log('이미지 URL 업데이트 성공');
+                //             } else {
+                //                 console.error('이미지 URL 업데이트 실패');
+                //             }
+                //         })
+                //         .catch(error => {
+                //             console.error('이미지 URL 업데이트 중 오류 발생:', error);
+                //         });
+            };
+        };
+    };
+
+    useEffect(() => {
+
+        console.log('=====================================================');
+        console.log(post);
+        console.log('=====================================================');
+
+    }, [post]);
+
+    useEffect(() => {
+        fetch('http://localhost:8080/api/partner/detail/' + id)
+            .then((response) => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    return null;
+                }
+            })
+            .then((data) => {
+                if (data !== null) {
+                    console.log(data);
+                    setPost(data);
+
+                    // 여기서 주소 정보를 업데이트합니다.
+                    setPost(prevState => ({
+                        ...prevState,
+                        lat: data.address.lat,
+                        lng: data.address.lng,
+                        area: data.address.area,
+                        zipCode: data.address.zipCode
+                    }));
+                }
+            });
+    }, []);
+
+    const postUpdate = (e) => {
+        e.preventDefault();
+
+        let hasError = true;
+
+        const checkField = (fieldName, errorMessage) => {
+            if (post[fieldName] === null || post[fieldName] === '') {
+                setErrorMessages(prevErrors => ({
+                    ...prevErrors,
+                    [fieldName]: errorMessage,
+                }));
+                hasError = false;
+            }
+        };
+
+        // 호출 부분을 아래와 같이 변경합니다.
+        checkField('favorite', '업종은 반드시 골라야 합니다');
+        checkField('storeInfo', '가게 정보는 필수입니다');
+        checkField('tableCnt', '테이블 수는 필수입니다');
+        checkField('openTime', '영업 시간은 필수입니다');
+        checkField('reserveInfo', '예약 주의 사항은 필수입니다');
+        checkField('parking', '주차 정보는 필수입니다');
+        checkField('corkCharge', '콜키지 정보는 필수입니다');
+        checkField('dog', '애완견 정보는 필수입니다');
+
+        if (!hasError) {
+            return;
+        }
+
   const postUpdate = (e) => {
     e.preventDefault();
+
 
     let hasError = true;
 
