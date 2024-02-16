@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {  Button, Container, Image, Spinner } from "react-bootstrap";
+import { Button, Container, Image, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
 import GoogleMap from "./partner/GoogleMap";
+import Roulette from "./partner/Roulette";
 
 const HomePage = () => {
   const [showMap, setShowMap] = useState(false);
+  const [showRoulette, setShowRoulette] = useState(false);
   const [partners, setPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,13 +19,19 @@ const HomePage = () => {
   ]; // 이미지 URL 배열
 
   const changeImage = () => {
-
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
   };
 
-  const toggleMapDisplay = () => {
-    setShowMap(!showMap);
-  };
+const toggleMapDisplay = () => {
+  setShowMap(true); // 맵을 활성화
+  setShowRoulette(false); // 룰렛을 비활성화
+};
+
+const toggleRouletteDisplay = () => {
+  setShowMap(false); // 맵을 비활성화
+  setShowRoulette(true); // 룰렛을 활성화
+};
+
   console.log(partners);
   useEffect(() => {
     const loadPartners = async () => {
@@ -52,7 +60,7 @@ const HomePage = () => {
         } finally {
           setIsLoading(false);
         }
-      }, 1000); // 1초 지연 후 데이터 로딩
+      }, 500); // 1초 지연 후 데이터 로딩
     };
 
     loadPartners();
@@ -77,52 +85,80 @@ const HomePage = () => {
   }, [hasMore, isLoading]);
 
   return (
-    <div>
+    <div className="mx-auto" style={{ width: "700px", marginTop: "20px" }}>
       <Container>
-        <Button onClick={toggleMapDisplay}>지도 표시</Button>
-        {showMap && <GoogleMap />}{" "}
-        {/* 조건부 렌더링으로 GoogleMap 컴포넌트 표시 제어 */}
-
-
-        {partners.map((partner) => (
-          <div
-            key={partner.id}
-            className="text-center mb-3"
-            style={{ width: "100%" }}
-          >
-            {/* 이미지 섹션 */}
-
-            <Image
-              src={
-                partner.fileList[0]
-                  ? partner.fileList[0]?.imageUrl
-                  : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
-              }
-              alt="Partner"
-              style={{
-                width: "200px", // 이미지 크기 조정
-                height: "200px",
-                borderRadius: "5%",
-                objectFit: "cover",
-                marginBottom: "10px",
-              }}
-            />
-
-            <Link
-              to={`/store/${partner.id}`}
-              style={{ textDecoration: "none", color: "inherit" }}
+        <Image
+          src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051385932-map.png"
+          onClick={toggleMapDisplay}
+          style={{ width: "50px" }}
+        />
+        맛집지도
+        <Image
+          src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051794890-fortune.png"
+          onClick={toggleRouletteDisplay}
+          style={{ width: "50px" }}
+        />
+        룰렛추천
+        <div className="text-center mb-3" style={{ width: "700px" }}>
+          {showMap && <GoogleMap />} {showRoulette && <Roulette />}
+          {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
+          <hr />
+          <h3 className="text-center mb-3">Eatable 근처 맛집</h3>
+          <hr />
+          {partners.map((partner) => (
+            <div
+              key={partner.id}
+              className="text-center mb-3"
+              style={{ width: "100%" }}
             >
-              <h3>{partner.storeName}</h3>
-            </Link>
-            <div>평점</div>
-            <div className="d-flex justify-content-between align-items-center">
-              <span>조회수: {partner.viewCnt}</span>
-            </div>
-            {/* 이미지 변경 섹션 */}
-            <div className="mt-2">
+              {/* 이미지 섹션 */}
+              <Link
+                to={`/store/${partner.id}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                {/* 매장 사진 */}
+                <Image
+                  src={
+                    partner.fileList[0]
+                      ? partner.fileList[0]?.imageUrl
+                      : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+                  }
+                  alt="Partner"
+                  style={{
+                    width: "500px", // 이미지 크기 조정
+                    height: "500px",
+                    borderRadius: "5%",
+                    objectFit: "cover",
+                    marginBottom: "10px",
+                  }}
+                />
+                <h3>{partner.storeName}</h3>
+              </Link>
+              <div className="d-flex justify-content-between align-items-center">
+                {/* 조회수 */}
+                <span>
+                  <Image src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"></Image>
+                  {partner.viewCnt}
+                </span>
+              </div>
+              {/* 즐겨찾기 이미지 변경 */}
+              <div className="mt-2">
+                <Image
+                  onClick={changeImage}
+                  src={images[imageIndex]}
+                  alt="Dynamic Image"
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "5%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+
+              {/* 평점 */}
               <Image
-                onClick={changeImage}
-                src={images[imageIndex]}
+                src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
                 alt="Dynamic Image"
                 style={{
                   width: "30px",
@@ -132,24 +168,14 @@ const HomePage = () => {
                 }}
               />
             </div>
-            <Image
-              src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
-              alt="Dynamic Image"
-              style={{
-                width: "30px",
-                height: "30px",
-                borderRadius: "5%",
-                objectFit: "cover",
-              }}
-            />
-          </div>
-        ))}
-        {isLoading && (
-          <div className="d-flex justify-content-center">
-            <Spinner animation="border" />
-          </div>
-        )}
-        {!isLoading && !hasMore && <p>END</p>}
+          ))}
+          {isLoading && (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" />
+            </div>
+          )}
+          {!isLoading && !hasMore && <p>END</p>}
+        </div>
       </Container>
     </div>
   );
