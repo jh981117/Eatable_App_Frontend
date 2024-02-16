@@ -6,11 +6,9 @@ import BarChartNewp from './BarChartNewp';
 import ApplyList from './ApplyList';
 import CancelList from './CancelList';
 import BarChartNews from './BarChartNews';
-import { useNavigate } from 'react-router-dom';
 import History from './History';
 
-const AdminPage = () => {  
-  const navigate =useNavigate();
+const AdminPage = () => {    
     return (
         <div>
            <Tabs defaultActiveKey="apply">
