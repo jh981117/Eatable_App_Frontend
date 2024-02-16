@@ -1,11 +1,17 @@
 import React, {  useState, useEffect } from 'react';
-import { Container, Row, Col,Button, Table, Form} from 'react-bootstrap';
+import { Container, Row, Col,Button, Table, Form, Pagination} from 'react-bootstrap';
 
 
 
 const CancelList = () => {  
     const [lists, setLists] = useState([]);   
     const [selectedState, setSelectedState] = useState('ALL');
+    const [page, setPage] = useState(0); // 현재 페이지
+    const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
+    const number = 2;
+    const handlePageChange = (pageNumber) => {
+      setPage(pageNumber);
+    };
    const cancleUpdate = (id) => {          
       fetch(`http://localhost:8080/api/req/update/${id}`, {
         method:'PUT',
@@ -24,51 +30,113 @@ const CancelList = () => {
         })
     };
 
-    const cancelOk = (index) => {
-      const updatelist = [...lists];
-      updatelist[index].partnerReqState = "CLOSE"
-      setLists(updatelist);
-      cancleUpdate(updatelist[index].id);
-      
-      // const partnerId = updatelist[index].partnerId;
-      // fetch(`http://localhost:8080/api/partner/update/${partnerId}`,{
-      //    method: 'PUT',
-      //    headers: {
-      //     'Content-Type': 'application/json;charset=utf-8',
-      //    },
-      //    body: JSON.stringify({partnerState: false}),
-      // })
-      // .then((response) => {
-      //   if(response.status === 200){
-      //     return response.json();
-      //   } else {
-      //     return null;
-      //   }
-      // })
+    const cancelOk = (id) => {
+      const updatedList = lists.map((item) =>
+      item.id === id ? { ...item, partnerReqState: "접수 완료" } : item
+    );
+    const listId = updatedList.find(item => item.id === id);
+    console.log(listId)
+      setLists(updatedList);
+      cancleUpdate(id);
+      console.log(updatedList)    
+   
+      fetch(`http://localhost:8080/api/partner/stateUpdate/${listId.userId}`,{
+         method: 'PUT',
+         headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+         },
+         body: JSON.stringify({partnerState: false}),
+      })
+      .then((response) => {
+        if(response.status === 200){
+          return response.json();
+        } else {
+          return null;
+        }
+      })
     } 
 
-    const handleSelectChange = (e) => {
-      setSelectedState(e.target.value);
+    const handleSelectChange = (e) => {  
+      let url =`http://localhost:8080/api/req/totalListPage?page=${page}`;
+      let selectFilter;
+    
+      if (e === "취소 대기중") {
+        selectFilter = "CLOSE_READY";
+      } else if (e === "취소 승인") {
+        selectFilter = "CLOSE"; 
+      }
+      if (selectFilter) {
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch data');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const filteredData = data.content.filter(item => item.partnerReqState === selectFilter);
+            console.log("",filteredData)
+            const totalPages = Math.ceil(filteredData.length / number);
+            setTotalPages(totalPages);
+            console.log("",totalPages)
+          setPage(0) 
+          })
+          .catch((error) => {
+            console.error('Error fetching data:', error);
+          });
+      } else {
+        fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const filteredData = data.content.filter(item => ["CLOSE", "CLOSE_READY"].includes(item.partnerReqState));
+          console.log("",filteredData)
+          const totalPages = Math.ceil(filteredData.length / number);
+          setTotalPages(totalPages);
+          console.log("",totalPages)
+          setPage(0)
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+      }
+    
+      setSelectedState(e);
     };
 
-    useEffect(()=>{
-      Promise.all([
-            fetch("http://localhost:8080/api/req/stateList/CLOSE_READY"),
-            fetch("http://localhost:8080/api/req/stateList/CLOSE")
-          ])   
-          .then(responses =>Promise.all(responses.map(response => response.json())))
-          .then(data => {
-            const list1 = data[0].map(i => ({...i,
-              partnerReqState: i.partnerReqState === 'CLOSE_READY' ? '취소 대기중' : i.partnerReqState
-             }));
-            const list2 = data[1].map(i => ({...i,
-              partnerReqState: i.partnerReqState === 'CLOSE' ? '취소 승인' : i.partnerReqState
-            }));
-             const cancelList = [...list1,...list2];
-              setLists(cancelList);
+    useEffect(() => {   
+    
+      fetch(`http://localhost:8080/api/req/totalListPage?page=${page}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          return response.json(); // 응답에서 JSON 데이터 추출
+        })
+        .then((data) => {  
+          const filteredData = data.content.filter(item => ["CLOSE", "CLOSE_READY"].includes(item.partnerReqState));
+          const stateListData = filteredData.map(item => {
+            switch (item.partnerReqState) {
+              case "CLOSE_READY":
+                return { ...item, partnerReqState: "취소 대기중" };
+              case "CLOSE":
+                return { ...item, partnerReqState: "취소 승인" };              
+              default:
+                return null;
+            }
           });
-  },[])
-
+          setLists(stateListData);  
+          console.log("크기||||||", filteredData.length); // switch를 통과하는 항목의 수
+          setTotalPages(Math.ceil(filteredData.length / number)); // 총 페이지 수 설정
+          console.log("||||", data); // 필터링된 항목들을 기반으로 페이지 수 설정                  
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+    }, []);
+  
   const filteredLists = selectedState === 'ALL' ? lists : lists.filter(item => item.partnerReqState === selectedState);
 
     return (
@@ -78,11 +146,11 @@ const CancelList = () => {
             <Col>
               <Form.Select
                 style={{ width: "13%" }}
-                onChange={handleSelectChange}
+                onChange={(e)=>handleSelectChange(e.target.value)}
               >
                 <option value="ALL">모두 보기</option>
                 <option value="취소 대기중">취소 대기중</option>
-                <option value="취소 승인">접수 승인</option>
+                <option value="취소 승인">취소 승인</option>
               </Form.Select>
             </Col>
           </Row>
@@ -102,8 +170,8 @@ const CancelList = () => {
                 </thead>
 
                 <tbody>
-                  {filteredLists.map((list, index) => (
-                    <tr key={index}>
+                  {filteredLists.sort((a,b)=> b.id - a.id).slice(page * number, (page + 1) * number).map((list) =>(
+                    <tr key={list.id}>
                       <td>{list.id}</td>
                       <td>{list.storeName}</td>
                       <td>{list.managerName}</td>
@@ -127,7 +195,7 @@ const CancelList = () => {
                             <>
                               <Button
                                 variant="outline-primary"
-                                onClick={() => cancelOk(index)}
+                                onClick={() => cancelOk(list.id)}
                               >
                                 승인
                               </Button>
@@ -142,6 +210,19 @@ const CancelList = () => {
             </Col>
           </Row>
         </Container>
+
+        <div className="justify-content-center" style={{ display: "flex", justifyContent: "center" }}>
+            <Pagination>
+              <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 0} />
+              {Array.from(Array(totalPages).keys()).map((pageNumber) => (
+                <Pagination.Item key={pageNumber} active={pageNumber === page} onClick={() => handlePageChange(pageNumber)}>
+                  {pageNumber + 1}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next onClick={() => handlePageChange(page + 1)} disabled={page === totalPages - 1} />
+            </Pagination>
+          </div>
+
       </div>
     );
 };

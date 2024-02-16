@@ -1,13 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { Card, Container, Image, Spinner } from "react-bootstrap";
+import {  Button, Container, Image, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
+import GoogleMap from "./partner/GoogleMap";
 
 const HomePage = () => {
+  const [showMap, setShowMap] = useState(false);
   const [partners, setPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [imageIndex, setImageIndex] = useState(0); // 이미지 인덱스 상태
+  const images = [
+    "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877698462-111.png",
+    "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877700672-222.png",
+  ]; // 이미지 URL 배열
+
+  const changeImage = () => {
+
+    setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
+  };
+
+  const toggleMapDisplay = () => {
+    setShowMap(!showMap);
+  };
+  console.log(partners);
   useEffect(() => {
     const loadPartners = async () => {
       if (isLoading || !hasMore) return;
@@ -60,34 +77,81 @@ const HomePage = () => {
   }, [hasMore, isLoading]);
 
   return (
-    <Container className="d-flex flex-column align-items-center mt-5">
-      {partners.map((partner) => (
-        <Link
-          to={`/store/${partner.id}`}
-          key={partner.id}
-          className="text-center mb-3"
-          style={{ width: "100%", textDecoration: "none", color: "inherit" }}
-        >
-          <Image
-            src={partner.fileList[0]?.imageUrl}
-            alt="Partner"
-            style={{
-              width: "400px",
-              height: "400px",
-              borderRadius: "5%",
-              objectFit: "cover",
-            }}
-          />
-          <p className="mt-2">{partner.storeName}</p>
-        </Link>
-      ))}
-      {isLoading && (
-        <div className="d-flex justify-content-center">
-          <Spinner animation="border" />
-        </div>
-      )}
-      {!isLoading && !hasMore && <p>No more partners</p>}
-    </Container>
+    <div>
+      <Container>
+        <Button onClick={toggleMapDisplay}>지도 표시</Button>
+        {showMap && <GoogleMap />}{" "}
+        {/* 조건부 렌더링으로 GoogleMap 컴포넌트 표시 제어 */}
+
+
+        {partners.map((partner) => (
+          <div
+            key={partner.id}
+            className="text-center mb-3"
+            style={{ width: "100%" }}
+          >
+            {/* 이미지 섹션 */}
+
+            <Image
+              src={
+                partner.fileList[0]
+                  ? partner.fileList[0]?.imageUrl
+                  : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+              }
+              alt="Partner"
+              style={{
+                width: "200px", // 이미지 크기 조정
+                height: "200px",
+                borderRadius: "5%",
+                objectFit: "cover",
+                marginBottom: "10px",
+              }}
+            />
+
+            <Link
+              to={`/store/${partner.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <h3>{partner.storeName}</h3>
+            </Link>
+            <div>평점</div>
+            <div className="d-flex justify-content-between align-items-center">
+              <span>조회수: {partner.viewCnt}</span>
+            </div>
+            {/* 이미지 변경 섹션 */}
+            <div className="mt-2">
+              <Image
+                onClick={changeImage}
+                src={images[imageIndex]}
+                alt="Dynamic Image"
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "5%",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+            <Image
+              src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+              alt="Dynamic Image"
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "5%",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+        ))}
+        {isLoading && (
+          <div className="d-flex justify-content-center">
+            <Spinner animation="border" />
+          </div>
+        )}
+        {!isLoading && !hasMore && <p>END</p>}
+      </Container>
+    </div>
   );
 };
 
