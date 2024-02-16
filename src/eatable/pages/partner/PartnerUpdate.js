@@ -1,15 +1,12 @@
-import React, { useEffect, useCallback, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import "./components/PartnerWrite.css";
-import { useDropzone } from "react-dropzone";
-import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useCallback, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import './components/PartnerWrite.css';
+import { useDropzone } from 'react-dropzone';
+import { jwtDecode } from 'jwt-decode';
 
 const PartnerUpdate = () => {
   const navigate = useNavigate();
-  const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-  let isAdmin = false;
   const token = localStorage.getItem("token");
   let isAdmin = false;
 
@@ -18,13 +15,7 @@ const PartnerUpdate = () => {
     const roles = decoded.auth ? decoded.auth.split(",") : [];
     isAdmin = roles.includes("ROLE_ADMIN");
   }
-  if (token) {
-    const decoded = jwtDecode(token);
-    const roles = decoded.auth ? decoded.auth.split(",") : [];
-    isAdmin = roles.includes("ROLE_ADMIN");
-  }
 
-  let { id } = useParams();
   let { id } = useParams();
 
   const [post, setPost] = useState({
@@ -115,7 +106,6 @@ const PartnerUpdate = () => {
   }, []);
 
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   const removeFile = (imageId) => {
@@ -258,9 +248,6 @@ const PartnerUpdate = () => {
     checkField('corkCharge', '콜키지 정보는 필수입니다');
     checkField('dog', '애완견 정보는 필수입니다');
 
-    if (!hasError) {
-      return;
-    }
     if (!hasError) {
       return;
     }
@@ -438,58 +425,6 @@ const PartnerUpdate = () => {
             />
           </div>
         </div>
-        {/* 매장주소 입력 부분 */}
-        <div className="mt-3">
-          <label htmlFor="address">
-            <h5>매장주소</h5>
-          </label>
-          <div>
-            <div className="act">
-              {/* <input id="autocomplete_search" name="autocomplete_search" type="text" className="form-control" placeholder="Search" readOnly /> */}
-              {/* <button onClick={findMyLocation}><GpsFixed /></button> */}
-            </div>
-            {/* 위도, 경도 입력 */}
-            <input
-              type="text"
-              name="lat"
-              id="lat"
-              placeholder="lat"
-              onChange={handleChange}
-              value={post.lat}
-              hidden
-            />
-            <input
-              type="text"
-              name="lng"
-              id="lng"
-              placeholder="lng"
-              onChange={handleChange}
-              value={post.lng}
-              hidden
-            />
-            {/* 주소와 우편번호 입력 */}
-            <input
-              type="text"
-              name="area"
-              id="area"
-              className="form-control"
-              placeholder="Address"
-              onChange={handleChange}
-              value={post.area}
-              readOnly
-            />
-            <input
-              type="text"
-              name="zipCode"
-              id="zipCode"
-              className="form-control"
-              placeholder="zipCode"
-              onChange={handleChange}
-              value={post.zipCode}
-              readOnly
-            />
-          </div>
-        </div>
 
         {/* 업종 선택 부분 */}
         <div className="mt-3">
@@ -498,56 +433,7 @@ const PartnerUpdate = () => {
               업종 <small>(1개이상 선택)</small>
             </h5>
           </label>
-        {/* 업종 선택 부분 */}
-        <div className="mt-3">
-          <label>
-            <h5>
-              업종 <small>(1개이상 선택)</small>
-            </h5>
-          </label>
 
-          {[
-            ["한식", "중식", "일식"],
-            ["이탈리아", "프랑스", "유러피안"],
-            ["퓨전", "스페인", "아메리칸"],
-            ["스시", "한우", "소고기구이"],
-            ["와인", "코스요리", "고기요리"],
-            ["한정식", "파스타", "해물"],
-            ["다이닝바", "브런치", "카페"],
-            ["치킨", "레스토랑", "피자"],
-            ["백반", "국수", "비건"],
-          ].map((group, index) => (
-            <div key={index} className="row">
-              {group.map((food, i) => (
-                <div key={i} className="col-md-4">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value={food}
-                      name="favorite"
-                      onChange={handleCheckboxChange}
-                      checked={
-                        (post.favorite && post.favorite.includes(food)) || ""
-                      }
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor={`favorite${index}${i}`}
-                    >
-                      {food}
-                    </label>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div>
-          {errorMessages.favorite && (
-            <span className="text-danger">{errorMessages.favorite}</span>
-          )}
-        </div>
           {[
             ["한식", "중식", "일식"],
             ["이탈리아", "프랑스", "유러피안"],
@@ -609,46 +495,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.storeInfo}</span>
           )}
         </div>
-        {/* 텍스트 입력 */}
-        <div className="mt-3">
-          <label htmlFor="storeInfo">
-            <h5>매장소개</h5>
-          </label>
-          <textarea
-            onChange={handleChange}
-            placeholder="매장소개를 입력하세요"
-            id="storeInfo"
-            name="storeInfo"
-            value={post.storeInfo}
-          ></textarea>
-        </div>
-        <div>
-          {errorMessages.storeInfo && (
-            <span className="text-danger">{errorMessages.storeInfo}</span>
-          )}
-        </div>
 
-        {/* 테이블수 */}
-        <div className="mt-3">
-          <label htmlFor="tableCnt">
-            <h5>테이블수</h5>
-          </label>
-          <input
-            type="number"
-            className="form-control"
-            id="tableCnt"
-            placeholder="테이블수를 입력하세요"
-            name="tableCnt"
-            min="0"
-            onChange={handleChange}
-            value={post.tableCnt}
-          />
-        </div>
-        <div>
-          {errorMessages.tableCnt && (
-            <span className="text-danger">{errorMessages.tableCnt}</span>
-          )}
-        </div>
         {/* 테이블수 */}
         <div className="mt-3">
           <label htmlFor="tableCnt">
@@ -693,47 +540,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.openTime}</span>
           )}
         </div>
-        {/* 영업시간 */}
-        <div className="mt-3">
-          <label htmlFor="openTime">
-            <h5>
-              영업시간 <small>(정기휴무)</small>
-            </h5>
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="openTime"
-            placeholder="영업시간을 입력하세요"
-            name="openTime"
-            onChange={handleChange}
-            value={post.openTime}
-          />
-        </div>
-        <div>
-          {errorMessages.openTime && (
-            <span className="text-danger">{errorMessages.openTime}</span>
-          )}
-        </div>
 
-        {/* 텍스트 입력 */}
-        <div className="mt-3">
-          <label htmlFor="reserveInfo">
-            <h5>예약주의사항</h5>
-          </label>
-          <textarea
-            onChange={handleChange}
-            placeholder="여기에 입력하세요"
-            id="reserveInfo"
-            name="reserveInfo"
-            value={post.reserveInfo}
-          ></textarea>
-        </div>
-        <div>
-          {errorMessages.reserveInfo && (
-            <span className="text-danger">{errorMessages.reserveInfo}</span>
-          )}
-        </div>
         {/* 텍스트 입력 */}
         <div className="mt-3">
           <label htmlFor="reserveInfo">
@@ -852,21 +659,7 @@ const PartnerUpdate = () => {
           <button type="submit" className="button-link">
             수정완료
           </button>
-        {/* 하단 버튼 */}
-        <div className="d-flex justify-content-end my-3">
-          <button type="submit" className="button-link">
-            수정완료
-          </button>
 
-          <button
-            type="button"
-            className="button-link"
-            onClick={() => {
-              navigate(-1) ? navigate(-1) : navigate("/home");
-            }}
-          >
-            뒤로가기
-          </button>
           <button
             type="button"
             className="button-link"
