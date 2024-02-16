@@ -3,9 +3,11 @@ import { Button, Container, Image, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
 import GoogleMap from "./partner/GoogleMap";
+import Roulette from "./partner/Roulette";
 
 const HomePage = () => {
   const [showMap, setShowMap] = useState(false);
+  const [showRoulette, setShowRoulette] = useState(false);
   const [partners, setPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,9 +22,16 @@ const HomePage = () => {
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
   };
 
-  const toggleMapDisplay = () => {
-    setShowMap(!showMap);
-  };
+const toggleMapDisplay = () => {
+  setShowMap(true); // 맵을 활성화
+  setShowRoulette(false); // 룰렛을 비활성화
+};
+
+const toggleRouletteDisplay = () => {
+  setShowMap(false); // 맵을 비활성화
+  setShowRoulette(true); // 룰렛을 활성화
+};
+
   console.log(partners);
   useEffect(() => {
     const loadPartners = async () => {
@@ -86,12 +95,13 @@ const HomePage = () => {
         맛집지도
         <Image
           src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051794890-fortune.png"
+          onClick={toggleRouletteDisplay}
           style={{ width: "50px" }}
         />
         룰렛추천
         <div className="text-center mb-3" style={{ width: "700px" }}>
-          {showMap && <GoogleMap />}{" "}
-          {/* 조건부 렌더링으로 GoogleMap 컴포넌트 표시 제어 */}
+          {showMap && <GoogleMap />} {showRoulette && <Roulette />}
+          {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
           <hr />
           <h3 className="text-center mb-3">Eatable 근처 맛집</h3>
           <hr />

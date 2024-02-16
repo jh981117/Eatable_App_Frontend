@@ -34,6 +34,23 @@ const GoogleMap = () => {
     // 데이터 가져오기
     fetchData();
   }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/partner/totallist"
+        );
+        if (!response.ok) throw new Error("Network response was not ok");
+        const data = await response.json();
+        setPost(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // 여기에 사용자에게 에러를 알리는 로직을 추가할 수 있습니다.
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const loadGoogleMapsAPI = () => {

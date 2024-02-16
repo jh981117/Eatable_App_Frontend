@@ -7,17 +7,33 @@ const MyHeader = () => {
   const navigate = useNavigate();
   const { auth, setAuth, updateProfile } = useAuth();
 
-
   useEffect(() => {
     const token = localStorage.getItem("token");
-     if (!token) {
-       setAuth((prevAuth) => ({ ...prevAuth, isLoggedIn: false }));
-      
-       return;
-     }
+    if (!token) {
+      setAuth((prevAuth) => ({ ...prevAuth, isLoggedIn: false }));
+
+      return;
+    }
     updateProfile();
   }, []);
 
+  const tempColor = (temperature) => {
+    if (temperature >= 20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070778358-1.png";
+    } else if (temperature >= 10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070780292-2.png";
+    } else if (temperature >= 0) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070782389-3.png";
+    } else if (temperature >= -10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070790881-33.png";
+    } else if (temperature >= -20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070787692-22.png";
+    } else if (temperature >= -30) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070784217-11.png";
+    } else {
+      return "Gray"; // 기본값은 회색
+    }
+  };
   console.log(auth);
   const handleLogout = () => {
     setAuth(""); // 프로필 정보도 초기화
@@ -83,7 +99,11 @@ const MyHeader = () => {
                   리뷰리스트
                 </Button>
               </Link>
-              <Link to="/usermypage" className="d-flex align-items-center">
+              <Nav.Link
+                as={Link}
+                to="/usermypage"
+                className="d-flex align-items-center"
+              >
                 <Image
                   src={auth.profile?.profileImageUrl}
                   alt="Profile"
@@ -95,10 +115,19 @@ const MyHeader = () => {
                     marginRight: "5px",
                   }}
                 />
-                <span className="nickname ml-2" style={{ marginRight: "10px" }}>
+                <span className="nickname ml-2">
                   {auth.profile ? auth.profile.nickName : ""}
                 </span>
-              </Link>
+                <span style={{ marginRight: "5px" }}>
+                  <Image
+                    src={tempColor(
+                      auth.profile ? auth.profile.temperature + 10 : ""
+                    )}
+                    style={{ width: "20px" }}
+                  />
+                  {auth.profile ? auth.profile.temperature + 10 : ""}º
+                </span>
+              </Nav.Link>
               <Button
                 onClick={handleLogout}
                 variant="outline-secondary"
