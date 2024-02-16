@@ -65,12 +65,6 @@ import { useNavigate } from "react-router-dom";
         setStoreName("");
       }
 
-      // if (!apply.managerName) {
-      //   setManagerName("문의자명을 입력해주세요.");
-      // } else {
-      //   setManagerName("");
-      // }
-
       if (!apply.phone) {
         setPhone("연락처를 입력해주세요.");
       } else {
