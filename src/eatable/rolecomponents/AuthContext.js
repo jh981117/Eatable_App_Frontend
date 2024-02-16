@@ -3,18 +3,20 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  // 로컬 스토리지에서 로그인 상태를 읽어와 초기 상태로 설정하는 로직을 개선
- const [auth, setAuth] = useState({
-   isLoggedIn: false,
-   user: null,
-   profile: null,
- });
-  // useEffect(() => {
-  //   // auth 상태가 변경될 때마다 로컬 스토리지에 저장
-  //   localStorage.setItem("auth", JSON.stringify(auth));
-  // }, [auth]);
+  const [auth, setAuth] = useState({
+    isLoggedIn: !!localStorage.getItem("token"), // 토큰 유무에 따른 로그인 상태 초기화
+    user: null,
+    profile: null,
+  });
 
-  // 프로필 정보를 업데이트하는 함수 추가
+  useEffect(() => {
+    // 컴포넌트 마운트 시 토큰이 있으면 프로필 업데이트
+    const token = localStorage.getItem("token");
+    if (token) {
+      updateProfile();
+    }
+  }, []);
+
   const updateProfile = async () => {
     const token = localStorage.getItem("token");
     if (token) {

@@ -37,7 +37,6 @@ const PartnerUpdate = () => {
     dog: "",
     fileList: [],
   });
-  console.log(post);
 
   const [errorMessages, setErrorMessages] = useState({
     favorite: "",
@@ -61,6 +60,29 @@ const PartnerUpdate = () => {
       ...prevState,
       [fieldName]: "",
     }));
+  };
+
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData("index", index.toString());
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, dstIndex, imageId) => {
+    e.preventDefault();
+    const srcIndex = parseInt(e.dataTransfer.getData("index"));
+    if (srcIndex !== dstIndex) {
+      const newFileList = Array.from(post.fileList);
+      const movedItem = newFileList[srcIndex];
+      newFileList.splice(srcIndex, 1);
+      newFileList.splice(dstIndex, 0, movedItem);
+      setPost((prevPost) => ({
+        ...prevPost,
+        fileList: newFileList,
+      }));
+    }
   };
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -149,20 +171,21 @@ const PartnerUpdate = () => {
           fileList: newImageList,
         }));
 
-        //     fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
-        //         method: 'PUT',
-        //         body: formData,
-        //     })
-        //         .then(response => {
-        //             if (response.ok) {
-        //                 console.log('이미지 URL 업데이트 성공');
-        //             } else {
-        //                 console.error('이미지 URL 업데이트 실패');
-        //             }
-        //         })
-        //         .catch(error => {
-        //             console.error('이미지 URL 업데이트 중 오류 발생:', error);
-        //         });
+        fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
+          method: "PUT",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              // navigate(`/partnerdetail/` + id);
+              console.log("이미지 URL 업데이트 성공");
+            } else {
+              console.error("이미지 URL 업데이트 실패");
+            }
+          })
+          .catch((error) => {
+            console.error("이미지 URL 업데이트 중 오류 발생:", error);
+          });
       };
     };
   };
@@ -253,8 +276,12 @@ const PartnerUpdate = () => {
           }
           const byteArray = new Uint8Array(byteNumbers);
           const blob = new Blob([byteArray], { type: "image/png" });
-          const file = new File([blob], "image.png", { type: "image/png" });
-
+          const file = new File(
+            [blob],
+            "image.png",
+            { type: "image/png" },
+            fileData.id
+          );
           formData.append("files", file);
         } else {
           formData.append("files", fileData);
@@ -607,7 +634,7 @@ const PartnerUpdate = () => {
           <label>
             <h5>첨부파일</h5>
           </label>
-          <div className="dropzoneContainer">
+          <div className="dropzoneContainer" onDragOver={handleDragOver}>
             <div
               className={"gallery--box " + (post.fileList.length > 0 && "true")}
               {...getRootProps()}
@@ -617,7 +644,6 @@ const PartnerUpdate = () => {
               {post.fileList.length === 0 && (
                 <div className="no--case">
                   <span className="text">
-                    {" "}
                     Drop files here or click to upload.
                   </span>
                   <br />
@@ -625,11 +651,18 @@ const PartnerUpdate = () => {
               )}
             </div>
             {post.fileList.map((image, idx) => (
-              <div key={idx} className="gallery--list">
+              <div
+                key={idx}
+                className="gallery--list"
+                draggable="true"
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDrop={(e) => handleDrop(e, idx, image.id)}
+                onDragOver={handleDragOver}
+              >
                 <div className="gallery--box">
                   <img
                     src={image.imageUrl}
-                    alt={""}
+                    alt=""
                     onClick={() => handleImageClick(image.id)}
                   />
                 </div>
