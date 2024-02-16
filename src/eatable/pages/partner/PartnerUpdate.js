@@ -3,16 +3,21 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import "./components/PartnerWrite.css";
 import { useDropzone } from "react-dropzone";
 import { jwtDecode } from "jwt-decode";
+
 const PartnerUpdate = () => {
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
   let isAdmin = false;
+
   if (token) {
     const decoded = jwtDecode(token);
     const roles = decoded.auth ? decoded.auth.split(",") : [];
     isAdmin = roles.includes("ROLE_ADMIN");
   }
+
   let { id } = useParams();
+
   const [post, setPost] = useState({
     storeName: "",
     partnerName: "",
@@ -32,6 +37,7 @@ const PartnerUpdate = () => {
     dog: "",
     fileList: [],
   });
+
   const [errorMessages, setErrorMessages] = useState({
     favorite: "",
     storeInfo: "",
@@ -42,17 +48,43 @@ const PartnerUpdate = () => {
     corkCharge: "",
     dog: "",
   });
+
   const handleChange = (e) => {
     const { name: fieldName, value } = e.target;
     setPost((prevState) => ({
       ...prevState,
       [fieldName]: value,
     }));
+
     setErrorMessages((prevState) => ({
       ...prevState,
       [fieldName]: "",
     }));
   };
+
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData("index", index.toString());
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, dstIndex, imageId) => {
+    e.preventDefault();
+    const srcIndex = parseInt(e.dataTransfer.getData("index"));
+    if (srcIndex !== dstIndex) {
+      const newFileList = Array.from(post.fileList);
+      const movedItem = newFileList[srcIndex];
+      newFileList.splice(srcIndex, 1);
+      newFileList.splice(dstIndex, 0, movedItem);
+      setPost((prevPost) => ({
+        ...prevPost,
+        fileList: newFileList,
+      }));
+    }
+  };
+
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length) {
       for (const file of acceptedFiles) {
@@ -72,7 +104,9 @@ const PartnerUpdate = () => {
       }
     }
   }, []);
+
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
   const removeFile = (imageId) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
       const newFiles = post.fileList.filter((image) => image.id !== imageId);
@@ -80,6 +114,7 @@ const PartnerUpdate = () => {
         ...prevPost,
         fileList: newFiles,
       }));
+
       fetch(`http://localhost:8080/api/partner/remove/${imageId}`, {
         method: "DELETE",
         headers: {
@@ -107,11 +142,13 @@ const PartnerUpdate = () => {
         });
     }
   };
+
   const handleImageClick = (imageId) => {
     const fileInput = document.createElement("input");
     fileInput.setAttribute("type", "file");
     fileInput.setAttribute("accept", "image/*");
     fileInput.click();
+
     // 파일 선택 이벤트 리스너
     fileInput.onchange = (e) => {
       const file = e.target.files[0];
@@ -120,6 +157,7 @@ const PartnerUpdate = () => {
       reader.onloadend = () => {
         const formData = new FormData();
         formData.append("file", file);
+
         // 이미지 업데이트 요청 전에 이미지 리스트를 업데이트합니다.
         const newImageList = post.fileList.map((image) => {
           if (image.id === imageId) {
@@ -127,51 +165,37 @@ const PartnerUpdate = () => {
           }
           return image;
         });
+
         setPost((prevPost) => ({
           ...prevPost,
           fileList: newImageList,
         }));
-        fetch(`http://localhost:8080/api/partner/remove/${imageId}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
+
+        fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
+          method: "PUT",
+          body: formData,
         })
           .then((response) => {
             if (response.ok) {
-              // 이미지 삭제 성공 시, 화면에서 업데이트
-              console.log("이미지 삭제 성공");
+              // navigate(`/partnerdetail/` + id);
+              console.log("이미지 URL 업데이트 성공");
             } else {
-              // 이미지 삭제 실패
-              console.error("이미지 삭제 실패");
+              console.error("이미지 URL 업데이트 실패");
             }
           })
           .catch((error) => {
-            console.error("이미지 삭제 중 오류 발생:", error);
+            console.error("이미지 URL 업데이트 중 오류 발생:", error);
           });
-
-        //     fetch(`http://localhost:8080/api/partner/updateImageUrl/${imageId}`, {
-        //         method: 'PUT',
-        //         body: formData,
-        //     })
-        //         .then(response => {
-        //             if (response.ok) {
-        //                 console.log('이미지 URL 업데이트 성공');
-        //             } else {
-        //                 console.error('이미지 URL 업데이트 실패');
-        //             }
-        //         })
-        //         .catch(error => {
-        //             console.error('이미지 URL 업데이트 중 오류 발생:', error);
-        //         });
       };
     };
   };
+
   useEffect(() => {
     console.log("=====================================================");
     console.log(post);
     console.log("=====================================================");
   }, [post]);
+
   useEffect(() => {
     fetch("http://localhost:8080/api/partner/detail/" + id)
       .then((response) => {
@@ -185,6 +209,7 @@ const PartnerUpdate = () => {
         if (data !== null) {
           console.log(data);
           setPost(data);
+
           // 여기서 주소 정보를 업데이트합니다.
           setPost((prevState) => ({
             ...prevState,
@@ -196,9 +221,12 @@ const PartnerUpdate = () => {
         }
       });
   }, []);
+
   const postUpdate = (e) => {
     e.preventDefault();
+
     let hasError = true;
+
     const checkField = (fieldName, errorMessage) => {
       if (post[fieldName] === null || post[fieldName] === "") {
         setErrorMessages((prevErrors) => ({
@@ -208,6 +236,7 @@ const PartnerUpdate = () => {
         hasError = false;
       }
     };
+
     // 호출 부분을 아래와 같이 변경합니다.
     checkField("favorite", "업종은 반드시 골라야 합니다");
     checkField("storeInfo", "가게 정보는 필수입니다");
@@ -217,9 +246,11 @@ const PartnerUpdate = () => {
     checkField("parking", "주차 정보는 필수입니다");
     checkField("corkCharge", "콜키지 정보는 필수입니다");
     checkField("dog", "애완견 정보는 필수입니다");
+
     if (!hasError) {
       return;
     }
+
     const formData = new FormData();
     formData.append("id", post.id);
     formData.append("storeName", post.storeName);
@@ -234,6 +265,7 @@ const PartnerUpdate = () => {
     formData.append("parking", post.parking);
     formData.append("corkCharge", post.corkCharge);
     formData.append("dog", post.dog);
+
     for (const fileData of post.fileList) {
       if (fileData) {
         if (fileData.imageUrl.startsWith("data:image")) {
@@ -244,13 +276,19 @@ const PartnerUpdate = () => {
           }
           const byteArray = new Uint8Array(byteNumbers);
           const blob = new Blob([byteArray], { type: "image/png" });
-          const file = new File([blob], "image.png", { type: "image/png" });
+          const file = new File(
+            [blob],
+            "image.png",
+            { type: "image/png" },
+            fileData.id
+          );
           formData.append("files", file);
         } else {
           formData.append("files", fileData);
         }
       }
     }
+
     fetch("http://localhost:8080/api/partner/update", {
       method: "PUT",
       body: formData,
@@ -271,30 +309,36 @@ const PartnerUpdate = () => {
         }
       });
   };
+
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
     let newFavorites = post.favorite
       .split(",")
       .filter((food) => food.trim() !== "");
+
     if (checked && newFavorites.length >= 3 && !newFavorites.includes(value)) {
       alert("3개 이상은 체크할 수 없습니다.");
       e.target.checked = false;
       return;
     }
+
     if (checked) {
       newFavorites.push(value);
     } else {
       newFavorites = newFavorites.filter((food) => food !== value);
     }
+
     setPost((prevState) => ({
       ...prevState,
       favorite: newFavorites.join(","),
     }));
+
     setErrorMessages((prevState) => ({
       ...prevState,
       favorite: "",
     }));
   };
+
   return (
     <div className="mt-3" id="partnerwrite">
       <h2 className="display-6">매장관리 - 수정</h2>
@@ -334,6 +378,7 @@ const PartnerUpdate = () => {
             </div>
           )
         )}
+
         {/* 매장주소 입력 부분 */}
         <div className="mt-3">
           <label htmlFor="address">
@@ -386,6 +431,7 @@ const PartnerUpdate = () => {
             />
           </div>
         </div>
+
         {/* 업종 선택 부분 */}
         <div className="mt-3">
           <label>
@@ -393,6 +439,7 @@ const PartnerUpdate = () => {
               업종 <small>(1개이상 선택)</small>
             </h5>
           </label>
+
           {[
             ["한식", "중식", "일식"],
             ["이탈리아", "프랑스", "유러피안"],
@@ -435,6 +482,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.favorite}</span>
           )}
         </div>
+
         {/* 텍스트 입력 */}
         <div className="mt-3">
           <label htmlFor="storeInfo">
@@ -453,6 +501,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.storeInfo}</span>
           )}
         </div>
+
         {/* 테이블수 */}
         <div className="mt-3">
           <label htmlFor="tableCnt">
@@ -474,6 +523,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.tableCnt}</span>
           )}
         </div>
+
         {/* 영업시간 */}
         <div className="mt-3">
           <label htmlFor="openTime">
@@ -496,6 +546,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.openTime}</span>
           )}
         </div>
+
         {/* 텍스트 입력 */}
         <div className="mt-3">
           <label htmlFor="reserveInfo">
@@ -514,6 +565,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.reserveInfo}</span>
           )}
         </div>
+
         {/* radio타입 입력 */}
         <div className="mt-3">
           {["parking", "corkCharge", "dog"].map((item, index) => (
@@ -576,12 +628,13 @@ const PartnerUpdate = () => {
             </div>
           ))}
         </div>
+
         {/* 첨부파일 */}
         <div className="mt-3">
           <label>
             <h5>첨부파일</h5>
           </label>
-          <div className="dropzoneContainer">
+          <div className="dropzoneContainer" onDragOver={handleDragOver}>
             <div
               className={"gallery--box " + (post.fileList.length > 0 && "true")}
               {...getRootProps()}
@@ -591,7 +644,6 @@ const PartnerUpdate = () => {
               {post.fileList.length === 0 && (
                 <div className="no--case">
                   <span className="text">
-                    {" "}
                     Drop files here or click to upload.
                   </span>
                   <br />
@@ -599,11 +651,18 @@ const PartnerUpdate = () => {
               )}
             </div>
             {post.fileList.map((image, idx) => (
-              <div key={idx} className="gallery--list">
+              <div
+                key={idx}
+                className="gallery--list"
+                draggable="true"
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDrop={(e) => handleDrop(e, idx, image.id)}
+                onDragOver={handleDragOver}
+              >
                 <div className="gallery--box">
                   <img
                     src={image.imageUrl}
-                    alt={""}
+                    alt=""
                     onClick={() => handleImageClick(image.id)}
                   />
                 </div>
@@ -617,11 +676,13 @@ const PartnerUpdate = () => {
             ))}
           </div>
         </div>
+
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">
           <button type="submit" className="button-link">
             수정완료
           </button>
+
           <button
             type="button"
             className="button-link"
@@ -631,6 +692,7 @@ const PartnerUpdate = () => {
           >
             뒤로가기
           </button>
+
           <div>
             {/* 관리자 권한이 있을때만 보여줌 */}
             {isAdmin && (
@@ -645,4 +707,5 @@ const PartnerUpdate = () => {
     </div>
   );
 };
+
 export default PartnerUpdate;
