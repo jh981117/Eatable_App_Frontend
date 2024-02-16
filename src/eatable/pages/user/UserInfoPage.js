@@ -67,6 +67,7 @@ const UserInfoPage = () => {
 
         const data = await response.json();
         setProfile(data);
+        setTemperature(data.temperature);
       } catch (error) {
         console.error("Error:", error);
         setError(error.toString());
@@ -132,6 +133,24 @@ const UserInfoPage = () => {
     return <div>Loading...</div>;
   }
 
+  // 회원탈퇴
+  const closeModal = () => setModal(false);
+  const showModal = () => setModal(true);
+
+  console.log(localStorage.token);
+
+  const handleDrop = () => {
+    const confirm = window.confirm("정말 탈퇴하시겠습니까?");
+    if (confirm) {
+      // 아이디 삭제되는부분 작성해야됨.
+      alert("회원탈퇴가 완료되었습니다.");
+      handleLogout();
+      navigate("/");
+    } else {
+      return;
+    }
+  };
+
   const fieldEdit = (field) => {
     setEdit((state) => ({
       ...state,
@@ -146,14 +165,37 @@ const UserInfoPage = () => {
     });
   };
 
+  // 온도바 테스트용코드
+  // 온도 증가
+  const increaseTemperature = () => {
+    setTemperature((prevTemperature) => prevTemperature + 1);
+  };
+
+  // 온도 감소
+  const decreaseTemperature = () => {
+    setTemperature((prevTemperature) => prevTemperature - 1);
+  };
+
   // 온도바
   const tempColor = (temperature) => {
-    if (temperature < 0 && temperature > -50) {
-      return "blue";
-    } else if (temperature > 0 && temperature < 30) {
-      return "red";
-    } else if (temperature > -50 && temperature < 30) {
-      return "gray"; // 기본값은 회색
+    if (temperature >= 20) {
+      return "Red";
+    } else if (temperature >= 10) {
+      return "OrangeRed";
+    } else if (temperature >= 0) {
+      return "Tomato";
+    } else if (temperature >= -10) {
+      return "DodgerBlue";
+    } else if (temperature >= -20) {
+      return "RoyalBlue";
+    } else if (temperature >= -30) {
+      return "Blue";
+    } else if (temperature >= -40) {
+      return "MediumBlue";
+    } else if (temperature >= -50) {
+      return "Navy";
+    } else {
+      return "Gray"; // 기본값은 회색
     }
   };
 
@@ -163,15 +205,14 @@ const UserInfoPage = () => {
   let barWidth = "0%";
   let barLeft = "50%";
 
-  if (temperature < 0) {
-    // 음수 온도인 경우
-    barWidth = `${(Math.abs(temperature) / 50) * 50}%`;
-    barLeft = `${50 + (temperature / 50) * 50}%`; // 0이 위에 오도록 조정
-  } else if (temperature > 0) {
-    // 양수 온도인 경우
-    barWidth = `${(temperature / 50) * 50}%`;
-    barLeft = "50%";
-  }
+if (temperature <= 0 || temperature < -50) {
+  barWidth = `${-temperature}%`;
+  barLeft = `${50 - -temperature}%`;
+} else if (temperature >= 0 || temperature > 30) {
+  barWidth = `${temperature * 1.8}%`;
+  barLeft = "50%";
+}
+
   console.log("온도는?" + profile.username);
 
   // 사용자정보 수정
@@ -295,9 +336,9 @@ const UserInfoPage = () => {
                   }}
                 />
                 <div className="flex align-items-center ml-3">
-                  닉네임 :{" "}
+                  닉네임 :
                   <Input type="text" value={profile.nickName} readOnly />
-                  <br />내 소개 :{" "}
+                  <br />내 소개 :
                   {edit.bio ? (
                     <Input
                       type="text"
@@ -320,8 +361,9 @@ const UserInfoPage = () => {
                     <div
                       style={{
                         backgroundColor: "gray",
-                        width: "60%",
+                        width: "100%",
                         height: "20px",
+                        borderRadius: "10px",
                       }}
                     >
                       <div
@@ -331,9 +373,10 @@ const UserInfoPage = () => {
                           width: "100%",
                           height: "20px",
                           position: "relative",
+                          borderRadius: "10px",
+                          animation: "wave 2s infinite linear alternate",
                         }}
                       >
-                        {" "}
                         {/* 막대의 최대 너비를 100%로 설정 */}
                         {/* 온도 바 */}
                         <div
@@ -342,9 +385,10 @@ const UserInfoPage = () => {
                             width: barWidth,
                             height: "100%",
                             position: "absolute",
-                            left: barLeft,
+                            borderRadius: "10px",
+                            left: barLeft /*animation: "wave 2s infinite"*/,
                           }}
-                        ></div>{" "}
+                        ></div>
                         {/* barWidth와 barLeft를 사용하여 막대의 위치와 너비 설정 */}
                         {/* 온도가 0인 경우 가운데 아래에 0 표시 */}
                         <span
@@ -404,16 +448,19 @@ const UserInfoPage = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <Button variant="primary" onClick={increaseTemperature}>온도 증가</Button>
-                <Button variant="danger" onClick={decreaseTemperature}>온도 감소</Button> */}
-                  {/* <Input type="text" name="temperature" value={auth.profile.temperature}/> */}
+                  <Button variant="primary" onClick={increaseTemperature}>
+                    온도 증가
+                  </Button>
+                  <Button variant="danger" onClick={decreaseTemperature}>
+                    온도 감소
+                  </Button>
                   <Button variant="primary" onClick={handleTogglePasswordInput}>
                     비밀번호 변경
                   </Button>
-                  <Button className="btn btn-danger ms-2" onClick={"showModal"}>
+                  <Button className="btn btn-danger ms-2" onClick={showModal}>
                     회원탈퇴
                   </Button>
-                  <Modal show={modal} onHide={"closeModal"}>
+                  <Modal show={modal} onHide={closeModal}>
                     <Modal.Header closeButton>
                       <Modal.Title>회원탈퇴</Modal.Title>
                     </Modal.Header>
@@ -426,10 +473,10 @@ const UserInfoPage = () => {
                       />
                     </Modal.Body>
                     <Modal.Footer>
-                      <Button variant="secondary" onClick={"closeModal"}>
+                      <Button variant="secondary" onClick={closeModal}>
                         취소
                       </Button>
-                      <Button variant="primary" onClick={"handleDrop"}>
+                      <Button variant="primary" onClick={handleDrop}>
                         확인
                       </Button>
                     </Modal.Footer>
@@ -568,8 +615,8 @@ const UserInfoPage = () => {
         <Modal.Header closeButton>
           <Modal.Title>비밀번호 변경 성공!</Modal.Title>
         </Modal.Header>
-        <Modal.Body>비밀번호가 성공적으로 변경되었습니다.
-           다시 로그인 해주세요 .
+        <Modal.Body>
+          비밀번호가 성공적으로 변경되었습니다. 다시 로그인 해주세요 .
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={handleCloseModal}>
