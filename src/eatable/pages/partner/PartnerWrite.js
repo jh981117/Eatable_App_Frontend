@@ -109,21 +109,21 @@ const PartnerWrite = () => {
   };
 
   //email js//
-  const form = useRef();
+  // const form = useRef();
 
-  const sendEmail = e => {
-    e.preventDefault();
+  // const sendEmail = e => {
+  //   e.preventDefault();
 
-    emailjs.sendForm("service_fch3yro1", "template_76jxtmb1", "ORegbfZuljHYVzE1s1").then(
-      result => {
-        alert("성공적으로 이메일이 전송되었습니다.");        
-      },
-      error => {
-        console.log(error.text);
-        alert("이메일이 전송이 실패되었습니다.");
-      },
-    );
-  };
+  //   emailjs.sendForm("service_fch3yro1", "template_76jxtmb1",form.current, "ORegbfZuljHYVzE1s1").then(
+  //     result => {
+  //       alert("성공적으로 이메일이 전송되었습니다.");        
+  //     },
+  //     error => {
+  //       console.log(error.text);
+  //       alert("이메일이 전송이 실패되었습니다.");
+  //     },
+  //   );
+  // };
 
   ////////구분선//////////////
   useEffect(() => {
@@ -457,7 +457,7 @@ const PartnerWrite = () => {
 
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">
-          <Form ref={form}  onSubmit={sendEmail}> 
+          <Form > 
             <Form.Control type="hidden" name="user_name" value="부트스트랩" />
             <Form.Control
               type="hidden"
@@ -475,7 +475,7 @@ const PartnerWrite = () => {
               name="message"
               value="부트스트랩 이게 맞냐 어?"
             />
-            <button type="submit" className="button-link" onClick={(e) => {handleSubmit(e); sendEmail(e);}}>
+            <button type="submit" className="button-link" onClick={(e) => {handleSubmit(e)}}>
               작성완료
             </button>
           </Form>

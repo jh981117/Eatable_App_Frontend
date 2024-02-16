@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
 
 const MyHeader = () => {
+  const navigate = useNavigate();
   const { auth, setAuth, updateProfile } = useAuth();
   
   useEffect(() => {
@@ -15,6 +16,8 @@ const MyHeader = () => {
   const handleLogout = () => {
     setAuth(""); // 프로필 정보도 초기화
     localStorage.removeItem("token");
+    navigate("/home");
+  
     // 필요한 경우 localStorage에서 다른 인증 관련 데이터도 제거
   };
 
@@ -42,42 +45,40 @@ const MyHeader = () => {
           Eatabel
         </Navbar.Brand>
         <Nav className="ml-auto">
-          <Link to={"/reservation"}>
-            <Button variant="outline-secondary" style={logoutButtonStyle}>
-              예약페이지
-            </Button>
-          </Link>
-          <Link to={"/partnerlist"}>
-            <Button variant="outline-secondary" style={logoutButtonStyle}>
-              파트너페이지
-            </Button>
-          </Link>
-          <Link to={"/userDetail"}>
-            <Button variant="outline-secondary" style={logoutButtonStyle}>
-              유저디테일
-            </Button>
-          </Link>
-          <Link to={"/applyreq"}>
-            <Button variant="outline-secondary" style={logoutButtonStyle}>
-              업체신청등록
-            </Button>
-          </Link>
-          <Link to={"/applylist"}>
-            <Button variant="outline-secondary" style={logoutButtonStyle}>
-              어드민페이지
-            </Button>
-          </Link>
-
-          <Link to={"/reviewlist"}>
-            <Button variant="outline-secondary" style={logoutButtonStyle}>
-              리뷰리스트
-            </Button>
-          </Link>
           {auth ? (
-
             <>
+              {/* 로그인 했을 때 보여줄 링크들 */}
+              <Link to={"/reservation"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  예약페이지
+                </Button>
+              </Link>
+              <Link to={"/partnerlist"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  파트너페이지
+                </Button>
+              </Link>
+              <Link to={"/userDetail"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  유저디테일
+                </Button>
+              </Link>
+              <Link to={"/applyreq"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  업체신청등록
+                </Button>
+              </Link>
+              <Link to={"/applylist"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  어드민페이지
+                </Button>
+              </Link>
+              <Link to={"/reviewlist"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  리뷰리스트
+                </Button>
+              </Link>
               <Link to="/usermypage" className="d-flex align-items-center">
-                {/* 세로 가운데 정렬 */}
                 <Image
                   src={auth.profile?.profileImageUrl}
                   alt="Profile"
@@ -96,13 +97,49 @@ const MyHeader = () => {
               <Button
                 onClick={handleLogout}
                 variant="outline-secondary"
-                style={logoutButtonStyle} // 로그아웃 버튼에 스타일 적용
+                style={logoutButtonStyle}
               >
                 로그아웃
               </Button>
             </>
           ) : (
             <>
+              {/* 로그인하지 않았을 때 보여줄 링크들 */}
+              <Link to={"/reservation"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  예약페이지
+                </Button>
+              </Link>
+              <Link to={"/partnerlist"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  파트너페이지
+                </Button>
+              </Link>
+              <Link to={"/userDetail"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  유저디테일
+                </Button>
+              </Link>
+              <Link to={"/applyreq"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  업체신청등록
+                </Button>
+              </Link>
+              <Link to={"/applylist"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  어드민페이지
+                </Button>
+              </Link>
+              <Link to={"/reviewlist"}>
+                <Button variant="outline-secondary" style={logoutButtonStyle}>
+                  리뷰리스트
+                </Button>
+              </Link>
+              <Link to="/usermypage" className="d-flex align-items-center">
+               
+                
+              </Link>
+          
               <Link to="/login" className="btn btn-outline-secondary">
                 로그인
               </Link>

@@ -7,7 +7,6 @@ import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import SignoutPage from "./SignoutPage";
 import { jwtDecode } from "jwt-decode";
-import PartnerDetail from "../partner/PartnerDetail";
 import UserPartnerPage from "./UserPartnerPage";
 
 
@@ -17,6 +16,7 @@ const checkPartnerRole = () => {
 
   try {
     const decoded = jwtDecode(token); // 토큰 디코딩
+    console.log(decoded)
     const roles = decoded.auth ? decoded.auth.split(",") : [];
     console.log(decoded)
     return roles.includes("ROLE_PARTNER"); // ROLE_PARTNER 권한이 있는지 확인
@@ -55,8 +55,7 @@ const isPartner = () => {
         return <ReviewPage />;
       case "userFollow":
         return <FollowPage />;
-      case "signout":
-        return <SignoutPage />;
+
       case "store":
         return <UserPartnerPage />;
       default:
@@ -99,12 +98,7 @@ const isPartner = () => {
 
 
 
-            <Button
-              onClick={() => setActiveTab("signout")}
-              variant={activeTab === "signout" ? "primary" : "light"}
-            >
-              회원탈퇴
-            </Button>
+           
           </Nav>
         </Tab.Container>
       </Col>
