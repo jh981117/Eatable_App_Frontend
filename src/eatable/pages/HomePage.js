@@ -113,7 +113,7 @@ const toggleRouletteDisplay = () => {
             >
               {/* 이미지 섹션 */}
               <Link
-                to={`/store/${partner.id}`}
+                to={`/userdetail/${partner.id}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 {/* 매장 사진 */}
