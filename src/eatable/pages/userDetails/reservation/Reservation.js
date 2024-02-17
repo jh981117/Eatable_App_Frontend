@@ -27,7 +27,7 @@ const Reservation = () => {
     };
 
     const showReservationOk = () => {
-        navigate("/reservationOk/" + {id})
+        navigate(`/reservationOk/${id}`)
     };
 
     return (
@@ -53,9 +53,11 @@ const Reservation = () => {
                     showTimeSelect
                     includeTimes={[
                         setHours(setMinutes(new Date(), 0), 17),
-                        setHours(setMinutes(new Date(), 30), 18),
-                        setHours(setMinutes(new Date(), 30), 19),
                         setHours(setMinutes(new Date(), 30), 17),
+                        setHours(setMinutes(new Date(), 0), 18),
+                        setHours(setMinutes(new Date(), 30), 18),
+                        setHours(setMinutes(new Date(), 0), 19),
+                        setHours(setMinutes(new Date(), 30), 19),
                     ]}  /*영업시간 설정*/
                     dateFormat="MMMM d, yyyy h:mm aa"
                 />
