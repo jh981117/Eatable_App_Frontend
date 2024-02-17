@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Image, Spinner } from "react-bootstrap";
+import { Button, Container, Image, Modal, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
-import GoogleMap from "./partner/GoogleMap";
+import GoogleMap from "./partner/GoogleMaps";
 import Roulette from "./partner/Roulette";
 
 const HomePage = () => {
@@ -22,15 +22,11 @@ const HomePage = () => {
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
   };
 
-const toggleMapDisplay = () => {
-  setShowMap(true); // 맵을 활성화
-  setShowRoulette(false); // 룰렛을 비활성화
-};
+  const handleCloseMap = () => setShowMap(false);
+  const handleShowMap = () => setShowMap(true);
 
-const toggleRouletteDisplay = () => {
-  setShowMap(false); // 맵을 비활성화
-  setShowRoulette(true); // 룰렛을 활성화
-};
+  const handleCloseRoulette = () => setShowRoulette(false);
+  const handleShowRoulette = () => setShowRoulette(true);
 
   console.log(partners);
   useEffect(() => {
@@ -85,80 +81,104 @@ const toggleRouletteDisplay = () => {
   }, [hasMore, isLoading]);
 
   return (
-    <div className="mx-auto" style={{ width: "700px", marginTop: "20px" }}>
-      <Container>
+    <Container
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <div style={{ width: "700px" }}>
         <Image
           src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051385932-map.png"
-          onClick={toggleMapDisplay}
+          onClick={handleShowMap}
           style={{ width: "50px" }}
         />
         맛집지도
         <Image
           src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051794890-fortune.png"
-          onClick={toggleRouletteDisplay}
+          onClick={handleShowRoulette}
           style={{ width: "50px" }}
         />
         룰렛추천
-        <div className="text-center mb-3" style={{ width: "700px" }}>
-          {showMap && <GoogleMap />} {showRoulette && <Roulette />}
-          {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
-          <hr />
-          <h3 className="text-center mb-3">Eatable 근처 맛집</h3>
-          <hr />
-          {partners.map((partner) => (
+        {/* GoogleMap 모달 */}
+        <Modal show={showMap} onHide={handleCloseMap} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>맛집지도</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
             <div
-              key={partner.id}
-              className="text-center mb-3"
-              style={{ width: "100%" }}
+              className="d-flex justify-content-center align-items-center"
+              style={{ height: "100%" }}
             >
-              {/* 이미지 섹션 */}
-              <Link
-                to={`/userdetail/${partner.id}`}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                {/* 매장 사진 */}
-                <Image
-                  src={
-                    partner.fileList[0]
-                      ? partner.fileList[0]?.imageUrl
-                      : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
-                  }
-                  alt="Partner"
-                  style={{
-                    width: "500px", // 이미지 크기 조정
-                    height: "500px",
-                    borderRadius: "5%",
-                    objectFit: "cover",
-                    marginBottom: "10px",
-                  }}
-                />
-                <h3>{partner.storeName}</h3>
-              </Link>
-              <div className="d-flex justify-content-between align-items-center">
-                {/* 조회수 */}
-                <span>
-                  <Image src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"></Image>
-                  {partner.viewCnt}
-                </span>
+              <div style={{ maxWidth: "600px", width: "100%" }}>
+                {" "}
+                {/* 가로 크기 조정이 필요할 경우 */}
+                <GoogleMap />
               </div>
-              {/* 즐겨찾기 이미지 변경 */}
-              <div className="mt-2">
-                <Image
-                  onClick={changeImage}
-                  src={images[imageIndex]}
-                  alt="Dynamic Image"
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "5%",
-                    objectFit: "cover",
-                  }}
-                />
+            </div>
+          </Modal.Body>
+        </Modal>
+        {/* Roulette 모달 */}
+        <Modal show={showRoulette} onHide={handleCloseRoulette} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>룰렛추천</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ height: "100%" }}
+            >
+              <div style={{ maxWidth: "600px", width: "100%" }}>
+                {" "}
+                {/* 가로 크기 조정이 필요할 경우 */}
+                <Roulette />
               </div>
-
-              {/* 평점 */}
+            </div>
+          </Modal.Body>
+        </Modal>
+        {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
+        <hr />
+        <h3 className="text-center mb-3">Eatable 근처 맛집</h3>
+        <hr />
+        {partners.map((partner) => (
+          <div
+            key={partner.id}
+            className="text-center mb-3"
+            style={{ width: "100%" }}
+          >
+            {/* 이미지 섹션 */}
+            <Link
+              to={`/userdetail/${partner.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              {/* 매장 사진 */}
               <Image
-                src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                src={
+                  partner.fileList[0]
+                    ? partner.fileList[0]?.imageUrl
+                    : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+                }
+                alt="Partner"
+                style={{
+                  width: "500px", // 이미지 크기 조정
+                  height: "500px",
+                  borderRadius: "5%",
+                  objectFit: "cover",
+                  marginBottom: "10px",
+                }}
+              />
+              <h3>{partner.storeName}</h3>
+            </Link>
+            <div className="d-flex justify-content-between align-items-center">
+              {/* 조회수 */}
+              <span>
+                <Image src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"></Image>
+                {partner.viewCnt}
+              </span>
+            </div>
+            {/* 즐겨찾기 이미지 변경 */}
+            <div className="mt-2">
+              <Image
+                onClick={changeImage}
+                src={images[imageIndex]}
                 alt="Dynamic Image"
                 style={{
                   width: "30px",
@@ -168,16 +188,28 @@ const toggleRouletteDisplay = () => {
                 }}
               />
             </div>
-          ))}
-          {isLoading && (
-            <div className="d-flex justify-content-center">
-              <Spinner animation="border" />
-            </div>
-          )}
-          {!isLoading && !hasMore && <p>END</p>}
-        </div>
-      </Container>
-    </div>
+
+            {/* 평점 */}
+            <Image
+              src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+              alt="Dynamic Image"
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "5%",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+        ))}
+        {isLoading && (
+          <div className="d-flex justify-content-center">
+            <Spinner animation="border" />
+          </div>
+        )}
+        {!isLoading && !hasMore && <p>END</p>}
+      </div>
+    </Container>
   );
 };
 

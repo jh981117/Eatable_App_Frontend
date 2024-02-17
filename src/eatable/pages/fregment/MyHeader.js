@@ -63,7 +63,8 @@ const MyHeader = () => {
     <Navbar bg="light" variant="light" style={navbarStyle}>
       <Container>
         <Navbar.Brand as={Link} to="/home">
-          Eatabel
+          <Image src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708150496729-logo.png"
+          style={{width: "100px"}} />
         </Navbar.Brand>
         <Nav className="ml-auto">
           {auth.isLoggedIn ? (

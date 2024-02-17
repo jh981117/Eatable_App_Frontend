@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import "./components/Roulette.css";
 import { ToastContainer, toast } from "react-toastify";
+import { Container } from "react-bootstrap";
 
 const Roulette = () => {
   const canvasRef = useRef(null);
@@ -142,34 +143,35 @@ const Roulette = () => {
   };
 
   return (
-    <div>
+    <Container>
+     
         <ToastContainer
-position="top-center"
-autoClose={5000}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-theme="dark"
-/>
-      <h2>오늘의 추천 메뉴</h2>
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
 
-      <div id="rouletteContainer">
-        <canvas
-          ref={canvasRef}
-          id="rouletteCanvas"
-          width="380"
-          height="380"
-          style={{ transform: "rotate(0deg)", transition: "transform 2s" }}
-        ></canvas>
-        <button id="rotateButton" onClick={rotate}>
-          룰렛 돌리기
-        </button>
-      </div>
-    </div>
+        <div id="rouletteContainer">
+          <canvas
+            ref={canvasRef}
+            id="rouletteCanvas"
+            width="380"
+            height="380"
+            style={{ transform: "rotate(0deg)", transition: "transform 2s" }}
+          ></canvas>
+          <button id="rotateButton" onClick={rotate}>
+            룰렛 돌리기
+          </button>
+        </div>
+      
+    </Container>
   );
 };
 
