@@ -14,7 +14,7 @@ import ApplyReq from "./pages/admin/ApplyReq";
 import AdminRoute from "./rolecomponents/AdminRoute";
 import RoleErrorPage from "./rolecomponents/RoleErrorPage";
 import MemberRoute from "./rolecomponents/MemberRoute";
-import MyHeader from "./pages/components/MyHeader";
+import MyHeader from "./pages/fregment/MyHeader";
 import Reservation from "./pages/userDetails/reservation/Reservation";
 import { AuthProvider } from "./rolecomponents/AuthContext";
 import ProvisionPage from "./pages/user/ProvisionPage";
@@ -26,16 +26,13 @@ import DetailTab from "./pages/userreview/DetailTab";
 import ReviewImg from "./pages/userreview/ReviewImg";
 import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
-import GoogleMap from "./pages/partner/GoogleMap";
+import GoogleMap from "./pages/partner/GoogleMaps";
 import UserPartnerPage from "./pages/user/UserPartnerPage";
 
-
-
-
+import "./EatableApp.css";
+import StoreReviewList from "./pages/userreview/StoreReviewList";
 
 const EatableApp = () => {
-
-
   return (
     <div>
       <AuthProvider>
@@ -51,7 +48,14 @@ const EatableApp = () => {
             <Route path="/provision" Component={ProvisionPage}></Route>
             <Route path="/signup" Component={SignupPage}></Route>
             <Route path="/login" Component={LoginPage}></Route>
-            <Route path="/usermypage" element={<MemberRoute><UserMyPage /></MemberRoute>}></Route>
+            <Route
+              path="/usermypage"
+              element={
+                <MemberRoute>
+                  <UserMyPage />
+                </MemberRoute>
+              }
+            ></Route>
 
             {/* 파트너페이지 어드민권환 */}
             <Route
@@ -63,8 +67,7 @@ const EatableApp = () => {
               }
             ></Route>
 
-            <Route            
-
+            <Route
               path="/partnerwrite/:userId"
               element={
                 // <AdminRoute>
@@ -140,12 +143,16 @@ const EatableApp = () => {
             {/* 유저디테일   스토어디테일  유저권한 */}
             <Route
               path="/userDetail/:id"
-              element={<MemberRoute><UserDetail /></MemberRoute>}
+              element={
+                <MemberRoute>
+                  <UserDetail />
+                </MemberRoute>
+              }
             ></Route>
 
             {/* 예약 페이지 유저권한  */}
             <Route
-              path="/reservation"
+              path="/reservation/:id"
               element={
                 <MemberRoute>
                   <Reservation />
@@ -153,11 +160,9 @@ const EatableApp = () => {
               }
             ></Route>
             <Route
-              path="/reservationOk"
+              path="/reservationOk/:id"
               element={<MemberRoute>{/* <ApplyReq /> */}</MemberRoute>}
             ></Route>
-
-
 
             {/* 민호 */}
             <Route path="/reviewlist" Component={ReviewList}></Route>
@@ -167,11 +172,10 @@ const EatableApp = () => {
             <Route path="/reviewwrite" Component={ReviewWrite}></Route>
             <Route path="/reviewdetail" Component={ReviewDetail}></Route>
             <Route path="/userpartnerpage" Component={UserPartnerPage}></Route>
-
-
-
-
-
+            <Route
+              path="/storeReviewList/:id"
+              Component={StoreReviewList}
+            ></Route>
           </Routes>
         </Container>
       </AuthProvider>

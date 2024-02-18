@@ -13,11 +13,12 @@ import {
   Form,
 } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
+import ReservePage from "./ReservePage";
+import ReservedPage from "./ReservedPage";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const UserInfoPage = () => {
   const navigate = useNavigate();
@@ -205,13 +206,13 @@ const UserInfoPage = () => {
   let barWidth = "0%";
   let barLeft = "50%";
 
-if (temperature <= 0 || temperature < -50) {
-  barWidth = `${-temperature}%`;
-  barLeft = `${50 - -temperature}%`;
-} else if (temperature >= 0 || temperature > 30) {
-  barWidth = `${temperature * 1.8}%`;
-  barLeft = "50%";
-}
+  if (temperature <= 0 && temperature >= -50) {
+    barWidth = `${-temperature}%`;
+    barLeft = `${50 - -temperature}%`;
+  } else if (temperature >= 0 && temperature <= 30) {
+    barWidth = `${temperature * 1.8}%`;
+    barLeft = "50%";
+  }
 
   console.log("온도는?" + profile.username);
 
@@ -336,9 +337,9 @@ if (temperature <= 0 || temperature < -50) {
                   }}
                 />
                 <div className="flex align-items-center ml-3">
-                  닉네임 :
+                  닉네임 :{" "}
                   <Input type="text" value={profile.nickName} readOnly />
-                  <br />내 소개 :
+                  <br />내 소개 :{" "}
                   {edit.bio ? (
                     <Input
                       type="text"
@@ -448,11 +449,11 @@ if (temperature <= 0 || temperature < -50) {
                       </div>
                     </div>
                   </div>
-                  <Button variant="primary" onClick={increaseTemperature}>
-                    온도 증가
-                  </Button>
-                  <Button variant="danger" onClick={decreaseTemperature}>
+                  <Button variant="primary" onClick={decreaseTemperature}>
                     온도 감소
+                  </Button>
+                  <Button variant="danger" onClick={increaseTemperature}>
+                    온도 증가
                   </Button>
                   <Button variant="primary" onClick={handleTogglePasswordInput}>
                     비밀번호 변경
@@ -592,7 +593,7 @@ if (temperature <= 0 || temperature < -50) {
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 현황</ListGroup.Item>
                         <ListGroup.Item>
-                          {/* 예약 현황 컴포넌트 */}
+                          <ListGroup.Item>{ReservePage}</ListGroup.Item>
                         </ListGroup.Item>
                       </ListGroup>
                     </Tab>
@@ -600,7 +601,7 @@ if (temperature <= 0 || temperature < -50) {
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 했던곳</ListGroup.Item>
                         <ListGroup.Item>
-                          {/* 예약 했던곳 컴포넌트 */}
+                          <ListGroup.Item>{ReservedPage}</ListGroup.Item>
                         </ListGroup.Item>
                       </ListGroup>
                     </Tab>

@@ -1,43 +1,44 @@
 #rouletteContainer {
- width: 380px;
- overflow: hidden;
- display: flex;
- align-items: center;
- flex-direction: column;
- position: relative;
- /* background-color: #6efe00; */
+  width: 400px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+   margin: auto; /* 추가 */
+  /* background-color: #6efe00; */
 }
 
 #rouletteContainer::before {
- content: "";
- position: absolute;
- width: 10px;
- height: 50px;
- border-radius: 5px;
- background: #000;
- top: -20px;
- left: 50%;
- transform: translateX(-50%);
- z-index: 22;
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 50px;
+  border-radius: 5px;
+  background: #000;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 22;
 }
 
 #rouletteCanvas {
- transition: 2s;
+  transition: 2s;
 }
 
 #rotateButton {
- background: #febf00;
- margin-top: 1rem;
- padding: .8rem 1.8rem;
- border: none;
- font-size: 1.5rem;
- font-weight: bold;
- border-radius: 5px;
- transition: .2s;
- cursor: pointer;
+  background: #febf00;
+  margin-top: 1rem;
+  padding: 0.8rem 1.8rem;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: 0.2s;
+  cursor: pointer;
 }
 
 #rotateButton:active {
- background: #444;
- color: #f9f9f9;
+  background: #444;
+  color: #f9f9f9;
 }

@@ -11,7 +11,7 @@ const UserDetail = () => {
 console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
 
     const goReservation = () => {
-        navigate("/reservation/")}
+        navigate(`/reservation/${id}`)}
 
 
     const [detail, setDetails] = useState([]);
