@@ -1,0 +1,55 @@
+.whole-box {
+  padding: 20px;
+}
+
+.input-box {
+  display: flex;
+  flex-direction: row;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 16px 16px; /* 기본값 */
+  z-index: 3;
+  background-color: white;
+}
+
+.input-box.active {
+  border-radius: 16px 16px 0 0;
+}
+.input-box:focus-within {
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
+}
+
+.input3 {
+  flex: 1 0 0;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.delete-button {
+  cursor: pointer;
+}
+
+.drop-down-box {
+  display: block;
+  margin: 0 auto;
+  padding: 8px 0;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
+  list-style-type: none;
+  z-index: 3;
+}
+
+.drop-down-item {
+  padding: 0 16px;
+}
+
+.drop-down-item.selected {
+  background-color: lightgray;
+}
