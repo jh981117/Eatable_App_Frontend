@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import MenuSection from './menuComponents/MenuSection';
+import DetailTab from '../userreview/DetailTab';
 
 const UserDetail = () => {
 
@@ -43,7 +44,7 @@ console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
             <Row>
                 <Col>
                     <div>매장사진</div>
-                    <div>{detail.fileList && detail.fileList[0] && detail.fileList[0].imageUrl}</div>
+                    <img src={detail.fileList && detail.fileList[0] && detail.fileList[0].imageUrl} style={{borderRadius: "25px" , width:"500px"}}/>
                     <hr />
                     <div>매장정보</div>
                     <h2>{detail.storeName}</h2>
@@ -69,6 +70,7 @@ console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
                         </svg>
                         {''} 포장 웨이팅 5팀이 있습니다
                     </div>
+                    <DetailTab />
                     <div>
                         <br /><br />
                         <MenuSection/>

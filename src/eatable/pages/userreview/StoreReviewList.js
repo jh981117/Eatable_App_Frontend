@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Card } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
 function StoreReviewList() {
@@ -42,10 +43,41 @@ console.log(reviews)
   return (
     <div>
       {reviews.map((review) => (
-        <div key={review.id}>
-          <p>{review.content}</p>
-          {/* 추가적인 리뷰 정보 렌더링 */}
-        </div>
+        <Card className="mt-3 col-6 flex justify-content-center">
+          <Card.Body>
+            <div key={review.id}>
+              <div>
+                <span>
+                  <img
+                    src={review.profileImageUrl}
+                    style={{
+                      width: "30px",
+                      borderRadius: "30px",
+                      marginRight: "5px",
+                    }}
+                  />
+                </span>
+                <span>{review.nickname}</span>
+              </div>
+              <span>
+                <img
+                  src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                  style={{ width: "20px" }}
+                />
+              </span>
+              <span style={{marginRight:"10px"}}>{review.avg}</span>
+              <span>{review.createdAt}</span>
+              <div>
+                <img
+                  src={review.partnerReviewAttachments}
+                  style={{ borderRadius: "15px", width: "250px" }}
+                />
+              </div>
+              <p>{review.content}</p>
+              {/* 추가적인 리뷰 정보 렌더링 */}
+            </div>
+          </Card.Body>
+        </Card>
       ))}
     </div>
   );
