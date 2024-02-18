@@ -150,7 +150,7 @@ const EatableApp = () => {
 
             {/* 예약 페이지 유저권한  */}
             <Route
-              path="/reservation"
+              path="/reservation/:id"
               element={
                 <MemberRoute>
                   <Reservation />
@@ -158,7 +158,7 @@ const EatableApp = () => {
               }
             ></Route>
             <Route
-              path="/reservationOk"
+              path="/reservationOk/:id"
               element={<MemberRoute>{/* <ApplyReq /> */}</MemberRoute>}
             ></Route>
 
