@@ -8,6 +8,7 @@ import FollowPage from "./FollowPage";
 import SignoutPage from "./SignoutPage";
 import { jwtDecode } from "jwt-decode";
 import UserPartnerPage from "./UserPartnerPage";
+import Temperature from "./Temperature";
 
 
 const checkPartnerRole = () => {
@@ -55,7 +56,8 @@ const isPartner = () => {
         return <ReviewPage />;
       case "userFollow":
         return <FollowPage />;
-
+      case "temperature":
+        return <Temperature/>;
       case "store":
         return <UserPartnerPage />;
       default:
@@ -95,7 +97,12 @@ const isPartner = () => {
               </Button>
             )}
 
-
+<Button
+              onClick={() => setActiveTab("temperature")}
+              variant={activeTab === "temperature" ? "primary" : "light"}
+            >
+              온도계
+            </Button>
 
 
            

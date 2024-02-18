@@ -93,6 +93,7 @@ const MyHeader = () => {
                 <span className="nickname ml-2" style={{ marginRight: "10px" }}>
                   {auth.profile ? auth.profile.nickName : "로그인 필요"}
                 </span>
+                {/* <여기에 작성>*/}
               </Link>
               <Button
                 onClick={handleLogout}
