@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button, Container, Image, Modal, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
-import GoogleMap from "./partner/GoogleMaps";
-import Roulette from "./partner/Roulette";
+import TopCategoty from "./fregment/TopCategoty";
+import StoreLike from "./userreview/StoreLilke";
 
 const HomePage = () => {
   const [showMap, setShowMap] = useState(false);
@@ -21,12 +21,6 @@ const HomePage = () => {
   const changeImage = () => {
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
   };
-
-  const handleCloseMap = () => setShowMap(false);
-  const handleShowMap = () => setShowMap(true);
-
-  const handleCloseRoulette = () => setShowRoulette(false);
-  const handleShowRoulette = () => setShowRoulette(true);
 
   console.log(partners);
   useEffect(() => {
@@ -72,7 +66,7 @@ const HomePage = () => {
       ) {
         setPage((prevPage) => prevPage + 1);
       }
-    }, 100); // 100ms 마다 이벤트 핸들러 실행
+    }, 90); // 100ms 마다 이벤트 핸들러 실행
 
     window.addEventListener("scroll", handleScroll);
     return () => {
@@ -80,60 +74,16 @@ const HomePage = () => {
     };
   }, [hasMore, isLoading]);
 
+  // 스크롤 이벤트 핸들링 로직...
+
   return (
     <Container
       className="d-flex justify-content-center align-items-center"
       style={{ minHeight: "100vh" }}
     >
-      <div style={{ width: "700px" }}>
-        <Image
-          src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051385932-map.png"
-          onClick={handleShowMap}
-          style={{ width: "50px" }}
-        />
-        맛집지도
-        <Image
-          src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051794890-fortune.png"
-          onClick={handleShowRoulette}
-          style={{ width: "50px" }}
-        />
-        룰렛추천
-        {/* GoogleMap 모달 */}
-        <Modal show={showMap} onHide={handleCloseMap} size="lg">
-          <Modal.Header closeButton>
-            <Modal.Title>맛집지도</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ height: "100%" }}
-            >
-              <div style={{ maxWidth: "600px", width: "100%" }}>
-                {" "}
-                {/* 가로 크기 조정이 필요할 경우 */}
-                <GoogleMap />
-              </div>
-            </div>
-          </Modal.Body>
-        </Modal>
-        {/* Roulette 모달 */}
-        <Modal show={showRoulette} onHide={handleCloseRoulette} size="lg">
-          <Modal.Header closeButton>
-            <Modal.Title>룰렛추천</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ height: "100%" }}
-            >
-              <div style={{ maxWidth: "600px", width: "100%" }}>
-                {" "}
-                {/* 가로 크기 조정이 필요할 경우 */}
-                <Roulette />
-              </div>
-            </div>
-          </Modal.Body>
-        </Modal>
+      <div >
+        <TopCategoty />
+
         {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
         <hr />
         <h3 className="text-center mb-3">Eatable 근처 맛집</h3>
@@ -174,20 +124,7 @@ const HomePage = () => {
                 {partner.viewCnt}
               </span>
             </div>
-            {/* 즐겨찾기 이미지 변경 */}
-            <div className="mt-2">
-              <Image
-                onClick={changeImage}
-                src={images[imageIndex]}
-                alt="Dynamic Image"
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "5%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
+            <StoreLike partnerId={partner.id} />
 
             {/* 평점 */}
             <Image
@@ -200,6 +137,7 @@ const HomePage = () => {
                 objectFit: "cover",
               }}
             />
+            
           </div>
         ))}
         {isLoading && (
