@@ -27,9 +27,36 @@ const Reservation = () => {
     };
 
     const showReservationOk = () => {
-        navigate("/reservationOk/" + {id})
+        const reservationData = {
+            partnerId: id,
+            people: adultCount,
+            waitingRegDate: selectedDate.toISOString(), // 서버에서 Date 형식으로 파싱하기 위해 ISO 문자열로 변환
+            waitingState: "TRUE"
+        };
+    
+        fetch(`http://localhost:8080/api/waiting/addWaiting/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(reservationData),
+        })
+        .then(response => {
+            if (response.ok) {
+                // 예약 성공 시 처리
+                navigate(`/reservationOk/${id}`);
+            } else {
+                // 예약 실패 시 처리
+                throw new Error('Failed to save reservation');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving reservation:', error);
+            // 예약 실패 시 처리
+        });
     };
-
+    console.log(adultCount);
+    console.log(selectedDate);
     return (
         <div>
             예약 인원 설정하기 <br />
@@ -53,9 +80,11 @@ const Reservation = () => {
                     showTimeSelect
                     includeTimes={[
                         setHours(setMinutes(new Date(), 0), 17),
-                        setHours(setMinutes(new Date(), 30), 18),
-                        setHours(setMinutes(new Date(), 30), 19),
                         setHours(setMinutes(new Date(), 30), 17),
+                        setHours(setMinutes(new Date(), 0), 18),
+                        setHours(setMinutes(new Date(), 30), 18),
+                        setHours(setMinutes(new Date(), 0), 19),
+                        setHours(setMinutes(new Date(), 30), 19),
                     ]}  /*영업시간 설정*/
                     dateFormat="MMMM d, yyyy h:mm aa"
                 />

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {  Button, Container, Image, Spinner } from "react-bootstrap";
+import { Button, Container, Image, Modal, Spinner } from "react-bootstrap";
 import { throttle } from "lodash";
 import { Link } from "react-router-dom";
-import GoogleMap from "./partner/GoogleMap";
+import TopCategoty from "./fregment/TopCategoty";
+import StoreLike from "./userreview/StoreLilke";
 
 const HomePage = () => {
   const [showMap, setShowMap] = useState(false);
+  const [showRoulette, setShowRoulette] = useState(false);
   const [partners, setPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,13 +19,9 @@ const HomePage = () => {
   ]; // 이미지 URL 배열
 
   const changeImage = () => {
-
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
   };
 
-  const toggleMapDisplay = () => {
-    setShowMap(!showMap);
-  };
   console.log(partners);
   useEffect(() => {
     const loadPartners = async () => {
@@ -52,7 +50,7 @@ const HomePage = () => {
         } finally {
           setIsLoading(false);
         }
-      }, 1000); // 1초 지연 후 데이터 로딩
+      }, 500); // 1초 지연 후 데이터 로딩
     };
 
     loadPartners();
@@ -68,7 +66,7 @@ const HomePage = () => {
       ) {
         setPage((prevPage) => prevPage + 1);
       }
-    }, 100); // 100ms 마다 이벤트 핸들러 실행
+    }, 90); // 100ms 마다 이벤트 핸들러 실행
 
     window.addEventListener("scroll", handleScroll);
     return () => {
@@ -76,14 +74,20 @@ const HomePage = () => {
     };
   }, [hasMore, isLoading]);
 
+  // 스크롤 이벤트 핸들링 로직...
+
   return (
-    <div>
-      <Container>
-        <Button onClick={toggleMapDisplay}>지도 표시</Button>
-        {showMap && <GoogleMap />}{" "}
-        {/* 조건부 렌더링으로 GoogleMap 컴포넌트 표시 제어 */}
+    <Container
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <div >
+        <TopCategoty />
 
-
+        {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
+        <hr />
+        <h3 className="text-center mb-3">Eatable 근처 맛집</h3>
+        <hr />
         {partners.map((partner) => (
           <div
             key={partner.id}
@@ -91,47 +95,38 @@ const HomePage = () => {
             style={{ width: "100%" }}
           >
             {/* 이미지 섹션 */}
-
-            <Image
-              src={
-                partner.fileList[0]
-                  ? partner.fileList[0]?.imageUrl
-                  : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
-              }
-              alt="Partner"
-              style={{
-                width: "200px", // 이미지 크기 조정
-                height: "200px",
-                borderRadius: "5%",
-                objectFit: "cover",
-                marginBottom: "10px",
-              }}
-            />
-
             <Link
-              to={`/store/${partner.id}`}
+              to={`/userdetail/${partner.id}`}
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <h3>{partner.storeName}</h3>
-            </Link>
-            <div>평점</div>
-            <div className="d-flex justify-content-between align-items-center">
-              <span>조회수: {partner.viewCnt}</span>
-            </div>
-            {/* 이미지 변경 섹션 */}
-            <div className="mt-2">
+              {/* 매장 사진 */}
               <Image
-                onClick={changeImage}
-                src={images[imageIndex]}
-                alt="Dynamic Image"
+                src={
+                  partner.fileList[0]
+                    ? partner.fileList[0]?.imageUrl
+                    : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+                }
+                alt="Partner"
                 style={{
-                  width: "30px",
-                  height: "30px",
+                  width: "500px", // 이미지 크기 조정
+                  height: "500px",
                   borderRadius: "5%",
                   objectFit: "cover",
+                  marginBottom: "10px",
                 }}
               />
+              <h3>{partner.storeName}</h3>
+            </Link>
+            <div className="d-flex justify-content-between align-items-center">
+              {/* 조회수 */}
+              <span>
+                <Image src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"></Image>
+                {partner.viewCnt}
+              </span>
             </div>
+            <StoreLike partnerId={partner.id} />
+
+            {/* 평점 */}
             <Image
               src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
               alt="Dynamic Image"
@@ -142,6 +137,7 @@ const HomePage = () => {
                 objectFit: "cover",
               }}
             />
+            
           </div>
         ))}
         {isLoading && (
@@ -150,8 +146,8 @@ const HomePage = () => {
           </div>
         )}
         {!isLoading && !hasMore && <p>END</p>}
-      </Container>
-    </div>
+      </div>
+    </Container>
   );
 };
 

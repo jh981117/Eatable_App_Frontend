@@ -8,7 +8,6 @@ import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const UserInfoPage = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
@@ -195,6 +194,7 @@ const UserInfoPage = () => {
   let barWidth = "0%";
   let barLeft = "50%";
 
+
 if (temperature <= 0 && temperature >= -50) {
   barWidth = `${-temperature}%`;
   barLeft = `${50 - (-temperature)}%`;
@@ -202,6 +202,7 @@ if (temperature <= 0 && temperature >= -50) {
   barWidth = `${temperature * 1.8}%`;
   barLeft = "50%";
 }
+
 
   console.log("온도는?" + profile.username);
 
@@ -310,10 +311,12 @@ if (temperature <= 0 && temperature >= -50) {
               <div className="d-flex align-items-center">
                 <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
                 <div className="flex align-items-center ml-3">
+
                   닉네임 : <Input type="text" value={profile.nickName} readOnly /><br/>
                   내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
                   {edit.bio && (<Button onClick={() => updateOk("bio")}>확인</Button>)}<br/>
                   온도 : {temperature}<br/>
+
                   <div>
                     <div style={{backgroundColor: "gray", width: "100%", height: "20px", borderRadius: "10px"}}>
                       <div className="temperature-bar" style={{backgroundColor: "gray", width: "100%", height: "20px", position: "relative", borderRadius: "10px", animation: "wave 2s infinite linear alternate"}}>
@@ -331,10 +334,12 @@ if (temperature <= 0 && temperature >= -50) {
                       </div>
                     </div>
                   </div>
+
                   {/* <Button variant="primary" onClick={decreaseTemperature}>온도 감소</Button>
                   <Button variant="danger" onClick={increaseTemperature}>온도 증가</Button> */}
                   <Button variant="primary" onClick={handleTogglePasswordInput}>비밀번호 변경</Button>
                   <Button className="btn btn-danger ms-2" onClick={showModal}>회원탈퇴</Button>
+
                   <Modal show={modal} onHide={closeModal}>
                     <Modal.Header closeButton>
                       <Modal.Title>회원탈퇴</Modal.Title>
@@ -399,7 +404,9 @@ if (temperature <= 0 && temperature >= -50) {
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 현황</ListGroup.Item>
                         <ListGroup.Item>
+
                         <ListGroup.Item>{ReservePage}</ListGroup.Item>
+
                         </ListGroup.Item>
                       </ListGroup>
                     </Tab>
@@ -408,6 +415,7 @@ if (temperature <= 0 && temperature >= -50) {
                         <ListGroup.Item>예약 했던곳</ListGroup.Item>
                         <ListGroup.Item>
                         <ListGroup.Item>{ReservedPage}</ListGroup.Item>
+
                         </ListGroup.Item>
                       </ListGroup>
                     </Tab>

@@ -32,7 +32,7 @@ const CancelList = () => {
 
     const cancelOk = (id) => {
       const updatedList = lists.map((item) =>
-      item.id === id ? { ...item, partnerReqState: "접수 완료" } : item
+      item.id === id ? { ...item, partnerReqState: "취소 승인" } : item
     );
     const listId = updatedList.find(item => item.id === id);
     console.log(listId)
@@ -183,9 +183,9 @@ const CancelList = () => {
                               : "blue",
                         }}
                       >
-                        {list.partnerReqState === "CLOSE"
-                          ? "취소 승인"
-                          : list.partnerReqState}
+                      {list.partnerReqState === "CLOSE"
+                        ? "취소 승인"
+                        : list.partnerReqState}
                       </td>
                       <td>{list.phone}</td>
                       <td>{list.createdAt}</td>
