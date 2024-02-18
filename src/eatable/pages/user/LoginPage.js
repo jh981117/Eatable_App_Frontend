@@ -87,7 +87,7 @@ const LoginPage = () => {
 
               const attemptedUrl = sessionStorage.getItem("attemptedUrl");
       if (attemptedUrl) {
-        navigate(attemptedUrl);
+        navigate("/home");
         sessionStorage.removeItem("attemptedUrl"); // 더 이상 필요 없으므로 삭제
       } else {
         // 기본 페이지로 리디렉션

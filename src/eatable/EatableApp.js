@@ -28,7 +28,9 @@ import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
 import GoogleMap from "./pages/partner/GoogleMaps";
 import UserPartnerPage from "./pages/user/UserPartnerPage";
+
 import "./EatableApp.css";
+import StoreReviewList from "./pages/userreview/StoreReviewList";
 
 const EatableApp = () => {
   return (
@@ -170,6 +172,10 @@ const EatableApp = () => {
             <Route path="/reviewwrite" Component={ReviewWrite}></Route>
             <Route path="/reviewdetail" Component={ReviewDetail}></Route>
             <Route path="/userpartnerpage" Component={UserPartnerPage}></Route>
+            <Route
+              path="/storeReviewList/:id"
+              Component={StoreReviewList}
+            ></Route>
           </Routes>
         </Container>
       </AuthProvider>

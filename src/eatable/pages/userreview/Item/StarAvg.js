@@ -18,24 +18,30 @@ const StarAvg = ({ rating, setRating }) => {
       {[...Array(5)].map((star, index) => {
         index += 1;
         return (
-          <button
-            type="button"
-            key={index}
-            className={`${animate ? "scale-animate" : ""} ${
-              index <= rating ? "on" : "off"
-            }`}
-            onClick={() => handleSetRating(index)}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              margin: "0 -15px",
-            }}
-          >
-            <FaStar color={index <= rating ? "#ffc107" : "#e4e5e9"} size={24} />
-          </button>
+          <>
+            <button
+              type="button"
+              key={index}
+              className={`${animate ? "scale-animate" : ""} ${
+                index <= rating ? "on" : "off"
+              }`}
+              onClick={() => handleSetRating(index)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                margin: "0 -15px",
+              }}
+            >
+              <FaStar
+                color={index <= rating ? "#ffc107" : "#e4e5e9"}
+                size={24}
+              />
+            </button>
+          </>
         );
       })}
+      {rating} 점
     </div>
   );
 };
