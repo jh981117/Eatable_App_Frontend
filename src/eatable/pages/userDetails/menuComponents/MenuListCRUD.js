@@ -1,9 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const MenuListCRUD = ({ menuData, handleEditMenu, id }) => {
     const [menus, setMenus] = useState(menuData); // 메뉴 데이터를 상태로 관리
+    const [newMenu, setNewMenu] = useState({ name: '', price: '', imageURL: '' }); // 새로운 메뉴 정보 상태
+
+    // 새로운 메뉴 추가 핸들러
+    const handleAddMenu = () => {
+        // 여기에서 새로운 메뉴를 서버로 전송하는 코드를 작성합니다.
+        // 새로운 메뉴 정보는 newMenu 상태에 저장되어 있습니다.
+        console.log('새로운 메뉴:', newMenu);
+        // 여기에서 서버로 새로운 메뉴 정보를 전송하는 fetch 요청을 작성합니다.
+
+        // 메뉴 추가가 성공하면 새로운 메뉴를 테이블에 추가합니다.
+        setMenus(prevMenus => [...prevMenus, newMenu]);
+        // 추가된 메뉴 정보를 초기화합니다.
+        setNewMenu({ name: '', price: '', imageURL: '' });
+    };
+
+    // 새로운 메뉴 입력값 변경 핸들러
+    const handleNewMenuChange = (e) => {
+        const { name, value } = e.target;
+        setNewMenu({ ...newMenu, [name]: value });
+    };
+
     
 
     useEffect(() => {
@@ -67,6 +88,49 @@ const MenuListCRUD = ({ menuData, handleEditMenu, id }) => {
                         handleDelete={() => handleDeleteMenu(menu.id)} /* 삭제 버튼 클릭 핸들러 */
                     />
                 ))}
+                                    {menus.map((menu, index) => (
+                        <Menu
+                            key={index}
+                            menuImageUrl={menu.menuImageUrl}
+                            name={menu.name}
+                            price={menu.price}
+                            handleEdit={() => handleEditMenu(menu.id)}
+                            handleDelete={() => handleDeleteMenu(menu.id)}
+                        />
+                    ))}
+                    {/* 새로운 메뉴 입력 폼 */}
+                    <tr>
+                        <td style={tableCellStyle}>
+                            <Form.Control
+                                type="text"
+                                name="imageURL"
+                                value={newMenu.imageURL}
+                                onChange={handleNewMenuChange}
+                                placeholder="이미지 URL"
+                            />
+                        </td>
+                        <td style={tableCellStyle}>
+                            <Form.Control
+                                type="text"
+                                name="name"
+                                value={newMenu.name}
+                                onChange={handleNewMenuChange}
+                                placeholder="이름"
+                            />
+                        </td>
+                        <td style={tableCellStyle}>
+                            <Form.Control
+                                type="text"
+                                name="price"
+                                value={newMenu.price}
+                                onChange={handleNewMenuChange}
+                                placeholder="가격"
+                            />
+                        </td>
+                        <td style={tableCellStyle}>
+                            <Button onClick={handleAddMenu}>추가</Button>
+                        </td>
+                    </tr>
             </tbody>
         </table>
     );
