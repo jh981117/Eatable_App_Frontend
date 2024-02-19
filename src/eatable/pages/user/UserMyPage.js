@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Col, Container, Row, Tab } from "react-bootstrap";
+import { Col, Container, Tab } from "react-bootstrap";
 import { Nav, Button } from "react-bootstrap";
 import UserInfoPage from "./UserInfoPage";
 import ReviewPage from "./ReviewPage";

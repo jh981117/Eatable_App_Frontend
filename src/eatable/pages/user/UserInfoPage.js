@@ -355,7 +355,6 @@ if (temperature <= 0 && temperature >= -50) {
                             <Modal.Title>회원탈퇴</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            {/* SignDrop 컴포넌트 */}
                             <SignDrop onClose={handleCloseSignOutModal} />
                         </Modal.Body>
                     </Modal>
