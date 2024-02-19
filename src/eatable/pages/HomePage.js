@@ -115,10 +115,10 @@ const HomePage = () => {
                   marginBottom: "10px",
                 }}
               />
-              <div style={{display:"flex" ,alignItems:"center"}}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 {" "}
                 <h3>{partner.storeName}</h3>
-                <small style={{color:"gray"}}>{partner.favorite}</small>
+                <small style={{ color: "gray" }}>{partner.favorite}</small>
               </div>
             </Link>
             <div className="d-flex justify-content-between align-items-center">
@@ -129,7 +129,6 @@ const HomePage = () => {
               </span>
             </div>
             <StoreLike partnerId={partner.id} />
-
             {/* 평점 */}
             <Image
               src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
@@ -141,7 +140,7 @@ const HomePage = () => {
                 objectFit: "cover",
               }}
             />
-            
+            {partner.averageRating ? partner.averageRating : "평가중"} 
           </div>
         ))}
         {isLoading && (
