@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./components/AutoComplete.css";
 
-const AutoComplete = () => {
+const AutoComplete = ({ onAutoCompleteData }) => {
   const [inputValue, setInputValue] = useState("");
   const [isHaveInputValue, setIsHaveInputValue] = useState(false);
   const [dropDownList, setDropDownList] = useState([]);
@@ -28,6 +28,7 @@ const AutoComplete = () => {
           console.log(data);
           setWholeTextArray(data);
           updateDropDownList(data);
+          onAutoCompleteData(data);
         }
       })
       .catch((error) => console.error("Error fetching search results:", error));
@@ -110,21 +111,18 @@ const AutoComplete = () => {
           {dropDownList.length === 0 && (
             <li className="drop-down-item">해당하는 단어가 없습니다</li>
           )}
-          <div>12312312312321312321</div>
           {dropDownList.map((dropDownItem, dropDownIndex) => {
             return (
-              <div>
-                <li
-                  key={dropDownIndex}
-                  onClick={() => clickDropDownItem(dropDownItem)}
-                  onMouseOver={() => setDropDownItemIndex(dropDownIndex)}
-                  className={`drop-down-item ${
-                    dropDownItemIndex === dropDownIndex ? "selected" : ""
-                  }`}
-                >
-                  {dropDownItem}
-                </li>
-              </div>
+              <li
+                key={dropDownIndex}
+                onClick={() => clickDropDownItem(dropDownItem)}
+                onMouseOver={() => setDropDownItemIndex(dropDownIndex)}
+                className={`drop-down-item ${
+                  dropDownItemIndex === dropDownIndex ? "selected" : ""
+                }`}
+              >
+                {dropDownItem}
+              </li>
             );
           })}
         </ul>

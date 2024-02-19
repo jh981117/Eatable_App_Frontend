@@ -29,6 +29,7 @@ import ReviewDetail from "./pages/userreview/ReviewDetail";
 import GoogleMap from "./pages/partner/GoogleMaps";
 import UserPartnerPage from "./pages/user/UserPartnerPage";
 import AutoComplete from "./pages/partner/AutoComplete";
+import SearchPage from "./pages/partner/SearchPage";
 
 import "./EatableApp.css";
 import StoreReviewList from "./pages/userreview/StoreReviewList";
@@ -64,6 +65,15 @@ const EatableApp = () => {
               element={
                 // <AdminRoute>
                 <GoogleMap />
+                // </AdminRoute>
+              }
+            ></Route>
+
+            <Route
+              path="/SearchPage"
+              element={
+                // <AdminRoute>
+                <SearchPage/>
                 // </AdminRoute>
               }
             ></Route>

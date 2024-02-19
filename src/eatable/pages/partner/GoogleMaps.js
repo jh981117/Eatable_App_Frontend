@@ -182,27 +182,8 @@ export default GoogleMaps;
 //   const [isLoaded, setIsLoaded] = useState(false);
 //   const markers = [];
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const response = await fetch(
-//           "http://localhost:8080/api/partner/totallist"
-//         );
-//         if (response.status === 200) {
-//           const data = await response.json();
-//           console.log(data);
-//           setPost(data); // 데이터를 상태 변수에 설정
-//         } else {
-//           console.error("Failed to fetch data");
-//         }
-//       } catch (error) {
-//         console.error("Error fetching data:", error);
-//       }
-//     };
-
-//     // 데이터 가져오기
-//     fetchData();
-//   }, []);
+ 
+  
 //   useEffect(() => {
 //     const fetchData = async () => {
 //       try {
@@ -392,3 +373,4 @@ export default GoogleMaps;
 // };
 
 // export default GoogleMap;
+ 
