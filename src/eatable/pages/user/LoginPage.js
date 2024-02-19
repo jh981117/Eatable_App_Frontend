@@ -3,12 +3,14 @@ import { Button, Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../rolecomponents/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 
 const LoginPage = () => {
 
   const { setAuth } = useAuth();
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [user, setUser] = useState({
     id: "",
@@ -93,19 +95,20 @@ const LoginPage = () => {
         // 기본 페이지로 리디렉션
         navigate("/");
       }
-    
-          
 
-          
-
-        } else {
-          console.error("로그인 실패:", response.status);
-          alert("로그인 실패!");
         }
       } catch (error) {
         console.error("로그인 요청 중 오류 발생:", error);
-        alert("로그인 요청 중 오류 발생!");
-      }
+        console.log(error); // 에러 객체 출력
+        let errorMessage = "로그인 요청 중 오류 발생!";
+        if (error.response && error.response.status === 401) {
+            errorMessage = "로그인 정보가 정확하지 않습니다.";
+        } else if (error.response && error.response.status === 403) {
+            errorMessage = "탈퇴한 회원입니다.";
+        }
+        toast.error(errorMessage); // 에러 메시지를 토스트로 표시
+    }
+      
     }
   };
 

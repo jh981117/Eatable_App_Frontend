@@ -7,8 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SignDrop from "./SignDrop";
+
 
 const UserInfoPage = () => {
+  const [showSignOutModal, setShowSignOutModal] = useState(false); // 모달 열림/닫힘 상태 관리
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [edit, setEdit] = useState(false);
@@ -18,7 +21,6 @@ const UserInfoPage = () => {
   const fileInputRef = useRef();
   const { auth, setAuth, updateProfile } = useAuth();
   const [modal, setModal] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [inputs, setInputs] = useState({
     oldPassword: "",
     newPassword: "",
@@ -27,10 +29,28 @@ const UserInfoPage = () => {
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  const [showSignOut, setShowSignOut] = useState(false);
   const [message, setMessage] = useState("");
+
+//////////////////////////////
+  const handleSignOutClick = () => {
+    setShowSignOutModal(true); // 회원탈퇴 버튼 클릭 시 모달 열기
+};
+
+const handleCloseSignOutModal = () => {
+    setShowSignOutModal(false); // 모달 닫기
+};
+
+
+///////////////////////////////////
+
   const handleTogglePasswordInput = () => {
     setShowPasswordInput(!showPasswordInput);
   };
+
+  const ToggleSignOut = () => {
+    setShowSignOut(!showSignOut);
+  }
 
   useEffect(() => {
     // 사용자 프로필 정보 불러오기
@@ -122,23 +142,6 @@ const UserInfoPage = () => {
     return <div>Loading...</div>;
   }
 
-  // 회원탈퇴
-  const closeModal = () => setModal(false);
-  const showModal = () => setModal(true);
-
-  console.log(localStorage.token);
-
-  const handleDrop = () => {
-    const confirm = window.confirm("정말 탈퇴하시겠습니까?");
-    if (confirm) {
-      // 아이디 삭제되는부분 작성해야됨.
-      alert("회원탈퇴가 완료되었습니다.");
-      handleLogout();
-      navigate("/");
-    } else {
-      return;
-    }
-  };
 
   const fieldEdit = (field) => {
     setEdit((state) => ({
@@ -301,8 +304,14 @@ if (temperature <= 0 && temperature >= -50) {
     handleUpdate(field);
   };
 
+  const back = () => {
+    navigate(-1);
+  }
+
+
   return (
     <Container>
+     
       <ToastContainer position="top-center" />
       <Row>
         <Col className="d-flex align-items-center">
@@ -338,20 +347,18 @@ if (temperature <= 0 && temperature >= -50) {
                   {/* <Button variant="primary" onClick={decreaseTemperature}>온도 감소</Button>
                   <Button variant="danger" onClick={increaseTemperature}>온도 증가</Button> */}
                   <Button variant="primary" onClick={handleTogglePasswordInput}>비밀번호 변경</Button>
-                  <Button className="btn btn-danger ms-2" onClick={showModal}>회원탈퇴</Button>
+                  <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
 
-                  <Modal show={modal} onHide={closeModal}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>회원탈퇴</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <input type="password" placeholder="비밀번호를 입력하세요." value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button variant="secondary" onClick={closeModal}>취소</Button>
-                      <Button variant="primary" onClick={handleDrop}>확인</Button>
-                    </Modal.Footer>
-                  </Modal>
+                    {/* 회원탈퇴 모달 */}
+                    <Modal show={showSignOutModal} onHide={handleCloseSignOutModal}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>회원탈퇴</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {/* SignDrop 컴포넌트 */}
+                            <SignDrop onClose={handleCloseSignOutModal} />
+                        </Modal.Body>
+                    </Modal>
                 </div>
               </div>
               <div>
@@ -372,6 +379,7 @@ if (temperature <= 0 && temperature >= -50) {
                       <Form.Label>새 비밀번호 확인</Form.Label>
                       <Form.Control type="password" name="confirmPassword" required onChange={handleChange}/>
                     </Form.Group>
+                    <Button variant="primary" onClick={back}>취소</Button>
                     <Button variant="primary" type="submit">변경하기</Button>
                     <p>{message}</p>
                   </Form>
@@ -403,20 +411,13 @@ if (temperature <= 0 && temperature >= -50) {
                     <Tab eventKey="reserve" title="예약 현황">
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 현황</ListGroup.Item>
-                        <ListGroup.Item>
-
                         <ListGroup.Item>{ReservePage}</ListGroup.Item>
-
-                        </ListGroup.Item>
                       </ListGroup>
                     </Tab>
                     <Tab eventKey="reserved" title="예약 했던곳">
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 했던곳</ListGroup.Item>
-                        <ListGroup.Item>
                         <ListGroup.Item>{ReservedPage}</ListGroup.Item>
-
-                        </ListGroup.Item>
                       </ListGroup>
                     </Tab>
                   </Tabs>

@@ -119,10 +119,7 @@ const MyHeader = () => {
                 <span className="nickname ml-2">
                   {auth.profile ? auth.profile.nickName : ""}
                 </span>
-<<<<<<< HEAD:src/eatable/pages/components/MyHeader.js
-                {/* <여기에 작성>*/}
-              </Link>
-=======
+
                 <span style={{ marginRight: "5px" }}>
                   <Image
                     src={tempColor(
@@ -133,7 +130,7 @@ const MyHeader = () => {
                   {auth.profile ? auth.profile.temperature + 10 : ""}º
                 </span>
               </Nav.Link>
->>>>>>> 457d2c6846f4ac553558a5d649eb825c383a7cd8:src/eatable/pages/fregment/MyHeader.js
+
               <Button
                 onClick={handleLogout}
                 variant="outline-secondary"
