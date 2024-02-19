@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import './components/AutoComplete.css';
 
-const AutoComplete = ({ onAutoCompleteData }) => {
+const AutoComplete = ({ keyword, onAutoCompleteData }) => {
     const [inputValue, setInputValue] = useState("");
     const [isHaveInputValue, setIsHaveInputValue] = useState(false);
     const [dropDownList, setDropDownList] = useState([]);
     const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
     const [wholeTextArray, setWholeTextArray] = useState([]);
+
+    useEffect(() => {
+        if (keyword) {
+            setInputValue(keyword);
+        }
+    }, [keyword]);
 
     useEffect(() => {
         fetchData();
@@ -44,6 +50,9 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             data.forEach(item => {
                 if (item.storeName.includes(inputValue) && !filteredList.includes(item.storeName)) {
                     filteredList.push(item.storeName);
+                }
+                if (item.favorite.includes(inputValue) && !filteredList.includes(item.favorite)) {
+                    filteredList.push(item.favorite);
                 }
                 if (item.address.area.includes(inputValue) && !filteredList.includes(item.address.area)) {
                     filteredList.push(item.address.area);
