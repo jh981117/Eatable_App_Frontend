@@ -3,8 +3,20 @@ import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import MenuSection from './menuComponents/MenuSection';
 import DetailTab from '../userreview/DetailTab';
+import { Modal } from 'react-bootstrap'; // 모달을 위한 Bootstrap 컴포넌트를 사용합니다.
+import Reservation from './reservation/Reservation';
 
 const UserDetail = () => {
+
+    const [showModal, setShowModal] = useState(false); // 모달 열림 여부를 저장하는 상태 변수
+
+    const handleOpenModal = () => {
+        setShowModal(true); // 모달 열기 함수
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false); // 모달 닫기 함수
+    };
 
     const navigate = useNavigate();
 
@@ -76,8 +88,24 @@ console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
                         <MenuSection/>
                     </div>
                     <div className='text-center'>
-                    <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '25rem' }} onClick={goReservation}>예약하기</Button>
-                    </div>
+            {/* 예약하기 버튼 */}
+            <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '25rem' }} onClick={handleOpenModal}>예약하기</Button>
+
+            {/* 모달 컴포넌트 */}
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>예약하기</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {/* Reservation 컴포넌트를 여기에 표시 */}
+                    <Reservation />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={handleCloseModal}>닫기</Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
+    
                 </Col>
             </Row>
         </Container>
