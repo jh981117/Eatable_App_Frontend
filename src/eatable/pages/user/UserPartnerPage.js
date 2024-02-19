@@ -1,12 +1,17 @@
 import { jwtDecode } from "jwt-decode";
 import React, { useState, useEffect } from "react";
 import { Button, Card, Container } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import MenuSectionCRUD from "../userDetails/menuComponents/MenuSectionCRUD";
+import MenuListCRUD from "../userDetails/menuComponents/MenuListCRUD";
 
 const UserPartnerPage = () => {
   const [stores, setStores] = useState([]);
   const [selectedImage, setSelectedImage] = useState("");
+  const [menuData, setMenuData] = useState([]); // menuData 상태를 정의합니다.
   const navigate = useNavigate();
+
+  let {id} = useParams();
 
   // 현재 로그인한 사용자의 userId를 추출하는 함수
   const getUserIdFromToken = () => {
@@ -217,6 +222,10 @@ const cancelPartner = async (userId) => {
 
         <Card style={{ marginTop: "10px" }}>
           <h2>메뉴관리</h2>
+          {stores.map((store, index) => (
+            <MenuSectionCRUD key={index} id={store.id} />
+  ))}
+          
           <br />
           <br />
         </Card>

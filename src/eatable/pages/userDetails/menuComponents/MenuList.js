@@ -7,22 +7,24 @@ const MenuList = ({ menuData }) => {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
                 <tr>
+                    <th style={tableHeaderStyle}>사진</th>
                     <th style={tableHeaderStyle}>이름</th>
                     <th style={tableHeaderStyle}>가격</th>
                 </tr>
             </thead>
             <tbody>
                 {menuData.map((menu, index) => (
-                    <Menu key={index} name={menu.name} price={menu.price} />
-                ))}
+                    <Menu key={index} menuImageUrl={menu.menuImageUrl} name={menu.name} price={menu.price} />
+                    ))}
             </tbody>
         </table>
     );
 };
 
-const Menu = ({ name, price }) => {
+const Menu = ({ menuImageUrl, name, price }) => {
     return (
         <tr style={tableRowStyle}>
+            <td style={tableCellStyle}><img src={menuImageUrl} style={{width: "100px"}}/></td>
             <td style={tableCellStyle}>{name}</td>
             <td style={tableCellStyle}>{price}원</td>
         </tr>

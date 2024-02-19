@@ -3,6 +3,7 @@ import { Container, Tab, Tabs } from "react-bootstrap";
 import ReviewList from "./ReviewList";
 import StoreReviewList from "./StoreReviewList";
 import ReviewImg from "./ReviewImg";
+import MenuSection from "../userDetails/menuComponents/MenuSection";
 
 const DetailTab = () => {
   return (
@@ -14,7 +15,7 @@ const DetailTab = () => {
             홈
           </Tab>
           <Tab eventKey="storemenu" title="메뉴">
-            메뉴
+            <MenuSection/>
           </Tab>
           <Tab eventKey="storeimg" title="사진">
             <ReviewImg/>

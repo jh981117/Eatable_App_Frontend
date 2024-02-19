@@ -83,10 +83,7 @@ console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
                         {''} 포장 웨이팅 5팀이 있습니다
                     </div>
                     <DetailTab />
-                    <div>
-                        <br /><br />
-                        <MenuSection/>
-                    </div>
+
                     <div className='text-center'>
             {/* 예약하기 버튼 */}
             <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '25rem' }} onClick={handleOpenModal}>예약하기</Button>
