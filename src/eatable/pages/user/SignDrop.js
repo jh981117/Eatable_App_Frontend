@@ -1,12 +1,7 @@
-import { Input } from '@material-ui/core';
-import React, { Profiler, useEffect, useState } from 'react';
-import { Button, Form, ListGroup, Modal, Tab, Tabs } from 'react-bootstrap';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import ReservePage from './ReservePage';
-import ReservedPage from './ReservedPage';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
 import { useAuth } from '../../rolecomponents/AuthContext';
 
 const SignDrop = ( ) => {
@@ -40,7 +35,7 @@ const SignDrop = ( ) => {
             );
             if (response.ok) {
                 // 회원 탈퇴 성공 시 처리
-                window.confirm("회원 탈퇴가 성공적으로 이루어졌습니다.");
+                window.confirm("정말 탈퇴하시겠습니까?");
                 setAuth("");
                 localStorage.removeItem("token");
                 navigate("/home");
@@ -73,59 +68,5 @@ const SignDrop = ( ) => {
       </div>
     );
   };
-
-    // const navigate = useNavigate();
-    // const token = localStorage.getItem("token");
-    // const decoded = jwtDecode(token); // 토큰 디코딩
-    // console.log(decoded , "234234324")
-    
-
-    // useEffect = (() => {
-    //     fetch(`http://localhost:8080/api/user/userdrop/${decoded.id}`,
-    //     {
-    //         body: JSON.stringify({
-                
-    //         }),
-    //     })
- 
-    //     .then((response) => {
-    //         if (response.status === 200) {
-    //             return "성공";
-    //         } else {
-    //             return "실패";
-    //         }
-    //     })
-    // }, []);
-
-    // const outSubmit = (e) => {
-    //     e.preventDefault();
-
-    //     try{
-
-    //     } catch {
-
-    //     }
-        
-    //     // logout();
-    //     // navigate("/home");
-    // }
-
-
-//     return (
-//         <div>
-//                 <Form onSubmit={""}>
-//                     <div style={{textAlign: "center", marginBottom: "20px"}}>
-//                         <h2>회원탈퇴</h2>
-//                     </div>
-//                     <Form.Group>
-//                         <Form.Label>비밀번호</Form.Label>
-//                         <Form.Control type="password" name="password" required />
-//                     </Form.Group>
-//                     <Button variant="primary" onClick={back}>취소</Button>
-//                     <Button variant="danger" type="submit">회원탈퇴</Button>
-//                 </Form>
-//         </div>
-//     );
-// };
 
 export default SignDrop;
