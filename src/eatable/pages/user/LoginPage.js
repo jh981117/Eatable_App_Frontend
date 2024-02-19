@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import { jwtDecode } from "jwt-decode";
-import { toast } from "react-toastify";
-
 
 const LoginPage = () => {
 
   const { setAuth } = useAuth();
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
 
   const [user, setUser] = useState({
     id: "",
@@ -85,8 +81,6 @@ const LoginPage = () => {
           // 로그인 상태와 프로필 정보를 함께 업데이트
           setAuth({ isLoggedIn: true, user: profileData, profile: profileData });
 
-
-
               const attemptedUrl = sessionStorage.getItem("attemptedUrl");
       if (attemptedUrl) {
         navigate("/home");
@@ -96,19 +90,20 @@ const LoginPage = () => {
         navigate("/");
       }
 
+        } else {
+          console.error("로그인 실패:", response.status);
+          if (response.status === 401) {
+            window.confirm("비밀번호가 틀렸습니다.");
+          } else if (response.status === 403) {
+            window.confirm("탈퇴한 회원입니다."); // 탈퇴한 회원일 경우의 처리
+          } else {
+            window.confirm("아이디가 존재하지 않습니다.");  // 404
+          }
         }
-      } catch (error) {
+      }
+       catch (error) {
         console.error("로그인 요청 중 오류 발생:", error);
-        console.log(error); // 에러 객체 출력
-        let errorMessage = "로그인 요청 중 오류 발생!";
-        if (error.response && error.response.status === 401) {
-            errorMessage = "로그인 정보가 정확하지 않습니다.";
-        } else if (error.response && error.response.status === 403) {
-            errorMessage = "탈퇴한 회원입니다.";
-        }
-        toast.error(errorMessage); // 에러 메시지를 토스트로 표시
-    }
-      
+      }
     }
   };
 
@@ -116,17 +111,9 @@ const LoginPage = () => {
   const validateField = (fieldName, value) => {
     switch (fieldName) {
       case "username":
-        return value.trim() === ""
-          ? "아이디를 입력해주세요."
-          : value === user.username
-          ? ""
-          : "존재하지 않는 아이디 입니다."; // 저장된 아이디인지도 확인해줘야함. 실제로 있는 아이디인지.
+        return value.trim() === "" ? "아이디를 입력해주세요." : "";
       case "password":
-        return value.trim() === ""
-          ? "비밀번호를 입력해주세요."
-          : value === user.password
-          ? ""
-          : "비밀번호를 확인해주세요.";
+        return value.trim() === ""? "비밀번호를 입력해주세요." : "" ;
     }
   };
 
@@ -165,32 +152,13 @@ const LoginPage = () => {
 
         <Form.Group className="mt-3" controlId="formBasicPassword">
           <Form.Label>비밀번호 : </Form.Label>
-          <Form.Control
-            type="password"
-            name="password"
-            placeholder="비밀번호를 입력해주세요."
-            value={user.password}
-            onChange={changeValue}
-          />
-          {user.passwordError && (
-            <div className="text-danger">{user.passwordError}</div>
-          )}
+          <Form.Control type="password" name="password" placeholder="비밀번호를 입력해주세요." value={user.password} onChange={changeValue}/>
+          {user.passwordError && (<div className="text-danger">{user.passwordError}</div>)}
         </Form.Group>
 
-        {user.submitError && (
-          <div className="text-danger">{user.submitError}</div>
-        )}
-        <Button variant="primary" type="submit">
-          로그인
-        </Button>
-        <Button
-          className="m-2"
-          variant="primary"
-          type="button"
-          onClick={provision}
-        >
-          회원가입
-        </Button>
+        {user.submitError && (<div className="text-danger">{user.submitError}</div>)}
+        <Button variant="primary" type="submit">로그인</Button>
+        <Button className="m-2" variant="primary" type="button" onClick={provision}>회원가입</Button>
       </Form>
     </Container>
   );
