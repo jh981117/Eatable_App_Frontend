@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './components/AutoComplete.css';
 
-const AutoComplete = () => {
+const AutoComplete = ({ onAutoCompleteData }) => {
     const [inputValue, setInputValue] = useState("");
     const [isHaveInputValue, setIsHaveInputValue] = useState(false);
     const [dropDownList, setDropDownList] = useState([]);
@@ -28,6 +28,7 @@ const AutoComplete = () => {
                     console.log(data);
                     setWholeTextArray(data);
                     updateDropDownList(data);
+                    onAutoCompleteData(data);
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
