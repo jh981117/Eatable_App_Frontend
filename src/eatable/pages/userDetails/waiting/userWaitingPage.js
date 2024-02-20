@@ -3,7 +3,7 @@ import React from 'react';
 const userWaitingPage = () => {
     return (
         <div>
-            
+            <h2>나의 예약</h2>
         </div>
     );
 };
