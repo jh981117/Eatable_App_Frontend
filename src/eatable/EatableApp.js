@@ -31,6 +31,8 @@ import UserPartnerPage from "./pages/user/UserPartnerPage";
 
 import "./EatableApp.css";
 import StoreReviewList from "./pages/userreview/StoreReviewList";
+import Out from "./pages/user/Out";
+import UserInfoPage from "./pages/user/UserInfoPage";
 
 const EatableApp = () => {
   return (
@@ -48,11 +50,12 @@ const EatableApp = () => {
             <Route path="/provision" Component={ProvisionPage}></Route>
             <Route path="/signup" Component={SignupPage}></Route>
             <Route path="/login" Component={LoginPage}></Route>
+            <Route path="/out" Component={Out}></Route>
             <Route
               path="/usermypage"
               element={
                 <MemberRoute>
-                  <UserMyPage />
+                  <UserInfoPage />
                 </MemberRoute>
               }
             ></Route>
