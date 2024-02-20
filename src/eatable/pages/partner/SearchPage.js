@@ -19,16 +19,16 @@ const SearchPage = () => {
 
   return (
     <Container
-      className="d-flex justify-content-center align-items-center"
+      className="d-flex justify-content-center"
       style={{ minHeight: "100vh" }}
     >
-      <div >
+      <div style={{ width: "70%" }}>
         <h3 className="text-center mb-3">Eatable 검색 결과</h3>
         <hr />
 
-        <AutoComplete className="text-center mb-3" onAutoCompleteData={setPartners} keyword={keyword} />
+        <AutoComplete className=" mb-3" onAutoCompleteData={setPartners} keyword={keyword} />
 
-        <div className="image-grid">
+        <div className="image-grid " >
           <div className="image-container" onClick={() => setKeyword("족발.보쌈")}>
             <Image
               src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392798299-free-icon-jokbal-8740559.png"
