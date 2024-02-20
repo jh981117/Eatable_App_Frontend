@@ -1,0 +1,12 @@
+.image-grid {
+ display: grid;
+ grid-template-columns: repeat(6, 1fr); /* 3개의 열을 가진 그리드 */
+ justify-content: center; 
+ /* align-items: center; */
+}
+
+.image-grid .Icon {
+ width: 50px; /* 부모 그리드 컨테이너에 맞게 이미지 너비 조정 */
+ height: 50px; /* 이미지 비율 유지 */
+ margin: 20px;
+}

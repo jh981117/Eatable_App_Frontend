@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Container, Image, Modal, Spinner } from "react-bootstrap";
-import { throttle } from "lodash";
 import { Link } from "react-router-dom";
 import StoreLike from "../userreview/StoreLilke";
 import AutoComplete from "./AutoComplete";
+import './components/SearchPage.css';
 
 
 const SearchPage = () => {
@@ -31,16 +31,57 @@ const SearchPage = () => {
         <hr />
 
         <AutoComplete className="text-center mb-3" onAutoCompleteData={setPartners} keyword={keyword} />
-
-        <Image
-          src="https://image.toast.com/aaaaaqx/catchtable/shopinfo/sGLE9cw-FitTFZEhOEdUT_g/gle9cw-fittfzehoedut_g_2351215074761485.jpeg?detail750"
-          onClick={() => setKeyword("치킨")} style={{ height: "100px" }}
-        />
-        <Image
-          src="https://image.toast.com/aaaaaqx/catchtable/shopinfo/snUVjSSlp0uXVetuDgQ-eWg/nuvjsslp0uxvetudgq-ewg_2352511164355747.jpg?detail750"
-          onClick={() => setKeyword("한식")} style={{ height: "100px" }}
-        />
-
+        <div className="image-grid">
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392798299-free-icon-jokbal-8740559.png"
+            onClick={() => setKeyword("족발.보쌈")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392859189-free-icon-food-12711337.png"
+            onClick={() => setKeyword("돈까스")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392885461-free-icon-grilled-meat-1791773.png"
+            onClick={() => setKeyword("고기.구이")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392913319-free-icon-pizza-2497913.png"
+            onClick={() => setKeyword("피자")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392940679-free-icon-tangyuan-8498963.png"
+            onClick={() => setKeyword("찜.탕.찌개")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708393241132-free-icon-spaguetti-3480618.png"
+            onClick={() => setKeyword("양식")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708393266825-free-icon-jajangmyeon-2090214.png"
+            onClick={() => setKeyword("중식")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708393286213-free-icon-wonton-noodles-7593714.png"
+            onClick={() => setKeyword("아시안")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708393306212-free-icon-chicken-6679109.png"
+            onClick={() => setKeyword("치킨")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708393325091-free-icon-rice-bowl-5990470.png"
+            onClick={() => setKeyword("백반.죽.국수")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708393341765-free-icon-beef-1720541.png"
+            onClick={() => setKeyword("버거")} className="Icon"
+          />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708393359686-free-icon-rice-cake-9745081.png"
+            onClick={() => setKeyword("분식")} className="Icon"
+          />
+        </div>
+        <hr/>
         {partners.map((partner) => (
           <div
             key={partner.id}
