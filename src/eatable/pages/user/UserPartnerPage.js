@@ -4,6 +4,7 @@ import { Button, Card, Container } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import MenuSectionCRUD from "../userDetails/menuComponents/MenuSectionCRUD";
 import MenuListCRUD from "../userDetails/menuComponents/MenuListCRUD";
+import PartnerWaitingPage from "../userDetails/waiting/partnerWaitingPage";
 
 const UserPartnerPage = () => {
   const [stores, setStores] = useState([]);
@@ -224,10 +225,16 @@ const cancelPartner = async (userId) => {
           <h2>메뉴관리</h2>
           {stores.map((store, index) => (
             <MenuSectionCRUD key={index} id={store.id} />
-  ))}
-          
+        ))}
           <br />
           <br />
+        </Card>
+
+        <Card>
+          <h2>예약관리</h2>
+          {stores.map((store, index) => (
+            <PartnerWaitingPage id={store.id} />
+        ))}
         </Card>
       </Container>
     </div>
