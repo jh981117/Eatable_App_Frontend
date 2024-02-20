@@ -5,6 +5,7 @@ import MenuSection from './menuComponents/MenuSection';
 import DetailTab from '../userreview/DetailTab';
 import { Modal } from 'react-bootstrap'; // 모달을 위한 Bootstrap 컴포넌트를 사용합니다.
 import Reservation from './reservation/Reservation';
+import ReservationNow from './reservation/ReservationNow';
 
 const UserDetail = () => {
 
@@ -85,9 +86,16 @@ console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
                     <DetailTab />
 
                     <div className='text-center'>
-            {/* 예약하기 버튼 */}
-            <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '25rem' }} onClick={handleOpenModal}>예약하기</Button>
-
+                    
+                    <div>
+                        {/* 예약하기 버튼 */}
+                        <Button style={{ fontSize: '1.5rem', marginTop: '0.5rem', width: '25rem', float: 'left' }} onClick={handleOpenModal}>예약하기</Button>
+                    </div>
+                    <div>
+                        {/* 웨이팅하기 버튼 */}
+                        <Button style={{ fontSize: '1.5rem', marginTop: '0.5rem', width: '25rem', float: 'right' }} onClick={handleOpenModal}>웨이팅하기</Button>
+                    </div>
+                    
             {/* 모달 컴포넌트 */}
             <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
@@ -96,6 +104,19 @@ console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
                 <Modal.Body>
                     {/* Reservation 컴포넌트를 여기에 표시 */}
                     <Reservation />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={handleCloseModal}>닫기</Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>예약하기</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {/* Reservation 컴포넌트를 여기에 표시 */}
+                    <ReservationNow />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={handleCloseModal}>닫기</Button>
