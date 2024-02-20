@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Button, Container, Image, Modal, Spinner } from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import StoreLike from "../userreview/StoreLilke";
 import AutoComplete from "./AutoComplete";
@@ -9,7 +9,6 @@ import './components/SearchPage.css';
 const SearchPage = () => {
 
   const [partners, setPartners] = useState([]);
-  const [imageIndex, setImageIndex] = useState(0); // 이미지 인덱스 상태
   const [keyword, setKeyword] = useState("");
 
   const images = [
@@ -17,9 +16,6 @@ const SearchPage = () => {
     "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877700672-222.png",
   ]; // 이미지 URL 배열
 
-  const changeImage = () => {
-    setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
-  };
 
   return (
     <Container
@@ -31,6 +27,7 @@ const SearchPage = () => {
         <hr />
 
         <AutoComplete className="text-center mb-3" onAutoCompleteData={setPartners} keyword={keyword} />
+
         <div className="image-grid">
           <div className="image-container" onClick={() => setKeyword("족발.보쌈")}>
             <Image

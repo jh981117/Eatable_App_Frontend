@@ -7,6 +7,7 @@ const AutoComplete = ({ keyword, onAutoCompleteData }) => {
     const [dropDownList, setDropDownList] = useState([]);
     const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
     const [wholeTextArray, setWholeTextArray] = useState([]);
+    const [page, setPage] = useState(0);
 
     useEffect(() => {
         if (keyword) {
@@ -15,11 +16,7 @@ const AutoComplete = ({ keyword, onAutoCompleteData }) => {
     }, [keyword]);
 
     useEffect(() => {
-        fetchData();
-    }, [inputValue]);
-
-    const fetchData = () => {
-        let url = `http://localhost:8080/api/partner/search?keyword=${inputValue}`;
+        let url = `http://localhost:8080/api/partner/search?page=${page}&keyword=${inputValue}`;
 
         fetch(url)
             .then((response) => {
@@ -31,14 +28,14 @@ const AutoComplete = ({ keyword, onAutoCompleteData }) => {
             })
             .then((data) => {
                 if (data !== null) {
-                    console.log(data);
-                    setWholeTextArray(data);
-                    updateDropDownList(data);
-                    onAutoCompleteData(data);
+                    console.log(data.content);
+                    setWholeTextArray(data.content);
+                    updateDropDownList(data.content);
+                    onAutoCompleteData(data.content);
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
-    };
+    }, [inputValue,page]);
 
     const updateDropDownList = (data) => {
         if (inputValue === '') {

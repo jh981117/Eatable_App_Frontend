@@ -61,10 +61,7 @@ button:hover,
   background-color: #0056b3;
 }
 
-/* WritePage.css */
-/* ... (previous styles) */
 
-/* Add focus and input styles for form controls */
 input:focus,
 select.has-value:focus {
   outline: none;
