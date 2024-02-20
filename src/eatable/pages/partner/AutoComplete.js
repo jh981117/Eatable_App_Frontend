@@ -1,24 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import './components/AutoComplete.css';
 
-const AutoComplete = ({ keyword, onAutoCompleteData }) => {
+const AutoComplete = ({ onAutoCompleteData }) => {
     const [inputValue, setInputValue] = useState("");
     const [isHaveInputValue, setIsHaveInputValue] = useState(false);
     const [dropDownList, setDropDownList] = useState([]);
     const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
     const [wholeTextArray, setWholeTextArray] = useState([]);
-    const [page, setPage] = useState(0);
 
     useEffect(() => {
-        if (keyword) {
-            setInputValue(keyword);
-        }
-    }, [keyword]);
-
-    useEffect(() => {
-        let url = `http://localhost:8080/api/partner/search?page=${page}&keyword=${inputValue}`;
-
-        fetch(url)
+        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue}`)
             .then((response) => {
                 if (response.status === 200) {
                     return response.json();
@@ -28,14 +19,16 @@ const AutoComplete = ({ keyword, onAutoCompleteData }) => {
             })
             .then((data) => {
                 if (data !== null) {
-                    console.log(data.content);
+                    // console.log(data.content);
                     setWholeTextArray(data.content);
                     updateDropDownList(data.content);
-                    onAutoCompleteData(data.content);
+                    // 검색어가 변경될 때마다 부모 컴포넌트로 해당 값을 전달
+                    onAutoCompleteData(inputValue);
+                    // onAutoCompleteData(data.content);
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
-    }, [inputValue,page]);
+    }, [inputValue]);
 
     const updateDropDownList = (data) => {
         if (inputValue === '') {
