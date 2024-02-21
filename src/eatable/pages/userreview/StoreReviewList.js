@@ -65,7 +65,7 @@ console.log(reviews)
                   style={{ width: "20px" }}
                 />
               </span>
-              <span style={{marginRight:"10px"}}>{review.avg}</span>
+              <span style={{ marginRight: "10px" }}>{review.avg}</span>
               <span>{review.createdAt}</span>
               <div>
                 <img

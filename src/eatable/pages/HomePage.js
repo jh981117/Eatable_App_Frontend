@@ -81,7 +81,7 @@ const HomePage = () => {
       className="d-flex justify-content-center align-items-center"
       style={{ minHeight: "100vh" }}
     >
-      <div >
+      <div>
         <TopCategoty />
 
         {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
@@ -115,7 +115,11 @@ const HomePage = () => {
                   marginBottom: "10px",
                 }}
               />
-              <h3>{partner.storeName}</h3>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {" "}
+                <h3>{partner.storeName}</h3>
+                <small style={{ color: "gray" }}>{partner.favorite}</small>
+              </div>
             </Link>
             <div className="d-flex justify-content-between align-items-center">
               {/* 조회수 */}
@@ -125,7 +129,6 @@ const HomePage = () => {
               </span>
             </div>
             <StoreLike partnerId={partner.id} />
-
             {/* 평점 */}
             <Image
               src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
@@ -137,7 +140,7 @@ const HomePage = () => {
                 objectFit: "cover",
               }}
             />
-            
+            {partner.averageRating ? partner.averageRating : "평가중"} 
           </div>
         ))}
         {isLoading && (

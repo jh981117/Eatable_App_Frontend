@@ -36,7 +36,7 @@ const ProvisionPage = () => {
 
     return (
         <div>
-            <Container>
+            <Container style={{ backgroundColor: "white", marginTop: "30px", borderRadius: "10px"}}>
             <h5 className="provision">약관 동의</h5>       
             <div className="provisionForm" style={{ maxHeight: '33vh', overflowY: 'auto' }}>
                 <Form.Group controlId="provision">         
@@ -160,7 +160,7 @@ const ProvisionPage = () => {
             </Container>
             <Form.Check  id="provisionCheckbox" className="provisionCheck" type="checkbox" label="이용 약관 동의 (필수)" onChange={handleProvision}/>
             <br/><br/>
-            <Container>
+            <Container style={{ backgroundColor: 'white' }}>
             <h5 className="provision">개인정보 수집 및 이용 동의</h5>   
             <div className="provisionForm" style={{ maxHeight: '33vh', overflowY: 'auto' }}>
                 <Form.Group controlId="provision">         
@@ -253,7 +253,7 @@ const ProvisionPage = () => {
                             <td>회사내부정책</td>
                             <td>회원가입 남용(부정거래), 서비스 부정사용(허위리뷰, 이벤트 부정혜택 등) 확인 및 방지</td>
                             <td>휴대전화번호, 이메일주소, 기기정보, CI/DI</td>
-                            <td>회원탈퇴 후 3년간 보관</td>
+                            <td>회원탈퇴 후 1년간 보관</td>
                         </tr>
                         </tbody>
                     </Table>   

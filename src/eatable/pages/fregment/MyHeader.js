@@ -133,6 +133,7 @@ const MyHeader = () => {
                 <span className="nickname ml-2">
                   {auth.profile ? auth.profile.nickName : ""}
                 </span>
+
                 <span style={{ marginRight: "5px" }}>
                   <Image
                     src={tempColor(
@@ -143,6 +144,7 @@ const MyHeader = () => {
                   {auth.profile ? auth.profile.temperature + 10 : ""}º
                 </span>
               </Nav.Link>
+
               <Button
                 onClick={handleLogout}
                 variant="outline-secondary"
