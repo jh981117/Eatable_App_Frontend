@@ -48,7 +48,6 @@ const UserDetail = () => {
     <Container>
       <Row>
         <Col>
-          <small style={{ color: "gray", marginLeft: "20px" }}>매장정보</small>
           <div
             style={{
               display: "flex",
@@ -57,6 +56,7 @@ const UserDetail = () => {
               alignItems: "center",
             }}
           >
+            <small style={{ color: "gray", marginLeft: "20px" }}>매장정보</small>
             <div
               style={{
                 display: "flex",
@@ -69,10 +69,10 @@ const UserDetail = () => {
                   src={selectedImage}
                   alt="Selected"
                   style={{
-                    width: "400px",
-                    height: "400px",
+                    width: "450px",
+                    height: "450px",
 
-                    borderRadius: "25px",
+                   
                   }}
                 />
               </div>
