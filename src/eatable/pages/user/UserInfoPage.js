@@ -19,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserWaitingPage from "../userDetails/waiting/userWaitingPage"; // userWaitingPage import 추가
+
 
 const UserInfoPage = () => {
   const navigate = useNavigate();
@@ -311,6 +313,8 @@ const UserInfoPage = () => {
     handleUpdate(field);
   };
 
+
+
   return (
     <Container>
       <ToastContainer position="top-center" />
@@ -593,7 +597,7 @@ const UserInfoPage = () => {
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 현황</ListGroup.Item>
                         <ListGroup.Item>
-                          <ListGroup.Item>{ReservePage}</ListGroup.Item>
+                          <ListGroup.Item><UserWaitingPage userId={profile.id}/></ListGroup.Item>
                         </ListGroup.Item>
                       </ListGroup>
                     </Tab>
@@ -601,7 +605,7 @@ const UserInfoPage = () => {
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 했던곳</ListGroup.Item>
                         <ListGroup.Item>
-                          <ListGroup.Item>{ReservedPage}</ListGroup.Item>
+                          <ListGroup.Item></ListGroup.Item>
                         </ListGroup.Item>
                       </ListGroup>
                     </Tab>
