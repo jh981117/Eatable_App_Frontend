@@ -22,9 +22,7 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                     // console.log(data.content);
                     setWholeTextArray(data.content);
                     updateDropDownList(data.content);
-                    // 검색어가 변경될 때마다 부모 컴포넌트로 해당 값을 전달
                     onAutoCompleteData(inputValue);
-                    // onAutoCompleteData(data.content);
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
@@ -50,13 +48,13 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             });
 
             setDropDownList(filteredList);
+            setIsHaveInputValue(true);
         }
     };
 
 
     const changeInputValue = event => {
         setInputValue(event.target.value);
-        setIsHaveInputValue(true);
     };
 
     const clickDropDownItem = clickedItem => {
@@ -79,6 +77,10 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                 clickDropDownItem(dropDownList[dropDownItemIndex]);
                 setDropDownItemIndex(-1);
             }
+            if (event.key === 'Enter') {
+                setIsHaveInputValue(false);
+            }
+            
         }
     };
 
@@ -105,6 +107,7 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                     )}
                     {dropDownList.map((dropDownItem, dropDownIndex) => {
                         return (
+                            
                             <li
                                 key={dropDownIndex}
                                 onClick={() => clickDropDownItem(dropDownItem)}
