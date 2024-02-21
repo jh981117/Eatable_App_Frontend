@@ -1,0 +1,22 @@
+.image-grid {
+ display: grid;
+ grid-template-columns: repeat(6, 1fr); /* 6개의 열을 가진 그리드 */
+ justify-content: center; 
+}
+
+.image-container {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ margin-bottom: 5px;
+}
+
+.Icon {
+ width: 50px; /* 이미지 너비 조정 */
+ height: 50px; /* 이미지 높이 조정 */
+}
+
+.image-container .keyword {
+ font-size: 12px; /* 키워드 글꼴 크기 */
+ color: #333; /* 키워드 색상 */
+}

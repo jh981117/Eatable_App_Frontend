@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Col, Container, Row, Tab } from "react-bootstrap";
-
+import { Col, Container, Tab } from "react-bootstrap";
 import { Nav, Button } from "react-bootstrap";
 import UserInfoPage from "./UserInfoPage";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
-import SignoutPage from "./SignoutPage";
 import { jwtDecode } from "jwt-decode";
 import UserPartnerPage from "./UserPartnerPage";
 
 
 const checkPartnerRole = () => {
   const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+  
   if (!token) return false; // 토큰이 없다면 false 반환
 
   try {
@@ -34,7 +33,10 @@ if (checkPartnerRole()) {
 }
 
 const UserMyPage = () => {
+  
   const [activeTab, setActiveTab] = useState("userInfo");
+
+ 
 
 // const na///
 
@@ -55,7 +57,6 @@ const isPartner = () => {
         return <ReviewPage />;
       case "userFollow":
         return <FollowPage />;
-
       case "store":
         return <UserPartnerPage />;
       default:
@@ -66,39 +67,14 @@ const isPartner = () => {
   return (
     <Container className="d-flex justify-content-center align-items-center">
       {/* 왼쪽에 세로로 배치된 탭 메뉴 */}
-      <Col sm={2}>
+      <Col sm={3}>
         <Tab.Container activeKey={activeTab}>
-          <Nav variant="tabs" className="flex-column justify-content-start">
-            <Button
-              onClick={() => setActiveTab("userInfo")}
-              variant={activeTab === "userInfo" ? "primary" : "light"}
-            >
-              내 정보
-            </Button>
-            <Button
-              onClick={() => setActiveTab("userReviews")}
-              variant={activeTab === "userReviews" ? "primary" : "light"}
-            >
-              내가 쓴 리뷰
-            </Button>
-            <Button
-              onClick={() => setActiveTab("userFollow")}
-              variant={activeTab === "userFollow" ? "primary" : "light"}
-            >
-              팔로우
-            </Button>
-
- {/* 파트너 권한이 있을 경우에만 매장 관리 탭을 보여줍니다. */}
-            {isPartner() && (
-              <Button onClick={() => setActiveTab("store")} variant={activeTab === "storeManagement" ? "primary" : "light"}>
-                매장 관리
-              </Button>
-            )}
-
-
-
-
-           
+          <Nav variant="tabs" className="flex-column justify-content-start" style={{ position: "fixed", top: "60px", left: "200px", width: "15%", marginRight: "100px"}}>
+            <Button onClick={() => setActiveTab("userInfo")} variant={activeTab === "userInfo" ? "primary" : "light"}>내 정보</Button>
+            <Button onClick={() => setActiveTab("userReviews")} variant={activeTab === "userReviews" ? "primary" : "light"}>내가 쓴 리뷰</Button>
+            <Button onClick={() => setActiveTab("userFollow")} variant={activeTab === "userFollow" ? "primary" : "light"}>팔로우</Button>
+            {/* 파트너 권한이 있을 경우에만 매장 관리 탭을 보여줍니다. */}
+            {isPartner() && (<Button onClick={() => setActiveTab("store")} variant={activeTab === "storeManagement" ? "primary" : "light"}>매장 관리</Button>)}
           </Nav>
         </Tab.Container>
       </Col>

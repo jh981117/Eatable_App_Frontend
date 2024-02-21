@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import ImageGallery from "./Item/ImageGallery";
 
 function StoreReviewList() {
   const { id } = useParams();
@@ -41,15 +42,22 @@ console.log(reviews)
 
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {reviews.map((review) => (
-        <Card className="mt-3 col-6 flex justify-content-center">
+        <Card key={review.id} style={{ maxWidth: "500px" }}>
           <Card.Body>
-            <div key={review.id}>
+            <div>
               <div>
                 <span>
                   <img
-                    src={review.profileImageUrl}
+                    src={review.user.profileImageUrl}
                     style={{
                       width: "30px",
                       borderRadius: "30px",
@@ -57,7 +65,8 @@ console.log(reviews)
                     }}
                   />
                 </span>
-                <span>{review.nickname}</span>
+                <span>{review.user.nickName}</span>
+                <span></span>
               </div>
               <span>
                 <img
@@ -65,14 +74,18 @@ console.log(reviews)
                   style={{ width: "20px" }}
                 />
               </span>
-              <span style={{marginRight:"10px"}}>{review.avg}</span>
+              <span style={{ marginRight: "10px" }}>{review.avg}</span>
               <span>{review.createdAt}</span>
+
               <div>
-                <img
-                  src={review.partnerReviewAttachments}
-                  style={{ borderRadius: "15px", width: "250px" }}
+                <ImageGallery
+                  images={review.partnerReviewAttachments.map((attachment) => ({
+                    src: attachment.imageUrl,
+                    alt: `Review Image ${attachment.id}`,
+                  }))}
                 />
               </div>
+
               <p>{review.content}</p>
               {/* 추가적인 리뷰 정보 렌더링 */}
             </div>

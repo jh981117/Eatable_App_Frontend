@@ -29,10 +29,18 @@ import ReviewDetail from "./pages/userreview/ReviewDetail";
 import GoogleMap from "./pages/partner/GoogleMaps";
 import UserPartnerPage from "./pages/user/UserPartnerPage";
 import AutoComplete from "./pages/partner/AutoComplete";
+import SearchPage from "./pages/partner/SearchPage";
 
 import "./EatableApp.css";
 import StoreReviewList from "./pages/userreview/StoreReviewList";
 import NaverLogin from "./pages/user/NaverLogin";
+
+import PartnerWaitingPage from "./pages/userDetails/waiting/partnerWaitingPage";
+
+import Out from "./pages/user/Out";
+import UserInfoPage from "./pages/user/UserInfoPage";
+import UserPageAccess from "./rolecomponents/UserPageAccess";
+
 
 const EatableApp = () => {
   return (
@@ -48,16 +56,16 @@ const EatableApp = () => {
 
             {/* 유저 */}
             <Route path="/provision" Component={ProvisionPage}></Route>
-            <Route path="/signup" Component={SignupPage}></Route>
-            
+            <Route path="/signup" Component={SignupPage}></Route>            
             <Route path="/login" Component={LoginPage}></Route>
-            
+            <Route path="/out" Component={Out}></Route>
+
             <Route
               path="/usermypage"
               element={
-                <MemberRoute>
-                  <UserMyPage />
-                </MemberRoute>
+                <UserPageAccess>
+                  <UserInfoPage />
+                </UserPageAccess>
               }
             ></Route>
 
@@ -67,6 +75,15 @@ const EatableApp = () => {
               element={
                 // <AdminRoute>
                 <GoogleMap />
+                // </AdminRoute>
+              }
+            ></Route>
+
+            <Route
+              path="/SearchPage"
+              element={
+                // <AdminRoute>
+                <SearchPage />
                 // </AdminRoute>
               }
             ></Route>
@@ -113,6 +130,10 @@ const EatableApp = () => {
               }
             ></Route>
 
+
+
+
+
             {/* 어드민 */}
             <Route
               path="/applylist"
@@ -149,6 +170,19 @@ const EatableApp = () => {
                 </AdminRoute>
               }
             ></Route>
+            <Route
+            path="/adminpage" element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
+            }>
+              
+            </Route>
+
+
+
+
+
 
             {/* 에러페이지 */}
             <Route path="/roleErrorPage" Component={RoleErrorPage}></Route>
@@ -172,10 +206,7 @@ const EatableApp = () => {
                 </MemberRoute>
               }
             ></Route>
-            <Route
-              path="/reservationOk/:id"
-              element={<MemberRoute>{/* <ApplyReq /> */}</MemberRoute>}
-            ></Route>
+
 
             {/* 민호 */}
             <Route path="/reviewlist" Component={ReviewList}></Route>
