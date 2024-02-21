@@ -33,8 +33,12 @@ import SearchPage from "./pages/partner/SearchPage";
 
 import "./EatableApp.css";
 import StoreReviewList from "./pages/userreview/StoreReviewList";
+
+import PartnerWaitingPage from "./pages/userDetails/waiting/partnerWaitingPage";
+
 import Out from "./pages/user/Out";
 import UserInfoPage from "./pages/user/UserInfoPage";
+
 
 const EatableApp = () => {
   return (
@@ -182,10 +186,7 @@ const EatableApp = () => {
                 </MemberRoute>
               }
             ></Route>
-            <Route
-              path="/reservationOk/:id"
-              element={<MemberRoute>{/* <ApplyReq /> */}</MemberRoute>}
-            ></Route>
+
 
             {/* 민호 */}
             <Route path="/reviewlist" Component={ReviewList}></Route>

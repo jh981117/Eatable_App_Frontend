@@ -7,10 +7,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import UserWaitingPage from "../userDetails/waiting/userWaitingPage"; // userWaitingPage import 추가
+
 import SignDrop from "./SignDrop";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
+
 
 
 const UserInfoPage = () => {
@@ -307,6 +311,9 @@ if (temperature <= 0 && temperature >= -50) {
     handleUpdate(field);
   };
 
+
+
+
   const back = () => {
     navigate(-1);
   }
@@ -341,6 +348,7 @@ if (temperature <= 0 && temperature >= -50) {
     // 해당 토큰에서 권한을 디코드하여 확인하는 로직이 될 것입니다.
     return checkPartnerRole();
   };
+
 
   return (
     <Container className="col-8">
@@ -441,6 +449,22 @@ if (temperature <= 0 && temperature >= -50) {
                       </ListGroup>
                     </Tab>
                     <Tab eventKey="reserve" title="예약 현황">
+
+                      <ListGroup variant="flush">
+                        <ListGroup.Item>예약 현황</ListGroup.Item>
+                        <ListGroup.Item>
+                          <ListGroup.Item><UserWaitingPage userId={profile.id}/></ListGroup.Item>
+                        </ListGroup.Item>
+                      </ListGroup>
+                    </Tab>
+                    <Tab eventKey="reserved" title="예약 했던곳">
+                      <ListGroup variant="flush">
+                        <ListGroup.Item>예약 했던곳</ListGroup.Item>
+                        <ListGroup.Item>
+                          <ListGroup.Item></ListGroup.Item>
+                        </ListGroup.Item>
+                      </ListGroup>
+
                       {ReservePage}
                     </Tab>
                     <Tab eventKey="reserved" title="예약 했던곳">
@@ -451,6 +475,7 @@ if (temperature <= 0 && temperature >= -50) {
                     </Tab>
                     <Tab eventKey="follow" title="팔로우">
                       {FollowPage}
+
                     </Tab>
                   </Tabs>
                 )}
