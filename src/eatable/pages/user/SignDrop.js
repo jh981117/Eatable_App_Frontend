@@ -1,30 +1,22 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
 import { useAuth } from '../../rolecomponents/AuthContext';
 import { Button, CloseButton } from 'react-bootstrap';
-import UserMyPage from './UserMyPage';
 
 const SignDrop = ( ) => {
 
-    // const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const { auth, setAuth, updateProfile } = useAuth();
-    const [inputs, setInputs] = useState({
-        inputPassword: "",
-    });
+    const { auth, setAuth } = useAuth();
+    const [inputs, setInputs] = useState({ inputPassword: "",});
     const [modalOpen, setModalOpen] = useState(false);
 
-    const openModal = () => {
-        setModalOpen(true);
-    }
 
-    const closeModal = () => {
-        setModalOpen(false);
-    }
+    const openModal = () => { setModalOpen(true); }
+    const closeModal = () => { setModalOpen(false); }
+   
 
-    
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -47,11 +39,16 @@ const SignDrop = ( ) => {
             );
             if (response.ok) {
                 // 회원 탈퇴 성공 시 처리
-                window.confirm("정말 탈퇴하시겠습니까?");
-                setAuth("");
-                localStorage.removeItem("token");
-                navigate("/out");
-                
+                const confirm = window.confirm("정말 탈퇴하시겠습니까?");
+                if (confirm) {
+                    if (response.status === 200) {
+                        setAuth("");
+                        localStorage.removeItem("token");
+                        navigate("/out");
+                    } else if (response.status !== 200) {
+                        navigate(-1);
+                    }
+                }
             } else {
                 // 회원 탈퇴 실패 시 처리
                 toast.error("회원 탈퇴에 실패했습니다. 비밀번호를 확인해 주세요.");
@@ -60,11 +57,7 @@ const SignDrop = ( ) => {
             toast.error("서버 오류로 회원 탈퇴에 실패했습니다.");
         }
     };
-  
-    const back = () => {
-        navigate("/");
-    }
-
+ 
     return (
       <div>
         <input
@@ -74,7 +67,7 @@ const SignDrop = ( ) => {
           onChange={(e) => setInputs({ ...inputs, inputPassword: e.target.value })}
         />
         { <p style={{ color: 'red' }}></p>}
-        <Button variant="danger" onClick={back}>취소</Button>
+        {/* <Button variant="danger" onClose={closeModal}>취소</Button> */}
         <Button variant="primary" onClick={handleSubmit}>회원 탈퇴</Button>
       </div>
     );
