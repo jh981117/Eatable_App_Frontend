@@ -1,19 +1,11 @@
-
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
-import MenuSection from './menuComponents/MenuSection';
-import DetailTab from '../userreview/DetailTab';
-import { Modal } from 'react-bootstrap'; // 모달을 위한 Bootstrap 컴포넌트를 사용합니다.
-import Reservation from './reservation/Reservation';
-import ReservationNow from './reservation/ReservationNow';
-
 import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Row, Image, Card } from "react-bootstrap";
+import { Button, Card, Col, Container, Row, Image } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import MenuSection from "./menuComponents/MenuSection";
 import DetailTab from "../userreview/DetailTab";
-
+import { Modal } from "react-bootstrap"; // 모달을 위한 Bootstrap 컴포넌트를 사용합니다.
+import Reservation from "./reservation/Reservation";
+import ReservationNow from "./reservation/ReservationNow";
 
 const UserDetail = () => {
   const navigate = useNavigate();
@@ -21,23 +13,23 @@ const UserDetail = () => {
   let { id } = useParams();
   console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
 
+  const [showModal, setShowModal] = useState(false); // 모달 열림 여부를 저장하는 상태 변수
 
-    const [showModal, setShowModal] = useState(false); // 모달 열림 여부를 저장하는 상태 변수
+  const handleOpenModal = () => {
+    setShowModal(true); // 모달 열기 함수
+  };
 
-    const handleOpenModal = () => {
-        setShowModal(true); // 모달 열기 함수
-    };
+  const handleCloseModal = () => {
+    setShowModal(false); // 모달 닫기 함수
+  };
 
-    const handleCloseModal = () => {
-        setShowModal(false); // 모달 닫기 함수
-    };
-
-    const navigate = useNavigate();
+  const Navigate = useNavigate();
 
   const goReservation = () => {
     navigate(`/reservation/${id}`);
   };
 
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const [detail, setDetails] = useState([]);
 
@@ -69,6 +61,24 @@ const UserDetail = () => {
       ); // 기본 이미지 설정
     }
   }, [detail.fileList]); // store.fileList가 변경될 때마다 효과를 다시 실행
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const containerStyle = {
+    display: "flex",
+    flexDirection: windowWidth > 770 ? "column" : "row",
+    gap: "10px",
+    flexWrap: "wrap", // 화면이 좁아질 때 이미지가 다음 줄로 넘어갈 수 있도록 설정
+  };
   return (
     <Container>
       <Row>
@@ -81,7 +91,7 @@ const UserDetail = () => {
               alignItems: "center",
             }}
           >
-            <small style={{ color: "gray", marginLeft: "20px" }}>매장정보</small>
+            {/* <small style={{ color: "gray", marginLeft: "20px" }}>매장정보</small> */}
             <div
               style={{
                 display: "flex",
@@ -96,18 +106,10 @@ const UserDetail = () => {
                   style={{
                     width: "450px",
                     height: "450px",
-
-                   
                   }}
                 />
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                }}
-              >
+              <div style={containerStyle}>
                 {detail.fileList && detail.fileList.length > 0 ? (
                   detail.fileList.map((file, fIndex) => (
                     <img
@@ -119,7 +121,7 @@ const UserDetail = () => {
                         height: "50px",
                         objectFit: "cover",
                         cursor: "pointer",
-                        marginLeft: "10px",
+                        marginLeft: windowWidth <= 770 ? "10px" : "0", // 화면 너비에 따라 마진 조정
                         borderRadius: "5px",
                       }}
                       onClick={() => setSelectedImage(file.imageUrl)}
@@ -142,7 +144,20 @@ const UserDetail = () => {
             <Card style={{ width: "100%", maxWidth: "700px" }}>
               <Card.Title style={{ marginTop: "0px" }}></Card.Title>
               <Card.Body style={{ paddingTop: "0px" }}>
-                <div>{detail.favorite}</div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>{detail.favorite}</span>
+                  <span>
+                    <Image
+                      src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"
+                      style={{ marginRight: "5px", marginBottom: "2px" }}
+                    ></Image>
+                    <span style={{ marginRight: "10px" }}>
+                      {detail.viewCnt}
+                    </span>
+                  </span>
+                </div>
                 <div style={{ display: "flex" }}>
                   <h2>{detail.storeName}</h2>
                   <div style={{ marginTop: "3px" }}>
@@ -167,8 +182,10 @@ const UserDetail = () => {
                   <div>주소 정보를 불러오는 중...</div>
                 )}
 
-                <div>전화번호: {detail.storePhone}</div>
+                <div>매장번호: {detail.storePhone}</div>
                 <div>테이블 수: {detail.tableCnt}</div>
+                <div>주차 : {detail.parking === "FALSE" ? "불가" : "가능"}</div>
+                <div>애완동물 : {detail.dog === "FALSE" ? "불가" : "가능"}</div>
               </Card.Body>
             </Card>
             <br />
@@ -178,89 +195,76 @@ const UserDetail = () => {
                 {""} 매장 웨이팅 5팀이 있습니다 {""}
               </div>
             </div>
-            <br />
-            <Card style={{ width: "100%", maxWidth: "700px" }}>
-              <Card.Title>
-                <small style={{ marginTop: "5px", marginLeft: "5px" }}>
-                  매장소개
-                </small>
-              </Card.Title>
-              <Card.Body>
-                <div>{detail.storeInfo}</div>
-              </Card.Body>
-            </Card>
-            <Card style={{ width: "100%", maxWidth: "700px" }}>
-              <Card.Title>
-                <small style={{ marginTop: "5px", marginLeft: "5px" }}>
-                  오픈시간
-                </small>
-                <Card.Body>
-                  <div>{detail.openTime}</div>
-                </Card.Body>
-              </Card.Title>
-            </Card>
-            <Card style={{width:"100%", maxWidth:"700px"}}>
-              <Card.Title>
-                <small style={{ marginTop: "5px", marginLeft: "5px" }}>
-                  예약정보
-                </small>
-              </Card.Title>
-              <Card.Body>
-                <div>{detail.reserveInfo}</div>
-              </Card.Body>
-            </Card>
-
 
             <DetailTab id={detail.id} />
+            <br />
+
             <div>
-              <br />
-              <br />
               <MenuSection />
             </div>
-             <div className='text-center'>
+            <div className="text-center">
               <div>
-                        {/* 예약하기 버튼 */}
-                        <Button style={{ fontSize: '1.5rem', marginTop: '0.5rem', width: '25rem', float: 'left' }} onClick={handleOpenModal}>예약하기</Button>
-                    </div>
-            
-                <div>
-                        {/* 웨이팅하기 버튼 */}
-                        <Button style={{ fontSize: '1.5rem', marginTop: '0.5rem', width: '25rem', float: 'right' }} onClick={handleOpenModal}>웨이팅하기</Button>
-                    </div>
-                    </div>
-                        
+                {/* 예약하기 버튼 */}
+                <Button
+                  style={{
+                    fontSize: "1.5rem",
+                    marginTop: "0.5rem",
+                    width: "25rem",
+                    float: "left",
+                  }}
+                  onClick={handleOpenModal}
+                >
+                  예약하기
+                </Button>
+              </div>
+
+              <div>
+                {/* 웨이팅하기 버튼 */}
+                <Button
+                  style={{
+                    fontSize: "1.5rem",
+                    marginTop: "0.5rem",
+                    width: "25rem",
+                    float: "right",
+                  }}
+                  onClick={handleOpenModal}
+                >
+                  웨이팅하기
+                </Button>
+              </div>
+            </div>
+
             {/* 모달 컴포넌트 */}
             <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>예약하기</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/* Reservation 컴포넌트를 여기에 표시 */}
-                    <Reservation />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={handleCloseModal}>닫기</Button>
-                </Modal.Footer>
+              <Modal.Header closeButton>
+                <Modal.Title>예약하기</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {/* Reservation 컴포넌트를 여기에 표시 */}
+                <Reservation />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleCloseModal}>닫기</Button>
+              </Modal.Footer>
             </Modal>
 
             <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>예약하기</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/* Reservation 컴포넌트를 여기에 표시 */}
-                    <ReservationNow />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={handleCloseModal}>닫기</Button>
-                </Modal.Footer>
+              <Modal.Header closeButton>
+                <Modal.Title>예약하기</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {/* Reservation 컴포넌트를 여기에 표시 */}
+                <ReservationNow />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleCloseModal}>닫기</Button>
+              </Modal.Footer>
             </Modal>
           </div>
         </Col>
       </Row>
     </Container>
   );
-
 };
 
 export default UserDetail;

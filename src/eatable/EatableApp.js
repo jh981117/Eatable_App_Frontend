@@ -38,6 +38,7 @@ import PartnerWaitingPage from "./pages/userDetails/waiting/partnerWaitingPage";
 
 import Out from "./pages/user/Out";
 import UserInfoPage from "./pages/user/UserInfoPage";
+import UserPageAccess from "./rolecomponents/UserPageAccess";
 
 
 const EatableApp = () => {
@@ -60,9 +61,9 @@ const EatableApp = () => {
             <Route
               path="/usermypage"
               element={
-                <MemberRoute>
+                <UserPageAccess>
                   <UserInfoPage />
-                </MemberRoute>
+                </UserPageAccess>
               }
             ></Route>
 
@@ -80,7 +81,7 @@ const EatableApp = () => {
               path="/SearchPage"
               element={
                 // <AdminRoute>
-                <SearchPage/>
+                <SearchPage />
                 // </AdminRoute>
               }
             ></Route>
@@ -127,6 +128,10 @@ const EatableApp = () => {
               }
             ></Route>
 
+
+
+
+
             {/* 어드민 */}
             <Route
               path="/applylist"
@@ -163,6 +168,19 @@ const EatableApp = () => {
                 </AdminRoute>
               }
             ></Route>
+            <Route
+            path="/adminpage" element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
+            }>
+              
+            </Route>
+
+
+
+
+
 
             {/* 에러페이지 */}
             <Route path="/roleErrorPage" Component={RoleErrorPage}></Route>
