@@ -8,17 +8,34 @@ const AutoComplete = ({ onAutoCompleteData }) => {
   const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
   const [wholeTextArray, setWholeTextArray] = useState([]);
 
-  useEffect(() => {
-    fetchData();
-  }, [inputValue]);
 
-  const fetchData = () => {
-    let url = `http://localhost:8080/api/partner/search?keyword=${inputValue}`;
+    useEffect(() => {
+        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue}`)
+            .then((response) => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to fetch data');
+                }
+            })
+            .then((data) => {
+                if (data !== null) {
+                    // console.log(data.content);
+                    setWholeTextArray(data.content);
+                    updateDropDownList(data.content);
+                    // 검색어가 변경될 때마다 부모 컴포넌트로 해당 값을 전달
+                    onAutoCompleteData(inputValue);
+                    // onAutoCompleteData(data.content);
+                }
+            })
+            .catch((error) => console.error("Error fetching search results:", error));
+    }, [inputValue]);
 
-    fetch(url)
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
+    const updateDropDownList = (data) => {
+        if (inputValue === '') {
+            setIsHaveInputValue(false);
+            setDropDownList([]);
+
         } else {
           throw new Error("Failed to fetch data");
         }
@@ -34,12 +51,19 @@ const AutoComplete = ({ onAutoCompleteData }) => {
       .catch((error) => console.error("Error fetching search results:", error));
   };
 
-  const updateDropDownList = (data) => {
-    if (inputValue === "") {
-      setIsHaveInputValue(false);
-      setDropDownList([]);
-    } else {
-      const filteredList = [];
+
+            data.forEach(item => {
+                if (item.storeName.includes(inputValue) && !filteredList.includes(item.storeName)) {
+                    filteredList.push(item.storeName);
+                }
+                if (item.favorite.includes(inputValue) && !filteredList.includes(item.favorite)) {
+                    filteredList.push(item.favorite);
+                }
+                if (item.address.area.includes(inputValue) && !filteredList.includes(item.address.area)) {
+                    filteredList.push(item.address.area);
+                }
+            });
+
 
       data.forEach((item) => {
         if (
