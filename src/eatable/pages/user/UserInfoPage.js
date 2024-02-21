@@ -3,11 +3,14 @@ import { Card, Col, Container, ListGroup, Row, Tab, Tabs, Image, Button, Modal, 
 import { useAuth } from "../../rolecomponents/AuthContext";
 import ReservePage from "./ReservePage";
 import ReservedPage from "./ReservedPage";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SignDrop from "./SignDrop";
+import ReviewPage from "./ReviewPage";
+import FollowPage from "./FollowPage";
+import { jwtDecode } from "jwt-decode";
 
 
 const UserInfoPage = () => {
@@ -34,13 +37,12 @@ const UserInfoPage = () => {
 
 //////////////////////////////
   const handleSignOutClick = () => {
-    setShowSignOutModal(true); // 회원탈퇴 버튼 클릭 시 모달 열기
+    setModal(true); // 회원탈퇴 버튼 클릭 시 모달 열기
 };
 
 const handleCloseSignOutModal = () => {
-    setShowSignOutModal(false); // 모달 닫기
+  setModal(false); // 모달 닫기
 };
-
 
 ///////////////////////////////////
 
@@ -54,6 +56,7 @@ const handleCloseSignOutModal = () => {
 
   useEffect(() => {
     // 사용자 프로필 정보 불러오기
+
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -308,16 +311,46 @@ if (temperature <= 0 && temperature >= -50) {
     navigate(-1);
   }
 
+  const checkPartnerRole = () => {
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+    
+    if (!token) return false; // 토큰이 없다면 false 반환
+  
+    try {
+      const decoded = jwtDecode(token); // 토큰 디코딩
+      console.log(decoded)
+      const roles = decoded.auth ? decoded.auth.split(",") : [];
+      console.log(decoded)
+      return roles.includes("ROLE_PARTNER"); // ROLE_PARTNER 권한이 있는지 확인
+    } catch (error) {
+      console.error("토큰 디코딩 중 오류 발생:", error);
+      return false;
+    }
+  };
+  
+  // 함수 사용 예시
+  if (checkPartnerRole()) {
+    console.log("파트너 권한이 있습니다.");
+  } else {
+    console.log("파트너 권한이 없습니다.");
+  }
+
+  const isPartner = () => {
+    // 권한 확인 로직 구현, 예시로는 항상 true를 반환
+    // 실제 구현에서는 localStorage에 저장된 토큰을 확인하고
+    // 해당 토큰에서 권한을 디코드하여 확인하는 로직이 될 것입니다.
+    return checkPartnerRole();
+  };
 
   return (
-    <Container>
-     
+    <Container className="col-8">
       <ToastContainer position="top-center" />
       <Row>
         <Col className="d-flex align-items-center">
           <Card style={{ width: "100%" }} className="mb-2">
             <Card.Body className="align-items-start"><input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleImageChange}/>
-              <div className="d-flex align-items-center">
+            {isPartner() && (<Link to={"/userpartnerpage"}><Button>매장 관리</Button></Link>)}              
+            <div className="d-flex align-items-center">
                 <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
                 <div className="flex align-items-center ml-3">
 
@@ -350,12 +383,12 @@ if (temperature <= 0 && temperature >= -50) {
                   <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
 
                     {/* 회원탈퇴 모달 */}
-                    <Modal show={showSignOutModal} onHide={handleCloseSignOutModal}>
+                    <Modal show={modal} onHide={handleCloseSignOutModal}>
                         <Modal.Header closeButton>
                             <Modal.Title>회원탈퇴</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <SignDrop onClose={handleCloseSignOutModal} />
+                            <SignDrop/><Button variant="secondary" onClick={handleCloseSignOutModal}>닫기</Button>
                         </Modal.Body>
                     </Modal>
                 </div>
@@ -408,16 +441,16 @@ if (temperature <= 0 && temperature >= -50) {
                       </ListGroup>
                     </Tab>
                     <Tab eventKey="reserve" title="예약 현황">
-                      <ListGroup variant="flush">
-                        <ListGroup.Item>예약 현황</ListGroup.Item>
-                        <ListGroup.Item>{ReservePage}</ListGroup.Item>
-                      </ListGroup>
+                      {ReservePage}
                     </Tab>
                     <Tab eventKey="reserved" title="예약 했던곳">
-                      <ListGroup variant="flush">
-                        <ListGroup.Item>예약 했던곳</ListGroup.Item>
-                        <ListGroup.Item>{ReservedPage}</ListGroup.Item>
-                      </ListGroup>
+                      {ReservedPage}                    
+                    </Tab>
+                    <Tab eventKey="review" title="내가 쓴 리뷰">
+                      {<ReviewPage/>}
+                    </Tab>
+                    <Tab eventKey="follow" title="팔로우">
+                      {FollowPage}
                     </Tab>
                   </Tabs>
                 )}

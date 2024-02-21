@@ -10,6 +10,7 @@ import UserPartnerPage from "./UserPartnerPage";
 
 const checkPartnerRole = () => {
   const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+  
   if (!token) return false; // 토큰이 없다면 false 반환
 
   try {
@@ -32,7 +33,10 @@ if (checkPartnerRole()) {
 }
 
 const UserMyPage = () => {
+  
   const [activeTab, setActiveTab] = useState("userInfo");
+
+ 
 
 // const na///
 
@@ -63,9 +67,9 @@ const isPartner = () => {
   return (
     <Container className="d-flex justify-content-center align-items-center">
       {/* 왼쪽에 세로로 배치된 탭 메뉴 */}
-      <Col sm={2}>
+      <Col sm={3}>
         <Tab.Container activeKey={activeTab}>
-          <Nav variant="tabs" className="flex-column justify-content-start" style={{ position: "fixed", top: "60px", left: "200px", width: "15%" }}>
+          <Nav variant="tabs" className="flex-column justify-content-start" style={{ position: "fixed", top: "60px", left: "200px", width: "15%", marginRight: "100px"}}>
             <Button onClick={() => setActiveTab("userInfo")} variant={activeTab === "userInfo" ? "primary" : "light"}>내 정보</Button>
             <Button onClick={() => setActiveTab("userReviews")} variant={activeTab === "userReviews" ? "primary" : "light"}>내가 쓴 리뷰</Button>
             <Button onClick={() => setActiveTab("userFollow")} variant={activeTab === "userFollow" ? "primary" : "light"}>팔로우</Button>
