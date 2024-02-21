@@ -28,10 +28,17 @@ import ReviewWrite from "./pages/userreview/ReviewWrite";
 import ReviewDetail from "./pages/userreview/ReviewDetail";
 import GoogleMap from "./pages/partner/GoogleMaps";
 import UserPartnerPage from "./pages/user/UserPartnerPage";
+import AutoComplete from "./pages/partner/AutoComplete";
+import SearchPage from "./pages/partner/SearchPage";
 
 import "./EatableApp.css";
 import StoreReviewList from "./pages/userreview/StoreReviewList";
+
 import PartnerWaitingPage from "./pages/userDetails/waiting/partnerWaitingPage";
+
+import Out from "./pages/user/Out";
+import UserInfoPage from "./pages/user/UserInfoPage";
+
 
 const EatableApp = () => {
   return (
@@ -49,11 +56,12 @@ const EatableApp = () => {
             <Route path="/provision" Component={ProvisionPage}></Route>
             <Route path="/signup" Component={SignupPage}></Route>
             <Route path="/login" Component={LoginPage}></Route>
+            <Route path="/out" Component={Out}></Route>
             <Route
               path="/usermypage"
               element={
                 <MemberRoute>
-                  <UserMyPage />
+                  <UserInfoPage />
                 </MemberRoute>
               }
             ></Route>
@@ -64,6 +72,24 @@ const EatableApp = () => {
               element={
                 // <AdminRoute>
                 <GoogleMap />
+                // </AdminRoute>
+              }
+            ></Route>
+
+            <Route
+              path="/SearchPage"
+              element={
+                // <AdminRoute>
+                <SearchPage/>
+                // </AdminRoute>
+              }
+            ></Route>
+
+            <Route
+              path="/AutoComplete"
+              element={
+                // <AdminRoute>
+                <AutoComplete />
                 // </AdminRoute>
               }
             ></Route>
