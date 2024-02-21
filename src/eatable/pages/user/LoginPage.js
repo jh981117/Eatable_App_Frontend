@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../rolecomponents/AuthContext";
 import { jwtDecode } from "jwt-decode";
-
-
+import NaverLogin from "./NaverLogin";
 const LoginPage = () => {
 
   const { setAuth } = useAuth();
@@ -135,16 +134,15 @@ const LoginPage = () => {
  };
 
 
-
   const saveTokenToLocalStorage = (token) => {
     // 로컬 스토리지에 토큰 저장 로직을 여기에 구현
     localStorage.setItem("token", token);
   };
 
   return (
+    
     <Container className="mt-3 col-6 flex justify-content-center">
-      <h2>로그인 페이지</h2>
-
+      <h2>로그인 페이지</h2>      
       <Form onSubmit={submitUser}>
         <Form.Group className="mt-3" controlId="formBasicUsername">
           <Form.Label>아이디 : </Form.Label>
@@ -179,7 +177,8 @@ const LoginPage = () => {
         )}
         <Button variant="primary" type="submit">
           로그인
-        </Button>
+        </Button>   
+                        
         <Button
           className="m-2"
           variant="primary"
@@ -188,6 +187,7 @@ const LoginPage = () => {
         >
           회원가입
         </Button>
+        <NaverLogin/>  
       </Form>
     </Container>
   );

@@ -32,6 +32,7 @@ import AutoComplete from "./pages/partner/AutoComplete";
 
 import "./EatableApp.css";
 import StoreReviewList from "./pages/userreview/StoreReviewList";
+import NaverLogin from "./pages/user/NaverLogin";
 
 const EatableApp = () => {
   return (
@@ -41,14 +42,16 @@ const EatableApp = () => {
         <MyHeader />
         {/* MyHeader 컴포넌트에서는 useAuth를 사용하여 로그인 상태 접근 */}
         <Container>
-          <Routes>
+          <Routes>         
             <Route path="/" Component={HomePage}></Route>
             <Route path="/home" Component={HomePage}></Route>
 
             {/* 유저 */}
             <Route path="/provision" Component={ProvisionPage}></Route>
             <Route path="/signup" Component={SignupPage}></Route>
+            
             <Route path="/login" Component={LoginPage}></Route>
+            
             <Route
               path="/usermypage"
               element={
