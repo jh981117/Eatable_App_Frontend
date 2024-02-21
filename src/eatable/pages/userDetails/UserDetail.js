@@ -1,14 +1,11 @@
-
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Container, Row ,Image } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
-import MenuSection from './menuComponents/MenuSection';
-import DetailTab from '../userreview/DetailTab';
-import { Modal } from 'react-bootstrap'; // 모달을 위한 Bootstrap 컴포넌트를 사용합니다.
-import Reservation from './reservation/Reservation';
-import ReservationNow from './reservation/ReservationNow';
-
-
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Container, Row, Image } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import MenuSection from "./menuComponents/MenuSection";
+import DetailTab from "../userreview/DetailTab";
+import { Modal } from "react-bootstrap"; // 모달을 위한 Bootstrap 컴포넌트를 사용합니다.
+import Reservation from "./reservation/Reservation";
+import ReservationNow from "./reservation/ReservationNow";
 
 const UserDetail = () => {
   const navigate = useNavigate();
@@ -16,26 +13,23 @@ const UserDetail = () => {
   let { id } = useParams();
   console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
 
+  const [showModal, setShowModal] = useState(false); // 모달 열림 여부를 저장하는 상태 변수
 
-    const [showModal, setShowModal] = useState(false); // 모달 열림 여부를 저장하는 상태 변수
+  const handleOpenModal = () => {
+    setShowModal(true); // 모달 열기 함수
+  };
 
-    const handleOpenModal = () => {
-        setShowModal(true); // 모달 열기 함수
-    };
+  const handleCloseModal = () => {
+    setShowModal(false); // 모달 닫기 함수
+  };
 
-    const handleCloseModal = () => {
-        setShowModal(false); // 모달 닫기 함수
-    };
-
-    const Navigate = useNavigate();
+  const Navigate = useNavigate();
 
   const goReservation = () => {
     navigate(`/reservation/${id}`);
   };
 
- const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const [detail, setDetails] = useState([]);
 
@@ -67,17 +61,17 @@ const UserDetail = () => {
       ); // 기본 이미지 설정
     }
   }, [detail.fileList]); // store.fileList가 변경될 때마다 효과를 다시 실행
-useEffect(() => {
-  const handleResize = () => {
-    setWindowWidth(window.innerWidth);
-  };
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
 
-  window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize);
 
-  return () => {
-    window.removeEventListener("resize", handleResize);
-  };
-}, []);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const containerStyle = {
     display: "flex",
@@ -202,90 +196,75 @@ useEffect(() => {
               </div>
             </div>
 
-            <br />
-            <Card style={{ width: "100%", maxWidth: "700px" }}>
-              <Card.Title>
-                <small style={{ marginTop: "5px", marginLeft: "5px" }}>
-                  매장소개
-                </small>
-              </Card.Title>
-              <Card.Body>
-                <div>{detail.storeInfo}</div>
-              </Card.Body>
-            </Card>
-            <Card style={{ width: "100%", maxWidth: "700px" }}>
-              <Card.Title>
-                <small style={{ marginTop: "5px", marginLeft: "5px" }}>
-                  오픈시간
-                </small>
-                <Card.Body>
-                  <div>{detail.openTime}</div>
-                </Card.Body>
-              </Card.Title>
-            </Card>
-            <Card style={{width:"100%", maxWidth:"700px"}}>
-              <Card.Title>
-                <small style={{ marginTop: "5px", marginLeft: "5px" }}>
-                  예약정보
-                </small>
-              </Card.Title>
-              <Card.Body>
-                <div>{detail.reserveInfo}</div>
-              </Card.Body>
-            </Card>
-
-
-
             <DetailTab id={detail.id} />
             <br />
 
             <div>
               <MenuSection />
             </div>
-             <div className='text-center'>
+            <div className="text-center">
               <div>
-                        {/* 예약하기 버튼 */}
-                        <Button style={{ fontSize: '1.5rem', marginTop: '0.5rem', width: '25rem', float: 'left' }} onClick={handleOpenModal}>예약하기</Button>
-                    </div>
-            
-                <div>
-                        {/* 웨이팅하기 버튼 */}
-                        <Button style={{ fontSize: '1.5rem', marginTop: '0.5rem', width: '25rem', float: 'right' }} onClick={handleOpenModal}>웨이팅하기</Button>
-                    </div>
-                    </div>
-                        
+                {/* 예약하기 버튼 */}
+                <Button
+                  style={{
+                    fontSize: "1.5rem",
+                    marginTop: "0.5rem",
+                    width: "25rem",
+                    float: "left",
+                  }}
+                  onClick={handleOpenModal}
+                >
+                  예약하기
+                </Button>
+              </div>
+
+              <div>
+                {/* 웨이팅하기 버튼 */}
+                <Button
+                  style={{
+                    fontSize: "1.5rem",
+                    marginTop: "0.5rem",
+                    width: "25rem",
+                    float: "right",
+                  }}
+                  onClick={handleOpenModal}
+                >
+                  웨이팅하기
+                </Button>
+              </div>
+            </div>
+
             {/* 모달 컴포넌트 */}
             <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>예약하기</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/* Reservation 컴포넌트를 여기에 표시 */}
-                    <Reservation />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={handleCloseModal}>닫기</Button>
-                </Modal.Footer>
+              <Modal.Header closeButton>
+                <Modal.Title>예약하기</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {/* Reservation 컴포넌트를 여기에 표시 */}
+                <Reservation />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleCloseModal}>닫기</Button>
+              </Modal.Footer>
             </Modal>
 
             <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>예약하기</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/* Reservation 컴포넌트를 여기에 표시 */}
-                    <ReservationNow />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={handleCloseModal}>닫기</Button>
-                </Modal.Footer>
+              <Modal.Header closeButton>
+                <Modal.Title>예약하기</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {/* Reservation 컴포넌트를 여기에 표시 */}
+                <ReservationNow />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleCloseModal}>닫기</Button>
+              </Modal.Footer>
             </Modal>
           </div>
         </Col>
       </Row>
     </Container>
   );
-
 };
 
 export default UserDetail;

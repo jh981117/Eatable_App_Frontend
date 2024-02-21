@@ -92,7 +92,7 @@ const MyHeader = () => {
   right: 0;
 }`}
       </style>
-      <Navbar bg="light" variant="light" className="navbar-custom">
+      <Navbar bg="light" variant="light" className="justify-content-center">
         <Container>
           <Navbar.Brand as={Link} to="/home">
             <Image
@@ -100,19 +100,47 @@ const MyHeader = () => {
               style={{ width: "100px" }}
             />
           </Navbar.Brand>
-          {/* Nav 컴포넌트에 사용자 정의 클래스 적용 */}
-          <Nav className="navbar-nav-custom">
+          <Nav className="ml-auto">
             {auth.isLoggedIn ? (
               <>
                 {/* 로그인 했을 때 보여줄 링크들 */}
+
                 <Nav.Link
                   as={Link}
                   to="/usermypage"
                   className="d-flex align-items-center"
                 >
-                  {/* 프로필 이미지, 닉네임, 로그아웃 버튼 등 */}
+                  <Image
+                    src={auth.profile?.profileImageUrl}
+                    alt="Profile"
+                    style={{
+                      borderRadius: "50%",
+                      maxWidth: "40px",
+                      height: "40px",
+                      cursor: "pointer",
+                      marginRight: "5px",
+                    }}
+                  />
+                  <span className="nickname ml-2">
+                    {auth.profile ? auth.profile.nickName : ""}
+                  </span>
+
+                  <span style={{ marginRight: "5px" }}>
+                    <Image
+                      src={tempColor(
+                        auth.profile ? auth.profile.temperature : ""
+                      )}
+                      style={{ width: "20px" }}
+                    />
+                    {auth.profile ? auth.profile.temperature : ""}
+                  </span>
                 </Nav.Link>
-                <Button onClick={handleLogout} variant="outline-secondary">
+
+                <Button
+                  onClick={handleLogout}
+                  variant="outline-secondary"
+                  style={logoutButtonStyle}
+                >
                   로그아웃
                 </Button>
               </>
