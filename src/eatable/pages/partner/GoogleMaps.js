@@ -19,6 +19,7 @@ const GoogleMaps = () => {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
+
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_KEY,
   });
 
@@ -45,6 +46,7 @@ const GoogleMaps = () => {
   const mapContainerStyle = {
     height: "500px",
     width: "100%",
+    borderRadius: "20px",
   };
 
   const clickedPolygonRef = useRef(null);

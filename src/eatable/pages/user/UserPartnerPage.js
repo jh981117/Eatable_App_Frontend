@@ -105,7 +105,7 @@ const cancelPartner = async (userId) => {
   
   return (
     <div>
-      <Container>
+      <Container className="col-8">
         <Card style={{ marginTop: "10px" }}>
           <Card.Body style={{ padding: "15px" }}>
             {" "}
