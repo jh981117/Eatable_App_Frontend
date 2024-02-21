@@ -8,6 +8,7 @@ import './components/SearchPage.css';
 const SearchPage = () => {
   const [inputValue, setInputValue] = useState("");
   const [partners, setPartners] = useState([]);
+  const [prevPartners, setPrevPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -60,16 +61,13 @@ const SearchPage = () => {
       .then((data) => {
         console.log(data);
 
-        if (inputValue) {
-          setPartners(data.content)
+        if (page === 0) {
+          setPartners(data.content);
         } else {
-          setPartners((prevPartners) => {
-            const newPartners = data.content.filter(
-              (partner) => !prevPartners.some((p) => p.id === partner.id)
-            );
-            return [...prevPartners, ...newPartners];
-          });
+          setPartners((prevPartners) => [...prevPartners, ...data.content]);
         }
+
+
         setLoading(true);
         setTimeout(() => {
           setLoading(false); // 일정 시간 후에 로딩 상태 변경
