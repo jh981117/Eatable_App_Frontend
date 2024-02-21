@@ -38,16 +38,16 @@ const MyHeader = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("token");
-      
+
       // 토큰 정보를 서버로 전송하여 로그아웃 처리
       await fetch("http://localhost:8080/api/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
-    
+
       setAuth(""); // 프로필 정보 초기화
       localStorage.removeItem("token"); // 토큰 삭제
       navigate("/home");
@@ -77,8 +77,10 @@ const MyHeader = () => {
     <Navbar bg="light" variant="light" style={navbarStyle}>
       <Container>
         <Navbar.Brand as={Link} to="/home">
-          <Image src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708150496729-logo.png"
-          style={{width: "100px"}} />
+          <Image
+            src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708150496729-logo.png"
+            style={{ width: "100px" }}
+          />
         </Navbar.Brand>
         <Nav className="ml-auto">
           {auth.isLoggedIn ? (
@@ -137,11 +139,11 @@ const MyHeader = () => {
                 <span style={{ marginRight: "5px" }}>
                   <Image
                     src={tempColor(
-                      auth.profile ? auth.profile.temperature + 10 : ""
+                      auth.profile ? auth.profile.temperature : ""
                     )}
                     style={{ width: "20px" }}
                   />
-                  {auth.profile ? auth.profile.temperature + 10 : ""}º
+                  {auth.profile ? auth.profile.temperature : ""}
                 </span>
               </Nav.Link>
 

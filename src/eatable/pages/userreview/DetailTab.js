@@ -4,23 +4,30 @@ import ReviewList from "./ReviewList";
 import StoreReviewList from "./StoreReviewList";
 import ReviewImg from "./ReviewImg";
 
-const DetailTab = () => {
+const DetailTab = ({ id }) => {
   return (
-    <div>
+    <div style={{ display: "flex", justifyContent: "center" }}>
       <Container>
-
-        <Tabs defaultActiveKey="storedetail" id="detail-tab">
-          <Tab eventKey="storedetail" title="홈">
+        <Tabs
+          defaultActiveKey="storedetail"
+          id="detail-tab"
+          style={{ display: "flex", justifyContent: "center" }}
+        >
+          <Tab
+            eventKey="storedetail"
+            title="홈"
+            style={{ display: "flex", justifyContent: "center" }}
+          >
             홈
           </Tab>
           <Tab eventKey="storemenu" title="메뉴">
             메뉴
           </Tab>
           <Tab eventKey="storeimg" title="사진">
-            <ReviewImg/>
+            <ReviewImg id={id} />
           </Tab>
           <Tab eventKey="storereview" title="리뷰">
-           <StoreReviewList />
+            <StoreReviewList id={id} />
           </Tab>
         </Tabs>
       </Container>
