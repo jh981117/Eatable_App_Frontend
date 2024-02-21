@@ -34,6 +34,7 @@ const PartnerDetail = () => {
     corkCharge: "",
     dog: "",
     fileList: [],
+    readyTime: "",
   });
 
   const favoriteGroups = [
@@ -207,6 +208,29 @@ const PartnerDetail = () => {
           readOnly
         ></textarea>
       </div>
+
+      {/* 테이블수 */}
+      <span>
+        <label htmlFor="tableCnt">
+          <h5>예상 소요시간</h5>
+        </label>
+        <div style={{ display: "flex" }}>
+          <input
+            type="number"
+            className="form-control"
+            id="readyTime"
+            placeholder="테이블수를 입력하세요"
+            name="readyTime"
+            min="0"
+            value={post.readyTime}
+            readOnly
+            style={{ width: "100px", maxWidth: "400px" }}
+          />
+          <span style={{ width: "100%", maxWidth: "400px", marginTop: "9px" }}>
+            분
+          </span>
+        </div>
+      </span>
 
       {/* 테이블수 */}
       <div className="mt-3">
