@@ -2,39 +2,17 @@ import React, { useRef, useEffect } from "react";
 import "./components/Roulette.css";
 import { ToastContainer, toast } from "react-toastify";
 import { Container } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const Roulette = () => {
   const canvasRef = useRef(null);
+  const navigate = useNavigate();
 
   const originalProducts = [
-    "한식",
-    "중식",
-    "일식",
-    "이탈리아",
-    "프랑스",
-    "유러피안",
-    "퓨전",
-    "스페인",
-    "아메리칸",
-    "스시",
-    "한우",
-    "소고기구이",
-    "와인",
-    "코스요리",
-    "고기요리",
-    "한정식",
-    "파스타",
-    "해물",
-    "다이닝바",
-    "브런치",
-    "카페",
-    "치킨",
-    "레스토랑",
-    "피자",
-    "백반",
-    "국수",
-    "비건",
+    // "한식", "중식", "일식", "이탈리아", "프랑스", "유러피안", "퓨전", "스페인", "아메리칸", "스시", "한우", "소고기구이", "와인", "코스요리", "고기요리", "한정식", "파스타", "해물", "다이닝바", "브런치", "카페", "치킨", "레스토랑", "피자", "백반", "국수", "비건"
+    "족발.보쌈", "돈까스", "고기.구이", "피자", "찜.탕.찌개", "양식", "중식", "아시안", "치킨", "한식", "버거", "분식"
   ];
+
 
   const getRandomProducts = (arr, num) => {
     const shuffled = arr.sort(() => 0.5 - Math.random());
@@ -135,42 +113,45 @@ const Roulette = () => {
         `${product[ran]} 먹을 때 좋아하는 영화나 드라마 추천해줄래?`,
       ];
 
+      const inputValue = encodeURIComponent(product[ran]);
+
       const selectedExpression =
         expressions[Math.floor(Math.random() * expressions.length)];
 
-      setTimeout(() =>toast(selectedExpression) , 2000);
+      toast(selectedExpression);
+      setTimeout(() => navigate(`/searchpage?keyword=${inputValue}`), 5000);
     }, 1);
   };
 
   return (
     <Container>
-     
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
 
-        <div id="rouletteContainer">
-          <canvas
-            ref={canvasRef}
-            id="rouletteCanvas"
-            width="380"
-            height="380"
-            style={{ transform: "rotate(0deg)", transition: "transform 2s" }}
-          ></canvas>
-          <button id="rotateButton" onClick={rotate}>
-            룰렛 돌리기
-          </button>
-        </div>
-      
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+
+      <div id="rouletteContainer">
+        <canvas
+          ref={canvasRef}
+          id="rouletteCanvas"
+          width="380"
+          height="380"
+          style={{ transform: "rotate(0deg)", transition: "transform 2s" }}
+        ></canvas>
+        <button id="rotateButton" onClick={rotate}>
+          룰렛 돌리기
+        </button>
+      </div>
+
     </Container>
   );
 };

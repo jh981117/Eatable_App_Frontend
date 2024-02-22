@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Container, Image, Spinner } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import StoreLike from "../userreview/StoreLilke";
 import AutoComplete from "./AutoComplete";
 import './components/SearchPage.css';
@@ -11,9 +11,23 @@ const SearchPage = () => {
   const [prevPartners, setPrevPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [keyword, setKeyword] = useState("");
 
   // Intersection Observer를 위한 ref 생성
   const sentinelRef = useRef();
+  const location = useLocation(); // useLocation 훅 사용
+  const queryParams = new URLSearchParams(location.search); // URL 쿼리 매개변수 파싱
+
+  // 쿼리 매개변수에서 keyword 값을 받아오기
+  const item = queryParams.get("keyword");
+
+  useEffect(() => {
+    const keywordString = item.toString(); // 문자열로 변환
+    console.log(keywordString);
+
+    setTimeout(() => handleInputChange(keywordString), 50)
+  }, [item])
+
 
   useEffect(() => {
 
@@ -49,8 +63,7 @@ const SearchPage = () => {
 
   // 새로운 페이지 가져오기
   useEffect(() => {
-
-
+    console.log("페이징:" + page + "검색어:" + inputValue);
     const fetchData = async () => {
       try {
         const response = await fetch(`http://localhost:8080/api/partner/search?page=${page}&keyword=${inputValue}`);
@@ -59,10 +72,12 @@ const SearchPage = () => {
         }
         const data = await response.json();
 
-        if (data.content.length === 0) {
-          setLoading(false);
-          return;
-        }
+        // if (data.content.length === 0) {
+        //   setLoading(false);
+        //   return;
+        // }
+
+        console.log(data.content);
 
         if (page === 0) {
           setPartners(data.content);
