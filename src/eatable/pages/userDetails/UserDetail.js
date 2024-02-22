@@ -200,17 +200,28 @@ const UserDetail = () => {
             <br />
 
             <div>
-              <MenuSection />
+              
             </div>
-            <div className="text-center">
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                maxWidth: "600px",
+                justifyContent: "center",
+                gap: "5px",
+                position: "fixed",
+                bottom: "5px",
+              }}
+            >
               <div>
                 {/* 예약하기 버튼 */}
                 <Button
                   style={{
-                    fontSize: "1.5rem",
+                    fontSize: "1.3rem",
                     marginTop: "0.5rem",
                     width: "25rem",
                     float: "left",
+                    padding: "5px",
                   }}
                   onClick={handleOpenModal}
                 >
@@ -222,10 +233,11 @@ const UserDetail = () => {
                 {/* 웨이팅하기 버튼 */}
                 <Button
                   style={{
-                    fontSize: "1.5rem",
+                    fontSize: "1.3rem",
                     marginTop: "0.5rem",
                     width: "25rem",
                     float: "right",
+                    padding: "5px",
                   }}
                   onClick={handleOpenModal}
                 >

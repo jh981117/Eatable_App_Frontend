@@ -6,6 +6,7 @@ import ReviewImg from "./ReviewImg";
 import DetailHome from "./DetailHome";
 import PartnerReviewImgLength from "./Item/PartnerReviewImgLength";
 import PartnerReviewLength from "./Item/PartnerReviewLength";
+import MenuSection from "../userDetails/menuComponents/MenuSection";
 
 const DetailTab = ({ id }) => {
   return (
@@ -27,7 +28,7 @@ const DetailTab = ({ id }) => {
             <DetailHome id={id} />
           </Tab>
           <Tab eventKey="storemenu" title="메뉴">
-            메뉴
+            <MenuSection />
           </Tab>
           <Tab eventKey="storeimg" title={<PartnerReviewImgLength id={id} />}>
             <ReviewImg id={id} />
