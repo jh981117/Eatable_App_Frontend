@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './components/AutoComplete.css';
 
 const AutoComplete = ({ onAutoCompleteData }) => {
+
     const [inputValue, setInputValue] = useState("");
     const [isHaveInputValue, setIsHaveInputValue] = useState(false);
     const [dropDownList, setDropDownList] = useState([]);
@@ -81,6 +82,8 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             if (event.key === 'Enter') {
               setIsHaveInputValue(false);
           }
+
+
         }
     };
 

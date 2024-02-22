@@ -4,10 +4,11 @@ import { throttle } from "lodash";
 import { Link } from "react-router-dom";
 import TopCategoty from "./fregment/TopCategoty";
 import StoreLike from "./userreview/StoreLilke";
+import PartnerLikeLength from "./userreview/Item/PartnerLikeLength";
+import PartnerReviewLength from "./userreview/Item/PartnerReviewLength";
 
 const HomePage = () => {
-  const [showMap, setShowMap] = useState(false);
-  const [showRoulette, setShowRoulette] = useState(false);
+ 
   const [partners, setPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +67,7 @@ const HomePage = () => {
       ) {
         setPage((prevPage) => prevPage + 1);
       }
-    }, 90); // 100ms 마다 이벤트 핸들러 실행
+    }, 80); // 100ms 마다 이벤트 핸들러 실행
 
     window.addEventListener("scroll", handleScroll);
     return () => {
@@ -82,8 +83,9 @@ const HomePage = () => {
       style={{ minHeight: "100vh" }}
     >
       <div>
-        <TopCategoty />
-
+        <div style={{marginTop:"10px"}}>
+          <TopCategoty />
+        </div>
         {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
         <hr />
         <h3 className="text-center mb-3">Eatable 근처 맛집</h3>
@@ -95,52 +97,109 @@ const HomePage = () => {
             style={{ width: "100%" }}
           >
             {/* 이미지 섹션 */}
-            <Link
-              to={`/userdetail/${partner.id}`}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              {/* 매장 사진 */}
-              <Image
-                src={
-                  partner.fileList[0]
-                    ? partner.fileList[0]?.imageUrl
-                    : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
-                }
-                alt="Partner"
+            <div>
+              <Link
+                to={`/userdetail/${partner.id}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                {/* 매장 사진 */}
+                <Image
+                  src={
+                    partner.fileList[0]
+                      ? partner.fileList[0]?.imageUrl
+                      : "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+                  }
+                  alt="Partner"
+                  style={{
+                    width: "450px", // 이미지 크기 조정
+                    height: "450px",
+                    borderRadius: "5%",
+                    objectFit: "cover",
+                    marginBottom: "10px",
+                  }}
+                />
+              </Link>
+              <span
                 style={{
-                  width: "500px", // 이미지 크기 조정
-                  height: "500px",
-                  borderRadius: "5%",
-                  objectFit: "cover",
-                  marginBottom: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
-              />
-              <div style={{ display: "flex", alignItems: "center" }}>
-                {" "}
-                <h3>{partner.storeName}</h3>
-                <small style={{ color: "gray" }}>{partner.favorite}</small>
-              </div>
-            </Link>
-            <div className="d-flex justify-content-between align-items-center">
-              {/* 조회수 */}
-              <span>
-                <Image src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"></Image>
-                {partner.viewCnt}
+              >
+                <div>
+                  <Link
+                    to={`/userdetail/${partner.id}`}
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                      display: "flex",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <h3 style={{ marginRight: "2px" }}>{partner.storeName}</h3>
+                    <small style={{ color: "gray" }}>{partner.favorite}</small>
+                    {/* 평점 */}
+                    <Image
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                      alt="Dynamic Image"
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "5%",
+                        objectFit: "cover",
+                        marginLeft: "10px",
+                        marginBottom: "2px",
+                      }}
+                    />
+                    {partner.averageRating ? partner.averageRating : "평가중"}
+                  </Link>
+                </div>
+                <span>
+                  <StoreLike partnerId={partner.id} />
+                </span>
               </span>
             </div>
-            <StoreLike partnerId={partner.id} />
-            {/* 평점 */}
-            <Image
-              src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
-              alt="Dynamic Image"
-              style={{
-                width: "30px",
-                height: "30px",
-                borderRadius: "5%",
-                objectFit: "cover",
-              }}
-            />
-            {partner.averageRating ? partner.averageRating : "평가중"} 
+
+            <div
+              className="d-flex justify-content align-items-center"
+              style={{ marginBottom: "50px" }}
+            >
+              {/* 조회수 */}
+              <span>
+                <Image
+                  src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"
+                  style={{ marginRight: "5px", marginBottom: "2px" }}
+                ></Image>
+                <span style={{ marginRight: "10px" }}>{partner.viewCnt}</span>
+              </span>
+              {/* 즐겨찾기 */}
+              <span>
+                <Image
+                  src="https://www.siksinhot.com/static2/images/common/bg_icon_bookmark2.png"
+                  style={{
+                    width: "13px",
+                    marginLeft: "5px",
+                    marginRight: "5px",
+                    marginBottom: " 2px",
+                  }}
+                ></Image>
+                <PartnerLikeLength partnerId={partner.id} />
+              </span>
+              <span>
+                <Image
+                  src="https://www.siksinhot.com/static2/images/common/bg_icon_reviewWrite.png"
+                  style={{
+                    width: "16px",
+                    marginLeft: "15px",
+                    marginBottom: "3px",
+                    marginRight: "5px",
+                  }}
+                ></Image>
+                <PartnerReviewLength partnerId={partner.id} />
+              </span>
+            </div>
           </div>
         ))}
         {isLoading && (

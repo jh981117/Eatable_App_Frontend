@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { setHours, setMinutes, format } from 'date-fns';
+import { jwtDecode } from 'jwt-decode';
 
 const Reservation = () => {
+
+  
+
+
     const navigate = useNavigate();
     let { id } = useParams();
 
@@ -15,36 +20,47 @@ const Reservation = () => {
     );
     const [adultCount, setAdultCount] = useState(0);
     const [infantCount, setInfantCount] = useState(0);
-
+    const [userId, setUserId] = useState("")
     const handleChangeDate = (date) => {
         setSelectedDate(date);
     };
+    console.log(userId , "유저아이디")
 
     const goReservationOk = () => {
         setShowGreeting(true);
         // 이후 예약확정 등 다른 작업 수행
         // navigate("/reservationOk");
     };
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const decoded = jwtDecode(token);
+          setUserId(decoded.userId);
+        }
+      }, []); // 빈 배열을 의존성 배열로 전달하여 최초 렌더링 시에만 실행되도록 함
 
     const showReservationOk = () => {
         const reservationData = {
             partnerId: id,
+            userId: userId,
             people: adultCount,
             waitingRegDate: selectedDate.toISOString(), // 서버에서 Date 형식으로 파싱하기 위해 ISO 문자열로 변환
-            waitingState: "TRUE"
+            waitingState: "True"
         };
     
-        fetch(`http://localhost:8080/api/waiting/addWaiting/${id}`, {
+        fetch(`http://localhost:8080/api/waiting/addWaiting/`+ id ,   {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(reservationData),
         })
+        // console.log(reservationData )
         .then(response => {
             if (response.ok) {
+                alert("예약 성공")
                 // 예약 성공 시 처리
-                navigate(`/reservationOk/${id}`);
+                // navigate(`/reservationOk/${id}`);
             } else {
                 // 예약 실패 시 처리
                 throw new Error('Failed to save reservation');

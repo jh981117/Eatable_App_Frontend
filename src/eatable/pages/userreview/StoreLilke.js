@@ -97,7 +97,7 @@ const StoreLike = ({ partnerId }) => {
         }
         alt="즐겨찾기"
         onClick={toggleFavorite}
-        style={{ cursor: "pointer", width: "50px" }}
+        style={{ cursor: "pointer", width: "30px" }}
       />
       <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)}>
         <Modal.Header closeButton>

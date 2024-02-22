@@ -1,87 +1,270 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
-import MenuSection from './menuComponents/MenuSection';
-import DetailTab from '../userreview/DetailTab';
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Container, Row, Image } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import MenuSection from "./menuComponents/MenuSection";
+import DetailTab from "../userreview/DetailTab";
+import { Modal } from "react-bootstrap"; // 모달을 위한 Bootstrap 컴포넌트를 사용합니다.
+import Reservation from "./reservation/Reservation";
+import ReservationNow from "./reservation/ReservationNow";
 
 const UserDetail = () => {
+  const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState(0);
+  let { id } = useParams();
+  console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
 
-    const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false); // 모달 열림 여부를 저장하는 상태 변수
 
-    let { id } = useParams();
-console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
+  const handleOpenModal = () => {
+    setShowModal(true); // 모달 열기 함수
+  };
 
-    const goReservation = () => {
-        navigate(`/reservation/${id}`)}
+  const handleCloseModal = () => {
+    setShowModal(false); // 모달 닫기 함수
+  };
 
+  const Navigate = useNavigate();
 
-    const [detail, setDetails] = useState([]);
+  const goReservation = () => {
+    navigate(`/reservation/${id}`);
+  };
 
-    useEffect(() => {
-        fetch(`http://localhost:8080/api/partner/detail/${id}`)
-            .then(response => {
-                if (response.status === 200) {
-                    return response.json();
-                } else {
-                    return null;
-                }
-            })
-            .then(data => {
-                if (data !== null) {
-                    console.log(data);
-                    setDetails(data);
-                }
-            })
-    }, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    console.log(detail);
+  const [detail, setDetails] = useState([]);
 
-    
-    
+  useEffect(() => {
+    fetch(`http://localhost:8080/api/partner/base/detail/${id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return null;
+        }
+      })
+      .then((data) => {
+        if (data !== null) {
+          console.log(data, "한번만제발 조회해라..");
+          setDetails(data);
+        }
+      });
+  }, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
 
-    return (
-        <Container>
-            <Row>
-                <Col>
-                    <div>매장사진</div>
-                    <img src={detail.fileList && detail.fileList[0] && detail.fileList[0].imageUrl} style={{borderRadius: "25px" , width:"500px"}}/>
-                    <hr />
-                    <div>매장정보</div>
-                    <h2>{detail.storeName}</h2>
-                    <h6>주소:</h6>
-                    <h6>평점:</h6>
-                    <h6>전화번호: {detail.storePhone}</h6>
-                    <h6>테이블 수: {detail.tableCnt}</h6>
-                    <h6>{detail.reserveInfo}</h6>
-                    <hr />
-                    <div>매장예약현황</div>
-                    <div style={{ whiteSpace: 'pre-line' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 36 36">
-                            <path fill="currentColor" d="M28 30H16v-8h-2v8H8v-8H6v8a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-8h-2Z"/>
-                            <path fill="currentColor" d="m33.79 13.27l-4.08-8.16A2 2 0 0 0 27.92 4H8.08a2 2 0 0 0-1.79 1.11l-4.08 8.16a2 2 0 0 0-.21.9v3.08a2 2 0 0 0 .46 1.28A4.67 4.67 0 0 0 6 20.13a4.72 4.72 0 0 0 3-1.07a4.73 4.73 0 0 0 6 0a4.73 4.73 0 0 0 6 0a4.73 4.73 0 0 0 6 0a4.72 4.72 0 0 0 6.53-.52a2 2 0 0 0 .47-1.28v-3.09a2 2 0 0 0-.21-.9M15 14.4v1.52L14.18 17a2.71 2.71 0 0 1-4.37 0L9 15.88V14.4L11.59 6H16Zm12 1.48L26.19 17a2.71 2.71 0 0 1-4.37 0L21 15.88V14.4L20 6h4.45L27 14.4Z"/>
-                            <path fill="none" d="M0 0h36v36H0z"/>
-                        </svg>
-                        {''} 매장 웨이팅 5팀이 있습니다  {''}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
-                            <g fill="none">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M8 8V7a4 4 0 0 1 4-4v0a4 4 0 0 1 4 4v1"/>
-                                <path fill="currentColor" fill-rule="evenodd" d="M3.586 7.586C3 8.172 3 9.114 3 11v3c0 3.771 0 5.657 1.172 6.828C5.343 22 7.229 22 11 22h2c3.771 0 5.657 0 6.828-1.172C21 19.657 21 17.771 21 14v-3c0-1.886 0-2.828-.586-3.414C19.828 7 18.886 7 17 7H7c-1.886 0-2.828 0-3.414.586M10 12a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0zm6 0a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0z" clip-rule="evenodd"/>
-                            </g>
-                        </svg>
-                        {''} 포장 웨이팅 5팀이 있습니다
-                    </div>
-                    <DetailTab />
-                    <div>
-                        <br /><br />
-                        <MenuSection/>
-                    </div>
-                    <div className='text-center'>
-                    <Button style={{ fontSize: '1.5rem', marginTop: '1rem', width: '25rem' }} onClick={goReservation}>예약하기</Button>
-                    </div>
-                </Col>
-            </Row>
-        </Container>
-    );
+  console.log(detail, "누구여");
+
+  useEffect(() => {
+    if (detail.fileList && detail.fileList.length > 0) {
+      setSelectedImage(detail.fileList[0].imageUrl); // 첫 번째 이미지를 선택된 이미지로 설정
+    } else {
+      setSelectedImage(
+        "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+      ); // 기본 이미지 설정
+    }
+  }, [detail.fileList]); // store.fileList가 변경될 때마다 효과를 다시 실행
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const containerStyle = {
+    display: "flex",
+    flexDirection: windowWidth > 770 ? "column" : "row",
+    gap: "10px",
+    flexWrap: "wrap", // 화면이 좁아질 때 이미지가 다음 줄로 넘어갈 수 있도록 설정
+  };
+  return (
+    <Container>
+      <Row>
+        <Col>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {/* <small style={{ color: "gray", marginLeft: "20px" }}>매장정보</small> */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                <img
+                  src={selectedImage}
+                  alt="Selected"
+                  style={{
+                    width: "450px",
+                    height: "450px",
+                  }}
+                />
+              </div>
+              <div style={containerStyle}>
+                {detail.fileList && detail.fileList.length > 0 ? (
+                  detail.fileList.map((file, fIndex) => (
+                    <img
+                      key={fIndex}
+                      src={file.imageUrl}
+                      alt={`Store Image ${fIndex + 1}`}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        objectFit: "cover",
+                        cursor: "pointer",
+                        marginLeft: windowWidth <= 770 ? "10px" : "0", // 화면 너비에 따라 마진 조정
+                        borderRadius: "5px",
+                      }}
+                      onClick={() => setSelectedImage(file.imageUrl)}
+                    />
+                  ))
+                ) : (
+                  <img
+                    src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707717950973-eatabel-1.png"
+                    alt="Default Store Image"
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            <Card style={{ width: "100%", maxWidth: "700px" }}>
+              <Card.Title style={{ marginTop: "0px" }}></Card.Title>
+              <Card.Body style={{ paddingTop: "0px" }}>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>{detail.favorite}</span>
+                  <span>
+                    <Image
+                      src="https://www.siksinhot.com/static2/images/common/bg_ico_s_click.png"
+                      style={{ marginRight: "5px", marginBottom: "2px" }}
+                    ></Image>
+                    <span style={{ marginRight: "10px" }}>
+                      {detail.viewCnt}
+                    </span>
+                  </span>
+                </div>
+                <div style={{ display: "flex" }}>
+                  <h2>{detail.storeName}</h2>
+                  <div style={{ marginTop: "3px" }}>
+                    {" "}
+                    <Image
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                      alt="Dynamic Image"
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "5%",
+                        objectFit: "cover",
+                        marginLeft: "10px",
+                      }}
+                    />
+                    {detail.averageRating ? detail.averageRating : "평가중"}
+                  </div>
+                </div>
+                {detail.address?.area ? (
+                  <div>{detail.address.area}</div>
+                ) : (
+                  <div>주소 정보를 불러오는 중...</div>
+                )}
+
+                <div>매장번호: {detail.storePhone}</div>
+                <div>테이블 수: {detail.tableCnt}</div>
+                <div>주차 : {detail.parking === "FALSE" ? "불가" : "가능"}</div>
+                <div>애완동물 : {detail.dog === "FALSE" ? "불가" : "가능"}</div>
+              </Card.Body>
+            </Card>
+            <br />
+            <div>
+              <div>매장예약현황</div>
+              <div style={{ whiteSpace: "pre-line" }}>
+                {""} 매장 웨이팅 5팀이 있습니다 {""}
+              </div>
+            </div>
+
+            <DetailTab id={detail.id} />
+            <br />
+
+            <div>
+              <MenuSection />
+            </div>
+            <div className="text-center">
+              <div>
+                {/* 예약하기 버튼 */}
+                <Button
+                  style={{
+                    fontSize: "1.5rem",
+                    marginTop: "0.5rem",
+                    width: "25rem",
+                    float: "left",
+                  }}
+                  onClick={handleOpenModal}
+                >
+                  예약하기
+                </Button>
+              </div>
+
+              <div>
+                {/* 웨이팅하기 버튼 */}
+                <Button
+                  style={{
+                    fontSize: "1.5rem",
+                    marginTop: "0.5rem",
+                    width: "25rem",
+                    float: "right",
+                  }}
+                  onClick={handleOpenModal}
+                >
+                  웨이팅하기
+                </Button>
+              </div>
+            </div>
+
+            {/* 모달 컴포넌트 */}
+            <Modal show={showModal} onHide={handleCloseModal}>
+              <Modal.Header closeButton>
+                <Modal.Title>예약하기</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {/* Reservation 컴포넌트를 여기에 표시 */}
+                <Reservation />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleCloseModal}>닫기</Button>
+              </Modal.Footer>
+            </Modal>
+
+            <Modal show={showModal} onHide={handleCloseModal}>
+              <Modal.Header closeButton>
+                <Modal.Title>예약하기</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {/* Reservation 컴포넌트를 여기에 표시 */}
+                <ReservationNow />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleCloseModal}>닫기</Button>
+              </Modal.Footer>
+            </Modal>
+          </div>
+        </Col>
+      </Row>
+    </Container>
+  );
 };
 
 export default UserDetail;

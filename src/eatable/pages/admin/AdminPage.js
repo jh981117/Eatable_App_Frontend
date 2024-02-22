@@ -51,7 +51,9 @@ const AdminPage = () => {
               <h3>히스토리</h3>
               <Container>       
                 <Row >
-                  <Col className="d-flex justify-content-center mb-4" ><History /></Col>
+                  <Col className="d-flex justify-content-center mb-4" >
+                    <History />
+                    </Col>
                 </Row>
               </Container>  
             </Tab>
