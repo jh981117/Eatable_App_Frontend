@@ -100,10 +100,12 @@ const MyHeader = () => {
       <Navbar bg="light" variant="light">
         <Container style={{ width: "100%", maxWidth: "1200px" }}>
           <Navbar.Brand>
-            <Image
-              src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708150496729-logo.png"
-              style={{ width: "100px" }}
-            />
+            <Link to="/home">
+              <Image
+                src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708150496729-logo.png"
+                style={{ width: "100px" }}
+              />
+            </Link>
           </Navbar.Brand>
           <Nav className="ml-auto">
             {auth.isLoggedIn ? (

@@ -1,74 +1,148 @@
-import React from "react";
+import React, { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
 
 const ImageGallery = ({ images }) => {
-  let gridTemplateColumns;
-  let gridTemplateRows = "1fr"; // 기본적으로 1행 구성
-  if (images.length === 1) {
-    gridTemplateColumns = "1fr";
-  } else if (images.length === 2) {
-    gridTemplateColumns = "1fr 1fr";
-    gridTemplateRows = "500px"; // 2개일 때 높이를 500px로 설정
-  } else if (images.length === 3) {
-    gridTemplateColumns = "1fr 1fr";
-    gridTemplateRows = "250px 500px"; // 3개일 때 높이를 각각 250px로 설정하여 총 500px
-  } else if (images.length === 4) {
-    gridTemplateColumns = "1fr 1fr";
-    gridTemplateRows = "250px 250px"; // 4개일 때도 동일하게 높이 설정
-  } else {
-    gridTemplateColumns = "1fr 1fr 1fr";
-    gridTemplateRows = "250px 250px"; // 4개 이상일 때도 동일하게 높이 설정
-  }
+    const [showModal, setShowModal] = useState(false);
 
-  return (
-    <div>
-      <style>
-        {`
-    .image-gallery {
-      display: grid;
-      gap: 2px;
-      margin: auto;
-      maxWidth: '500px', 
-      maxHeight: '500px', 
-      overflow: 'hidden' // 컨테이너 최대 크기 설정
-    }
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
+  // 이미지 갯수에 따라 grid 스타일 동적 설정
+  const getGalleryStyle = () => {
+    let style = {
+      display: "flex", // 오타 수정: "fiex" -> "flex"
+      flexDirection: "row", // 기본값으로 row 설정
+      flexWrap: "wrap", // 이미지를 여러 줄로 나열하기 위해 wrap 설정
+      gap: "5px",
+      maxWidth: "500px",
+      height: "auto",
 
-    .image-container {
-      position: relative;
-    }
+    };
 
-    .image-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 20px;
+    if (images.length === 1) {
+      // 이미지가 하나일 때
+      style.display = "flex";
+      style.flexDirection = "column"; // 중앙 정렬을 위해 column 설정
+      style.alignItems = "center"; // 가운데 정렬
+    } else if (images.length === 2) {
+      // 이미지가 두 개일 때
+      style.display = "grid";
+      style.gridTemplateColumns = "1fr 1fr";
+    } else if (images.length === 3) {
+      // 이미지가 세 개 또는 네 개일 때
+      style.display = "grid";
+      style.gridTemplateColumns = "1fr 1fr";
+    } else if (images.length >= 4) {
+      style.display = "grid";
+      style.gridTemplateColumns = "1fr 1fr";
     }
+    return style;
+  };
 
-    .image-container img {
-      width: 100%;
-      height: 100%; 
-      object-fit: cover; // 이미지가 컨테이너 내에서 꽉 차도록 설정
-    }
-    `}
-      </style>
-      <div className="image-gallery" style={{ gridTemplateColumns }}>
-        {images.map((image, index) => (
-          <div key={index} className="image-container">
-            <img src={image.src} alt={image.alt} />
-            {index === 3 && images.length > 4 && (
-              <div className="image-overlay">+{images.length - 3}</div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  const imageStyle = (index) => ({
+    width: "100%", // 이미지 너비를 컨테이너에 맞춤
+    height: "100%", // 이미지 높이를 자동으로 조절
+    objectFit: images.length === 1 ? "contain" : "cover", // 이미지가 하나일 때는 contain, 그렇지 않을 때는 cover
+    opacity: index === 3 && images.length > 4 ? 0.5 : 1, // 네 번째 이미지에 투명도 적용하여 나머지 이미지 수 표시
+  });
+
+
+
+  const galleryStyle = getGalleryStyle();
+
+
+   return (
+     <>
+       <div style={galleryStyle}>
+         {images.slice(0, 4).map((image, index) => (
+           <div
+             key={index}
+             style={{
+               width: "100%",
+               overflow: "hidden",
+               height:
+                 images.length === 1 || images.length === 3? "100%" : "250px",
+               position: "relative",
+               objectFit: "cover",
+             }}
+           >
+             <img
+               src={image.src}
+               alt={`Gallery Image ${index}`}
+               style={imageStyle(index)}
+             />
+             {index === 3 && images.length > 4 && (
+               <div
+                 onClick={handleShowModal} // 클릭 시 모달 토글
+                 style={{
+                   position: "absolute",
+                   top: 0,
+                   left: 0,
+                   width: "100%",
+                   height: "100%",
+                   display: "flex",
+                   justifyContent: "center",
+                   alignItems: "center",
+                   backgroundColor: "rgba(0, 0, 0, 0.5)",
+                   color: "white",
+                   fontSize: "20px",
+                   cursor: "pointer", // 클릭 가능함을 나타내는 커서 스타일
+                 }}
+               >
+                 +{images.length - 4}
+               </div>
+             )}
+           </div>
+         ))}
+       </div>
+       <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
+         <Modal.Header closeButton>
+           <Modal.Title>이미지 갤러리</Modal.Title>
+         </Modal.Header>
+         <Modal.Body>
+           <div
+             className="image-gallery"
+             style={{
+               display: "flex",
+               flexWrap: "wrap",
+               justifyContent: "center", // 이미지를 가운데 정렬
+             }}
+           >
+             {images.map((image, index) => (
+               <div
+                 key={index}
+                 style={{
+                   flex: "1 1 auto", // 컨테이너 크기에 따라 유연하게 크기 조절
+                   maxWidth: "300px", // 컨테이너 최대 너비
+                   maxHeight: "300px",
+                   margin: "5px", // 이미지 간 간격
+                   display: "flex",
+                   justifyContent: "center", // 이미지를 div 내에서 가운데 정렬
+                 }}
+               >
+                 <img
+                   src={image.src}
+                   alt={`Gallery Image ${index}`}
+                   style={{
+                     width: "100%",
+                     height: "100%",
+                     maxWidth: "300px", // 이미지 최대 너비
+                     maxHeight: "300px", // 이미지 최대 높이
+                     objectFit: "cover", // 컨테이너를 꽉 채우면서 이미지 비율 유지
+                   }}
+                 />
+               </div>
+             ))}
+           </div>
+         </Modal.Body>
+
+         <Modal.Footer>
+           <Button variant="secondary" onClick={handleCloseModal}>
+             닫기
+           </Button>
+         </Modal.Footer>
+       </Modal>
+     </>
+   );
 };
 
 export default ImageGallery;

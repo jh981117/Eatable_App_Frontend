@@ -28,10 +28,16 @@ const DetailHome = ({id}) => {
 
 
     return (
-     <>
+      <>
         <Card style={{ width: "100%", maxWidth: "700px" }}>
           <Card.Title>
-            <small style={{ marginTop: "5px", marginLeft: "5px" }}>
+            <small
+              style={{
+                marginTop: "5px",
+                marginLeft: "5px",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+              }}
+            >
               매장소개
             </small>
           </Card.Title>
@@ -39,7 +45,13 @@ const DetailHome = ({id}) => {
             <div>{detail.storeInfo}</div>
           </Card.Body>
         </Card>
-        <Card style={{ width: "100%", maxWidth: "700px" }}>
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: "700px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+          }}
+        >
           <Card.Title>
             <small style={{ marginTop: "5px", marginLeft: "5px" }}>
               오픈시간
@@ -49,7 +61,13 @@ const DetailHome = ({id}) => {
             </Card.Body>
           </Card.Title>
         </Card>
-        <Card style={{ width: "100%", maxWidth: "700px" }}>
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: "700px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+          }}
+        >
           <Card.Title>
             <small style={{ marginTop: "5px", marginLeft: "5px" }}>
               예약정보

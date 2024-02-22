@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Container, Modal, Button } from "react-bootstrap";
+import { Link, useParams } from "react-router-dom";
 
 function ReviewImg() {
   const { id } = useParams();
-  const [reviewImages, setReviewImages] = useState(null); // 초기 상태를 null로 변경
+  const [reviewImages, setReviewImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [showModal, setShowModal] = useState(false); // 모달 표시 상태
+  const [selectedImage, setSelectedImage] = useState(""); // 선택된 이미지의 URL
+  const [selectedStoreName, setSelectedStoreName] = useState(""); // 선택된 이미지에 해당하는 매장 이름
+  const [selectedFavorite, setSelectedFavorite] = useState("");
+  const [partnerId, setPartnerId] = useState("");
+  console.log(reviewImages, "!23123123123");
   useEffect(() => {
     fetch(`http://localhost:8080/api/store/partner/${id}`)
       .then((response) => {
@@ -26,17 +32,26 @@ function ReviewImg() {
   }, [id]);
 
   if (loading) {
-    return <div>로딩 중...</div>; // 데이터를 가져 오는 동안 로딩 표시기 렌더링
+    return <div>로딩 중...</div>;
   }
 
   if (error) {
-    return <div>오류: {error}</div>; // 가져오기 실패시 오류 메시지 렌더링
+    return <div>오류: {error}</div>;
   }
-  console.log(reviewImages, "111111111");
- return (
-   <div>
-     <style>
-       {`
+
+  // 이미지 클릭 핸들러
+  const handleImageClick = (imageUrl, storeName, favorite, partnerId) => {
+    setSelectedImage(imageUrl); // 선택된 이미지 URL 상태 업데이트
+    setSelectedStoreName(storeName); // 선택된 이미지에 해당하는 매장 이름 상태 업데이트
+    setSelectedFavorite(favorite);
+    setPartnerId(partnerId);
+    setShowModal(true); // 모달 표시
+  };
+  return (
+    <div>
+      <Container>
+        <style>
+          {`
       .review-images {
         display: flex;
         flex-wrap: wrap;
@@ -73,22 +88,69 @@ function ReviewImg() {
         }
       }
       `}
-     </style>
-     <div className="review-images">
-       {reviewImages.map((review) =>
-         review.partnerReviewAttachments.map((url, index) => (
-           <img
-             className="review-image"
-             key={index}
-             src={url.imageUrl}
-             alt={`Review Attachment ${index + 1}`}
-           />
-         ))
-       )}
-     </div>
-   </div>
- );
-
+        </style>
+        <div className="review-images">
+          {reviewImages.map((review, reviewIndex) =>
+            review.partnerReviewAttachments.map(
+              (attachment, attachmentIndex) => (
+                <img
+                  key={`${reviewIndex}-${attachmentIndex}`} // key 값을 unique하게 수정
+                  className="review-image"
+                  src={attachment.imageUrl}
+                  alt={`Review Attachment ${attachmentIndex + 1}`}
+                  style={{
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    maxWidth: "200px",
+                    maxHeight: "200px",
+                  }}
+                  onClick={() =>
+                    handleImageClick(
+                      attachment.imageUrl,
+                      review.partner.storeName,
+                      review.partner.favorite,
+                      review.partner.id
+                    )
+                  } // storeName을 인자로 추가
+                />
+              )
+            )
+          )}
+        </div>
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+          <Modal.Title style={{ marginLeft: "10px" }}>
+            <div
+              style={{
+                marginTop: "10px",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>
+                {selectedStoreName}{" "}
+                <small style={{ fontSize: "15px", color: "gray" }}>
+                  {selectedFavorite}
+                </small>
+              </span>
+              <span></span>
+            </div>
+          </Modal.Title>
+          <Modal.Body>
+            <img
+              src={selectedImage}
+              alt="Selected"
+              style={{ width: "100%", height: "auto" }}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              닫기
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+    </div>
+  );
 }
 
 export default ReviewImg;
