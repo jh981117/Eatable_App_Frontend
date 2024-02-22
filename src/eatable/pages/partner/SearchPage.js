@@ -16,9 +16,10 @@ const SearchPage = () => {
   const sentinelRef = useRef();
 
   useEffect(() => {
+
     const options = {
       root: null,
-      rootMargin: "0px",
+      rootMargin: "-10px",
       threshold: 0.8,
     };
 
@@ -48,18 +49,20 @@ const SearchPage = () => {
 
   // 새로운 페이지 가져오기
   useEffect(() => {
-    console.log("페이징:", page, "검색어:",);
 
 
-    fetch(`http://localhost:8080/api/partner/search?page=${page}&keyword=${inputValue}`)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/partner/search?page=${page}&keyword=${inputValue}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
         }
-        throw new Error('Network response was not ok.');
-      })
-      .then((data) => {
-        console.log(data);
+        const data = await response.json();
+
+        if (data.content.length === 0) {
+          setLoading(false);
+          return;
+        }
 
         if (page === 0) {
           setPartners(data.content);
@@ -69,20 +72,21 @@ const SearchPage = () => {
           )]);
         }
 
-
-        setLoading(true);
         setTimeout(() => {
           setLoading(false); // 일정 시간 후에 로딩 상태 변경
         }, 1000); // 2초 후에 로딩 상태 변경
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('There was a problem with your fetch operation:', error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, [page, inputValue]);
 
-  const handleInputChange = (data) => {
-    setInputValue(data);
+
+  const handleInputChange = (input) => {
+    setInputValue(input);
     setPage(0);
   };
 
@@ -237,6 +241,7 @@ const SearchPage = () => {
         ))}
         {/* Intersection Observer를 위한 Sentinel */}
         <div ref={sentinelRef}></div>
+
         {loading && (
           <div className="d-flex justify-content-center">
             <Spinner animation="border" />

@@ -20,7 +20,7 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             })
             .then((data) => {
                 if (data !== null) {
-                    console.log(data.content);
+                    // console.log(data.content);
                     setWholeTextArray(data.content);
                     updateDropDownList(data.content);
                     onAutoCompleteData(inputValue);
@@ -80,8 +80,8 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                 setDropDownItemIndex(-1);
             }
             if (event.key === 'Enter') {
-              setIsHaveInputValue(false);
-          }
+                setIsHaveInputValue(false);
+            }
 
 
         }
