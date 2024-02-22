@@ -40,6 +40,7 @@ import PartnerWaitingPage from "./pages/userDetails/waiting/partnerWaitingPage";
 import Out from "./pages/user/Out";
 import UserInfoPage from "./pages/user/UserInfoPage";
 import UserPageAccess from "./rolecomponents/UserPageAccess";
+import { MenuList } from "@material-ui/core";
 
 
 const EatableApp = () => {
@@ -50,13 +51,13 @@ const EatableApp = () => {
         <MyHeader />
         {/* MyHeader 컴포넌트에서는 useAuth를 사용하여 로그인 상태 접근 */}
         <Container>
-          <Routes>         
+          <Routes>
             <Route path="/" Component={HomePage}></Route>
             <Route path="/home" Component={HomePage}></Route>
 
             {/* 유저 */}
             <Route path="/provision" Component={ProvisionPage}></Route>
-            <Route path="/signup" Component={SignupPage}></Route>            
+            <Route path="/signup" Component={SignupPage}></Route>
             <Route path="/login" Component={LoginPage}></Route>
             <Route path="/out" Component={Out}></Route>
 
@@ -130,10 +131,6 @@ const EatableApp = () => {
               }
             ></Route>
 
-
-
-
-
             {/* 어드민 */}
             <Route
               path="/applylist"
@@ -171,18 +168,13 @@ const EatableApp = () => {
               }
             ></Route>
             <Route
-            path="/adminpage" element={
-              <AdminRoute>
-                <AdminPage />
-              </AdminRoute>
-            }>
-              
-            </Route>
-
-
-
-
-
+              path="/adminpage"
+              element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
+              }
+            ></Route>
 
             {/* 에러페이지 */}
             <Route path="/roleErrorPage" Component={RoleErrorPage}></Route>
@@ -207,7 +199,6 @@ const EatableApp = () => {
               }
             ></Route>
 
-
             {/* 민호 */}
             <Route path="/reviewlist" Component={ReviewList}></Route>
             <Route path="/eatabletimeline" Component={EatableTimeLine}></Route>
@@ -220,6 +211,8 @@ const EatableApp = () => {
               path="/storeReviewList/:id"
               Component={StoreReviewList}
             ></Route>
+
+            <Route path="/stoermenu/:id" Component={StoreReviewList} />
           </Routes>
         </Container>
       </AuthProvider>
