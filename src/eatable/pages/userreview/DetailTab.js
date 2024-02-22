@@ -6,6 +6,9 @@ import ReviewImg from "./ReviewImg";
 import DetailHome from "./DetailHome";
 import PartnerReviewImgLength from "./Item/PartnerReviewImgLength";
 import PartnerReviewLength from "./Item/PartnerReviewLength";
+import MenuSection from "../userDetails/menuComponents/MenuSection";
+import HomeCategoryMenu from "../userDetails/menuComponents/HomeCategoryMenu";
+import HomeReview from "../userDetails/menuComponents/HomeReview";
 
 const DetailTab = ({ id }) => {
   return (
@@ -25,12 +28,20 @@ const DetailTab = ({ id }) => {
         >
           <Tab eventKey="storedetail" title="홈">
             <DetailHome id={id} />
+            <HomeCategoryMenu id={id} />
+            <HomeReview id={id} />
+            <br />
+            <br />
           </Tab>
           <Tab eventKey="storemenu" title="메뉴">
-            메뉴
+            <MenuSection />
+            <br />
+            <br />
           </Tab>
           <Tab eventKey="storeimg" title={<PartnerReviewImgLength id={id} />}>
             <ReviewImg id={id} />
+            <br />
+            <br />
           </Tab>
           <Tab
             eventKey="storereview"
@@ -38,6 +49,8 @@ const DetailTab = ({ id }) => {
               <>
                 <span>리뷰</span>
                 <PartnerReviewLength partnerId={id} />
+                <br />
+                <br />
               </>
             }
           >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Container } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import ImageGallery from "./Item/ImageGallery";
 
@@ -42,57 +42,73 @@ console.log(reviews)
 
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {reviews.map((review) => (
-        <Card key={review.id} style={{ maxWidth: "500px" }}>
-          <Card.Body>
-            <div>
+    <Container>
+      <div
+ 
+      >
+        {reviews.map((review) => (
+          <Card
+            key={review.id}
+            className="mb-3"
+            style={{
+              width: "auto",
+              maxWidth: "500px",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            <Card.Body>
               <div>
+                <div>
+                  <span>
+                    <img
+                      src={review.user.profileImageUrl}
+                      style={{
+                        width: "30px",
+                        borderRadius: "30px",
+                        marginRight: "5px",
+
+                        objectFit: "cover",
+                      }}
+                    />
+                  </span>
+                  <span>{review.user.nickName}</span>
+                </div>
                 <span>
                   <img
-                    src={review.user.profileImageUrl}
-                    style={{
-                      width: "30px",
-                      borderRadius: "30px",
-                      marginRight: "5px",
-                    }}
+                    src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                    style={{ width: "20px" }}
                   />
                 </span>
-                <span>{review.user.nickName}</span>
-                <span></span>
-              </div>
-              <span>
-                <img
-                  src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
-                  style={{ width: "20px" }}
-                />
-              </span>
-              <span style={{ marginRight: "10px" }}>{review.avg}</span>
-              <span>{review.createdAt}</span>
+                <span style={{ marginRight: "10px" }}>{review.avg}</span>
+                <span>{review.createdAt}</span>
 
-              <div>
-                <ImageGallery
-                  images={review.partnerReviewAttachments.map((attachment) => ({
-                    src: attachment.imageUrl,
-                    alt: `Review Image ${attachment.id}`,
-                  }))}
-                />
-              </div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "500px",
+                    maxHeight: "600px",
+                  }}
+                >
+                  <ImageGallery
+                    images={review.partnerReviewAttachments.map(
+                      (attachment) => ({
+                        src: attachment.imageUrl,
+                        alt: `Review Image ${attachment.id}`,
+                      })
+                    )}
+                  />
+                </div>
 
-              <p>{review.content}</p>
-              {/* 추가적인 리뷰 정보 렌더링 */}
-            </div>
-          </Card.Body>
-        </Card>
-      ))}
-    </div>
+                <p>{review.content}</p>
+                {/* 추가적인 리뷰 정보 렌더링 */}
+              </div>
+            </Card.Body>
+          </Card>
+        ))}
+      </div>
+    </Container>
   );
 }
 

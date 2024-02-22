@@ -12,6 +12,7 @@ const UserDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   let { id } = useParams();
   console.log(id); // 콘솔에 id 값이 출력되어야 합니다.
+  console.log(selectedImage)
 
   const [showModal, setShowModal] = useState(false); // 모달 열림 여부를 저장하는 상태 변수
 
@@ -75,8 +76,11 @@ const UserDetail = () => {
 
   const containerStyle = {
     display: "flex",
-    flexDirection: windowWidth > 770 ? "column" : "row",
+    marginLeft: "10px",
+    flexDirection: windowWidth > 1000 ? "column" : "row",
     gap: "10px",
+    marginTop: "10px",
+    marginBottom: "10px",
     flexWrap: "wrap", // 화면이 좁아질 때 이미지가 다음 줄로 넘어갈 수 있도록 설정
   };
   return (
@@ -99,13 +103,16 @@ const UserDetail = () => {
                 justifyContent: "center",
               }}
             >
-              <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                <img
+              <div style={{ textAlign: "center", marginBottom: "20px", display:"flex", justifyContent:"center"}}>
+                <Image
                   src={selectedImage}
                   alt="Selected"
                   style={{
-                    width: "450px",
-                    height: "450px",
+                    objectFit: "cover",
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "600px",
+                    maxHeight: "600px"
                   }}
                 />
               </div>
@@ -121,7 +128,7 @@ const UserDetail = () => {
                         height: "50px",
                         objectFit: "cover",
                         cursor: "pointer",
-                        marginLeft: windowWidth <= 770 ? "10px" : "0", // 화면 너비에 따라 마진 조정
+                        marginLeft: windowWidth <= 1000 ? "10px" : "0", // 화면 너비에 따라 마진 조정
                         borderRadius: "5px",
                       }}
                       onClick={() => setSelectedImage(file.imageUrl)}
@@ -199,18 +206,27 @@ const UserDetail = () => {
             <DetailTab id={detail.id} />
             <br />
 
-            <div>
-              <MenuSection />
-            </div>
-            <div className="text-center">
+            
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                maxWidth: "600px",
+                justifyContent: "center",
+                gap: "5px",
+                position: "fixed",
+                bottom: "5px",
+              }}
+            >
               <div>
                 {/* 예약하기 버튼 */}
                 <Button
                   style={{
-                    fontSize: "1.5rem",
+                    fontSize: "1.3rem",
                     marginTop: "0.5rem",
                     width: "25rem",
                     float: "left",
+                    padding: "5px",
                   }}
                   onClick={handleOpenModal}
                 >
@@ -222,10 +238,11 @@ const UserDetail = () => {
                 {/* 웨이팅하기 버튼 */}
                 <Button
                   style={{
-                    fontSize: "1.5rem",
+                    fontSize: "1.3rem",
                     marginTop: "0.5rem",
                     width: "25rem",
                     float: "right",
+                    padding: "5px",
                   }}
                   onClick={handleOpenModal}
                 >
