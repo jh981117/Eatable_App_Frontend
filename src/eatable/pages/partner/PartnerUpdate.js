@@ -36,6 +36,7 @@ const PartnerUpdate = () => {
     corkCharge: "",
     dog: "",
     fileList: [],
+    readyTime: "",
   });
 
   const [errorMessages, setErrorMessages] = useState({
@@ -47,6 +48,7 @@ const PartnerUpdate = () => {
     parking: "",
     corkCharge: "",
     dog: "",
+    readyTime: ""
   });
 
   const handleChange = (e) => {
@@ -264,6 +266,7 @@ const PartnerUpdate = () => {
     formData.append("favorite", post.favorite);
     formData.append("parking", post.parking);
     formData.append("corkCharge", post.corkCharge);
+    formData.append("readyTime", post.readyTime);
     formData.append("dog", post.dog);
 
     for (const fileData of post.fileList) {
@@ -501,7 +504,26 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.storeInfo}</span>
           )}
         </div>
-
+          {/* 예상 소요시간 */}
+          <span>
+            <label htmlFor="tableCnt">
+              <h5>예상 소요시간</h5>
+            </label>
+            <div style={{display:"flex" }}>
+            <input
+              type="number"
+              className="form-control"
+              id="readyTime"
+              placeholder="예상 시간 분 단위입니다."
+              name="readyTime"
+              min="0"
+              onChange={handleChange}
+              value={post.readyTime}
+              style={{ width: "100%", maxWidth: "500px" }}
+            />
+            <span style={{width: "100%" , maxWidth: "400px", marginTop:"9px"}}>분</span>
+            </div>
+          </span>
         {/* 테이블수 */}
         <div className="mt-3">
           <label htmlFor="tableCnt">
