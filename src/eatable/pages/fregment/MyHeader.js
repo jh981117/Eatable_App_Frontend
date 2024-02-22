@@ -75,26 +75,31 @@ const MyHeader = () => {
   };
   console.log(auth);
 
-
-
   return (
     <>
       <style>
         {`
-      .navbar-custom {
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
+        .navbar-custom {
+          display: flex;
+          justify-content: center;
+          position: relative;
+        }
 
-.navbar-nav-custom {
-  position: absolute;
-  right: 0;
-}`}
+        .navbar-nav-custom {
+          position: absolute;
+          right: 0;
+        }
+
+        @media (max-width: 770px) {
+          .responsive-span {
+            display: none;
+          }
+        }
+      `}
       </style>
-      <Navbar bg="light" variant="light" className="justify-content-center">
-        <Container>
-          <Navbar.Brand as={Link} to="/home">
+      <Navbar bg="light" variant="light">
+        <Container style={{ width: "100%", maxWidth: "1200px" }}>
+          <Navbar.Brand>
             <Image
               src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708150496729-logo.png"
               style={{ width: "100px" }}
@@ -104,7 +109,6 @@ const MyHeader = () => {
             {auth.isLoggedIn ? (
               <>
                 {/* 로그인 했을 때 보여줄 링크들 */}
-
                 <Nav.Link
                   as={Link}
                   to="/usermypage"
@@ -121,11 +125,13 @@ const MyHeader = () => {
                       marginRight: "5px",
                     }}
                   />
-                  <span className="nickname ml-2">
+                  <span className="nickname ml-2 responsive-span">
                     {auth.profile ? auth.profile.nickName : ""}
                   </span>
-
-                  <span style={{ marginRight: "5px" }}>
+                  <span
+                    className="responsive-span"
+                    style={{ marginRight: "5px" }}
+                  >
                     <Image
                       src={tempColor(
                         auth.profile ? auth.profile.temperature : ""
@@ -135,7 +141,6 @@ const MyHeader = () => {
                     {auth.profile ? auth.profile.temperature : ""}
                   </span>
                 </Nav.Link>
-
                 <Button
                   onClick={handleLogout}
                   variant="outline-secondary"
