@@ -24,7 +24,7 @@ const UserWaitingPage = ({ userId }) => {
 
     const handleDeleteReservation = async (partnerId, waitingId) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/waiting/waitingDelete/${partnerId}/${userId}`, {
+            const response = await fetch(`http://localhost:8080/api/waiting/waitingDelete/${partnerId}/${waitingId}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {
