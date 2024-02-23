@@ -247,7 +247,7 @@ if (temperature <= 0 && temperature >= -50) {
       setError(error);
     }
   };
-  console.log(profile);
+  console.log("정보수정 됬니?",profile);
 
   //프로필사진 업데이트
 
@@ -348,7 +348,6 @@ if (temperature <= 0 && temperature >= -50) {
     // 해당 토큰에서 권한을 디코드하여 확인하는 로직이 될 것입니다.
     return checkPartnerRole();
   };
-
 
   return (
     <Container className="col-8">
@@ -498,5 +497,6 @@ if (temperature <= 0 && temperature >= -50) {
     </Container>
   );
 };
+
 
 export default UserInfoPage;
