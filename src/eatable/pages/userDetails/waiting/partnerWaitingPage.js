@@ -1,31 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-const PartnerWaitingPage = ({id}) => {
+const PartnerWaitingPage = ({ id }) => {
     const [waitings, setWaitings] = useState([]);
 
-    console.log(id+'id값입니다')
-    console.log(waitings+'웨이팅값입니다')
+    // fetchWaitings 함수를 정의
+    const fetchWaitings = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/waiting/waitingList/${id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch waitings');
+            }
+            let data = await response.json();
+            // 예약 시간이 빠른 순으로 정렬
+            data.sort((a, b) => new Date(a.waitingRegDate) - new Date(b.waitingRegDate));
+            setWaitings(data);
+        } catch (error) {
+            console.error('Error fetching waitings:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchWaitings = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/api/waiting/waitingList/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch waitings');
-                }
-                let data = await response.json();
-                // 예약 시간이 빠른 순으로 정렬
-                data.sort((a, b) => new Date(a.waitingRegDate) - new Date(b.waitingRegDate));
-                setWaitings(data);
-            } catch (error) {
-                console.error('Error fetching waitings:', error);
-            }
-        };
-
+        // useEffect 내에서 fetchWaitings 호출
         fetchWaitings();
     }, [id]);
+
+    const updateWaitingState = async (waitingId, newWaitingState) => {
+        // WaitingDto를 사용하여 waitingState를 문자열로 전송
+        const waitingDto = {
+            waitingState: newWaitingState
+        };
     
+        try {
+            const response = await fetch(`http://localhost:8080/api/waiting/updateWaitingState/${id}/${waitingId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(waitingDto) // WaitingDto를 JSON 문자열로 변환하여 전송
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update waiting state');
+            }
+            // 대기열 상태 업데이트 후 다시 대기열을 불러옴
+            fetchWaitings();
+        } catch (error) {
+            console.error('Error updating waiting state:', error);
+        }
+    };
 
     return (
         <div>
@@ -38,6 +60,7 @@ const PartnerWaitingPage = ({id}) => {
                         <th>매장</th>
                         <th>예약 시간</th>
                         <th>대기 상태</th>
+                        <th>대기 상태 변경</th> {/* 변경 버튼을 추가 */}
                     </tr>
                 </thead>
                 <tbody>
@@ -48,6 +71,12 @@ const PartnerWaitingPage = ({id}) => {
                             <td>{waiting.partner.storeName}</td>
                             <td>{waiting.waitingRegDate}</td>
                             <td>{waiting.waitingState}</td>
+                            <td>
+                                {/* 버튼 클릭 시 대기 상태를 변경 */}
+                                <button onClick={() => updateWaitingState(waiting.id, waiting.waitingState === "TRUE" ? "FALSE" : "TRUE")}>
+                                    {waiting.waitingState === "TRUE" ? "대기 중" : "입장완료"}
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
