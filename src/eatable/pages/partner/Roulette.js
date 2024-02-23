@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./components/Roulette.css";
 import { ToastContainer, toast } from "react-toastify";
 import { Container } from "react-bootstrap";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const Roulette = () => {
   const canvasRef = useRef(null);
   const navigate = useNavigate();
+  let inputValue = "";
 
   const originalProducts = [
     // "한식", "중식", "일식", "이탈리아", "프랑스", "유러피안", "퓨전", "스페인", "아메리칸", "스시", "한우", "소고기구이", "와인", "코스요리", "고기요리", "한정식", "파스타", "해물", "다이닝바", "브런치", "카페", "치킨", "레스토랑", "피자", "백반", "국수", "비건"
@@ -84,11 +85,13 @@ const Roulette = () => {
 
     setTimeout(() => {
       const ran = Math.floor(Math.random() * product.length);
-      const arc = 360 / product.length;
+      inputValue = product[ran];
+
+      const arc = 360 / product.length ;
       const rotate = ran * arc + 3600 + arc * 3 - arc / 4;
 
       canvas.style.transform = `rotate(-${rotate}deg)`;
-      canvas.style.transition = `2s`;
+      canvas.style.transition = `2s`;  // 2초에 걸쳐 회전 css
 
       const expressions = [
         `오늘은 ${product[ran]} 어때?`,
@@ -113,14 +116,19 @@ const Roulette = () => {
         `${product[ran]} 먹을 때 좋아하는 영화나 드라마 추천해줄래?`,
       ];
 
-      const inputValue = encodeURIComponent(product[ran]);
-
       const selectedExpression =
         expressions[Math.floor(Math.random() * expressions.length)];
 
-      toast(selectedExpression);
-      setTimeout(() => navigate(`/searchpage?keyword=${inputValue}`), 5000);
-    }, 1);
+      setTimeout(() => {
+        toast(selectedExpression);
+      }, 2000);
+
+    }, 1);  // 클릭후 1초뒤에 스핀 시작
+
+  };
+
+  const handleToastClose = () => {
+    navigate(`/searchpage?keyword=${inputValue}`);
   };
 
   return (
@@ -131,12 +139,13 @@ const Roulette = () => {
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
-        closeOnClick
+        closeOnClick={false}
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
         theme="dark"
+        onClose={handleToastClose}
       />
 
       <div id="rouletteContainer">
