@@ -11,7 +11,6 @@ const SearchPage = () => {
   const [prevPartners, setPrevPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState("");
 
   // Intersection Observer를 위한 ref 생성
   const sentinelRef = useRef();
@@ -21,12 +20,17 @@ const SearchPage = () => {
   // 쿼리 매개변수에서 keyword 값을 받아오기
   const item = queryParams.get("keyword");
 
-  useEffect(() => {
-    const keywordString = item.toString(); // 문자열로 변환
-    console.log(keywordString);
+  // useEffect(() => {
+  //   const keywordString = item.toString(); // 문자열로 변환
+  //   console.log(keywordString);
 
-    setTimeout(() => handleInputChange(keywordString), 50)
-  }, [item])
+  //   setTimeout(() => handleInputChange(keywordString), 500)
+  // }, []);
+
+  const handleItem = () => {
+    const keywordString = item.toString();
+    handleInputChange(keywordString)
+  };
 
 
   useEffect(() => {
@@ -81,11 +85,14 @@ const SearchPage = () => {
 
         if (page === 0) {
           setPartners(data.content);
+        } else if (item) {
+          handleItem(item);
         } else {
           setPartners((prevPartners) => [...prevPartners, ...data.content.filter(
             (partner) => !prevPartners.some((p) => p.id === partner.id)
           )]);
         }
+
 
         setTimeout(() => {
           setLoading(false); // 일정 시간 후에 로딩 상태 변경
