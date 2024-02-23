@@ -72,7 +72,7 @@ const ReviewPage = () => {
       alert("리뷰글이 수정되었습니다.");
       setReviews(updatedReviews);
       // 이미지 수정
-    // editReviewImages(review.id);
+      editReviewImages(review.id);
       setEditReview(null); // 수정완료후 editReview를 null로 설정 편집모드종료
   })
   .catch((error) => {
@@ -108,37 +108,42 @@ const ReviewPage = () => {
   });
 };
 
-// const editReviewImages = async (reviewId) => {
-//   const formData = new FormData();
-//   updateImage.imgList.forEach((file) => {
-//     formData.append("files", file); // 이미지 파일 추가
-//     console.log("파일?",file);
-//   });
+const editReviewImages = async (reviewId) => {
+  const formData = new FormData();
+  updateImage.imgList.forEach((file) => {
+    formData.append("files", file); // 이미지 파일 추가
+    setNewImage(file);
+    console.log("파일?",setNewImage);
+  });
 
-//   try {
-//     // 이미지 파일 전송
-//     const imageResponse = await fetch(
-//       `http://localhost:8080/api/store/reviews/update/attachments`,
-//       {
-//         method: "PUT",
-//         body: formData, // Content-Type을 설정하지 않음. 브라우저가 자동으로 처리
-//       }
-//     );
+  try {
+    // 이미지 파일 전송
+    const imageResponse = await fetch(
+      `http://localhost:8080/api/store/reviews/update/attachments`,
+      {
+        method: "PUT",
+        body: formData, // Content-Type을 설정하지 않음. 브라우저가 자동으로 처리
+      }
+    );
+    console.log("응답" , imageResponse);
 
-//       if (!imageResponse.ok) {
-//         throw new Error("이미지 URL 수정 실패");
-//       } else {
-//         console.log("이미지 URL 수정 성공");
-//       }
-//     } catch (error) {
-//     console.error(error);
-//   }
-// };
+      if (!imageResponse.ok) {
+        throw new Error("이미지 URL 수정 실패");
+      } else {
+        console.log("이미지 URL 수정 성공");
+        setNewImage(imageResponse.file);
+        console.log("파일 : ", imageResponse.file);
+      }
+    } catch (error) {
+    console.error(error);
+  }
+};
   
-// const addNewImage = (e) => {
-//   setUpdateImage({ ...updateImage, imgList: [...updateImage.imgList, newImage] }); // 새 이미지를 기존 이미지 배열에 추가
-//   console.log("사진" ,newImage);
-// };
+const addNewImage = (e) => {
+  const file = e.target.files[0];
+  setUpdateImage({ ...updateImage, imgList: [...updateImage.imgList, file] }); // 새 이미지를 기존 이미지 배열에 추가
+  console.log("사진" ,file);
+};
 const cancelUpdate = () => {
   setEditReview(null); // 수정 취소 시 수정 중인 리뷰 상태 초기화
 };
@@ -166,7 +171,7 @@ console.log(reviews, "re");
           {editReview === review ? (
               <>
                 <Form.Control as="textarea" rows={3} value={editContent} onChange={(e) => setEditContent(e.target.value)}/>
-                {/* <input type="file" onChange={addNewImage}/> 새 이미지 업로드 input */}
+                <input type="file" onChange={addNewImage}/>
                 <Button onClick={() => deleteReview(review)}>삭제</Button>
                 <Button onClick={cancelUpdate}>취소</Button> {/* 수정 취소 버튼 */}
                 <Button onClick={() => handleUpdate(review)}>완료</Button>
