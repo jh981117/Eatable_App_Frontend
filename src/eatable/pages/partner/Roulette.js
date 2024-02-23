@@ -87,7 +87,7 @@ const Roulette = () => {
       const ran = Math.floor(Math.random() * product.length);
       inputValue = product[ran];
 
-      const arc = 360 / product.length ;
+      const arc = 360 / product.length;
       const rotate = ran * arc + 3600 + arc * 3 - arc / 4;
 
       canvas.style.transform = `rotate(-${rotate}deg)`;
@@ -136,7 +136,7 @@ const Roulette = () => {
 
       <ToastContainer
         position="top-center"
-        autoClose={5000}
+        autoClose={4000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick={false}
