@@ -11,7 +11,6 @@ const SearchPage = () => {
   const [prevPartners, setPrevPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [totalpages, setTotalpages] = useState(0);
   const [numberOfElements, setNumberOfElements] = useState(0);
 
   const sentinelRef = useRef();   // Intersection Observer를 위한 ref 생성
@@ -49,7 +48,6 @@ const SearchPage = () => {
     }
   };
 
-  console.log(totalpages);
   console.log(page);
 
   const images = [
@@ -70,7 +68,6 @@ const SearchPage = () => {
         const data = await response.json();
 
         console.log(data);
-        setTotalpages(data.totalPages);
         setNumberOfElements(data.numberOfElements);
 
         if (page === 0) {
