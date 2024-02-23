@@ -7,7 +7,7 @@ const MenuList = ({ menuData }) => {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
                 <tr>
-                    <th style={tableHeaderStyle}>사진</th>
+                    <th style={tableHeaderStyle}>이미지</th>
                     <th style={tableHeaderStyle}>이름</th>
                     <th style={tableHeaderStyle}>가격</th>
                 </tr>
@@ -24,7 +24,7 @@ const MenuList = ({ menuData }) => {
 const Menu = ({ menuImageUrl, name, price }) => {
     return (
         <tr style={tableRowStyle}>
-            <td style={tableCellStyle}><img src={menuImageUrl} style={{width: "100px"}}/></td>
+            <td style={tableCellStyle}><img src={menuImageUrl} style={{width: "100px" ,borderRadius:"10px"}}/></td>
             <td style={tableCellStyle}>{name}</td>
             <td style={tableCellStyle}>{price}원</td>
         </tr>
