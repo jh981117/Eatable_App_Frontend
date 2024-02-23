@@ -11,7 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import {Col, Container, Row, Table } from 'react-bootstrap';
+import { Col, Container, Row, Table } from 'react-bootstrap';
 
 ChartJS.register(
   CategoryScale,
@@ -45,57 +45,53 @@ const AnimatedTable = styled(Table)`
   animation: ${({ show }) => (show ? fadeIn : fadeOut)} 0.3s ease-in-out forwards;
 `;
 
-   const BarChartNewp = () => {
-    const [userLists, setUserLists] = useState([]);
-    const [selectDate, setSelectDate] = useState(null);
-    
-    useEffect(() => {
-      fetch("http://localhost:8080/api/user/list")
-          .then(response => response.json())
-          .then(data => {
-              // ROLE_ADMIN을 가진 사용자 필터링
-              console.log(data)
-              const authfilter = data.filter(user => {
-                  return !user.roles.map(role => role.roleName).includes("ROLE_ADMIN");
-              });
-              console.log(authfilter)
-              setUserLists(authfilter);
-          })
-          .catch(error => {
-              console.error("Error fetching user list:", error);
-          });
-  }, []);
-  
-    const options = {
-      responsive: false,
-      plugins: {
-        legend: {
-          position: 'top' ,
-        },
-        title: {
-          display: true,
-          text: 'Chart.js Bar Chart',
-        },
-      },
-    };
+const BarChartNewp = () => {
+  const [userLists, setUserLists] = useState([]);
+  const [selectDate, setSelectDate] = useState(null);
 
-    const getWeekDates = () => {
-      const today = new Date();
-      const currentDay = today.getDay(); // 현재 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)    
-      const mondayDate = new Date(today); // 오늘의 날짜를 복사하여 시작 날짜로 설정
-      mondayDate.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1)); // 이번 주 월요일로 설정
-    
-      const weekDates = [];
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(mondayDate);
-        date.setDate(mondayDate.getDate() + i);
-        weekDates.push(date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }));
-      }
-      return weekDates;
-    };
-    
-    const labels = getWeekDates();
-  
+  useEffect(() => {
+    fetch("http://localhost:8080/api/user/list")
+      .then(response => response.json())
+      .then(data => {
+        // ROLE_ADMIN을 가진 사용자 필터링
+        const authfilter = data.filter(user => !user.roles.map(role => role.roleName).includes("ROLE_ADMIN"));
+        setUserLists(authfilter);
+      })
+      .catch(error => {
+        console.error("Error fetching user list:", error);
+      });
+  }, []);
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Chart.js Bar Chart',
+      },
+    },
+  };
+
+  const getWeekDates = () => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 현재 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)    
+    const mondayDate = new Date(today); // 오늘의 날짜를 복사하여 시작 날짜로 설정
+    mondayDate.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1)); // 이번 주 월요일로 설정
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(mondayDate);
+      date.setDate(mondayDate.getDate() + i);
+      weekDates.push(date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }));
+    }
+    return weekDates;
+  };
+
+  const labels = getWeekDates();
+
   const userListsByDate = {}; // 각 날짜별 가입자 수를 저장할 객체
 
   userLists.forEach(user => {
@@ -111,7 +107,7 @@ const AnimatedTable = styled(Table)`
         label: '일일신규가입자수',
         data: labels.map(date => userListsByDate[date] || 0), // 각 날짜별 가입자 수를 매핑
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      } 
+      }
     ],
   };
 
@@ -123,17 +119,22 @@ const AnimatedTable = styled(Table)`
   };
 
   return (
-    <div>
-    <Bar options={{ ...options, onClick: BarClick }} data={data} height="600px" width="1000px" />
-    <CSSTransition
-      in={!!selectDate}
-      timeout={300}
-      classNames="table"
-      unmountOnExit
-    >
-      <Container>     
-        <Row>
-          <Col>
+    <Container fluid>
+      <Row>
+        <Col>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Bar options={{ ...options, onClick: BarClick }} data={data} width={600} height={300} />
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <CSSTransition
+            in={!!selectDate}
+            timeout={300}
+            classNames="table"
+            unmountOnExit
+          >
             <AnimatedTable show={!!selectDate} striped bordered hover size="sm" className="list_table">
               <thead>
                 <tr>
@@ -160,14 +161,11 @@ const AnimatedTable = styled(Table)`
                   ))}
               </tbody>
             </AnimatedTable>
-          </Col>
-        </Row>
-      </Container>
-    </CSSTransition>
-  </div>
+          </CSSTransition>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
-  
-
-  export default BarChartNewp;
+export default BarChartNewp;

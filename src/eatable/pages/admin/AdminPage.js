@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Container, Row, Col,Button, Form, Modal, Table, Tab,Tabs } from 'react-bootstrap';
+import React from 'react';
+import styled from 'styled-components';
+import { Container, Tab, Tabs } from 'react-bootstrap';
 
 import LineChart from './LineChart';
 import BarChartNewp from './BarChartNewp';
@@ -8,57 +9,57 @@ import CancelList from './CancelList';
 import BarChartNews from './BarChartNews';
 import History from './History';
 
-const AdminPage = () => {    
+const ResponsiveTabs = styled(Tabs)`
+    @media screen and (max-width: 600px) {
+      font-size:0.5rem; /* 600px 이하일 때 h3 요소의 글자 크기를 줄임 */ 
+     
+    }
+`;
+
+const StyledHeading = styled.h3`
+    @media screen and (max-width: 600px) {
+        font-size:1rem; /* 600px 이하일 때 h3 요소의 글자 크기를 줄임 */ 
+        display: flex;
+       justify-content: center;
+    }
+`;
+
+
+const AdminPage = () => {
     return (
-        <div>
-           <Tabs defaultActiveKey="apply">
-            <Tab eventKey="apply" title="입점신청List">
-              <h3>입점신청List</h3>
-                <ApplyList/>
-            </Tab>
+        <Container>
+            <ResponsiveTabs defaultActiveKey="apply">
+                <Tab eventKey="apply" title="입점신청List">               
+                    <StyledHeading >입점신청List</StyledHeading>                 
+                    <ApplyList />
+                </Tab>
 
-            <Tab eventKey="cancel" title="입점취소List">
-              <h3>입점취소List</h3>
-                 <CancelList/>
-            </Tab>
+                <Tab eventKey="cancel" title="입점취소List">              
+                    <StyledHeading>입점취소List</StyledHeading>                   
+                    <CancelList />
+                </Tab>
 
-            <Tab eventKey="newp" title="신규가입자수">
-              <h3>신규가입자수</h3>
-              <Container>
-                <Row >        
-                  <Col className="d-flex justify-content-center"><BarChartNewp /></Col>
-                </Row>        
-              </Container>                    
-            </Tab>
+                <Tab eventKey="newp" title="신규가입자수">              
+                    <StyledHeading>신규가입자수</StyledHeading>
+                    <BarChartNewp />
+                </Tab>
 
-            <Tab eventKey="news" title="신규가게수">
-              <h3>신규가게수</h3>
-              <Container>
-                <Row >        
-                  <Col className="d-flex justify-content-center"><BarChartNews /></Col>
-                </Row>        
-              </Container>
-            </Tab>
-            <Tab eventKey="totalp" title="총가입자수">
-              <h3>총가입자수</h3>
-              <Container>       
-                <Row >
-                  <Col className="d-flex justify-content-center mb-4" ><LineChart /></Col>
-                </Row>
-              </Container>  
-            </Tab>
-            <Tab eventKey="history" title="히스토리">
-              <h3>히스토리</h3>
-              <Container>       
-                <Row >
-                  <Col className="d-flex justify-content-center mb-4" >
+                <Tab eventKey="news" title="신규가게수">               
+                    <StyledHeading>신규가게수</StyledHeading>                   
+                    <BarChartNews />
+                </Tab>
+
+                <Tab eventKey="totalp" title="총가입자수">                
+                    <StyledHeading>총가입자수</StyledHeading>                  
+                    <LineChart />
+                </Tab>
+
+                <Tab eventKey="history" title="히스토리">                
+                    <StyledHeading>히스토리</StyledHeading>                   
                     <History />
-                    </Col>
-                </Row>
-              </Container>  
-            </Tab>
-          </Tabs>           
-       </div>
+                </Tab>
+            </ResponsiveTabs>
+        </Container>
     );
 };
 
