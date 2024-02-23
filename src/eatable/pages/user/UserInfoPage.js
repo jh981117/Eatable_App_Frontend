@@ -457,17 +457,7 @@ if (temperature <= 0 && temperature >= -50) {
                       </ListGroup>
                     </Tab>
                     <Tab eventKey="reserved" title="예약 했던곳">
-                      <ListGroup variant="flush">
-                        <ListGroup.Item>예약 했던곳</ListGroup.Item>
-                        <ListGroup.Item>
-                          <ListGroup.Item></ListGroup.Item>
-                        </ListGroup.Item>
-                      </ListGroup>
-
-                      {ReservePage}
-                    </Tab>
-                    <Tab eventKey="reserved" title="예약 했던곳">
-                      {ReservedPage}                    
+                      <ReservedPage userId={profile.id}/>                   
                     </Tab>
                     <Tab eventKey="review" title="내가 쓴 리뷰">
                       {<ReviewPage/>}
