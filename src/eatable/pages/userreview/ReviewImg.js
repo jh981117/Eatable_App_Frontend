@@ -14,6 +14,10 @@ function ReviewImg() {
   const [partnerId, setPartnerId] = useState("");
   const [reviewUser,setReviewUser] = useState();
   console.log(reviewImages, "!23123123123");
+
+
+
+  
   useEffect(() => {
     fetch(`http://localhost:8080/api/store/partner/${id}`)
       .then((response) => {

@@ -1,0 +1,343 @@
+import React, { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+import { EffectCoverflow, Pagination } from "swiper";
+// Swiper styles
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import { Button, Container } from "react-bootstrap";
+import { throttle } from "lodash";
+import FollowButton from "./Item/FollowButton ";
+import { useNavigate } from "react-router-dom";
+import CommentForm from "./Item/CommentForm";
+import CommentsModal from "./Item/CommentsModal";
+
+const TimeLineReviewList = (toId1) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [reviewList, setReviewList] = useState([]);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const navigate = useNavigate();
+  const [showComments, setShowComments] = useState(false);
+  const [showCommentForms, setShowCommentForms] = useState({}); // 각 리뷰 ID에 대한 댓글 폼 표시 상태를 저장하는 객체
+  const [modalShow, setModalShow] = useState(false);
+  const [currentReviewId, setCurrentReviewId] = useState(null);
+  const [comments, setComments] = useState([]); // 댓글 데이터 상태
+  // 댓글 폼 표시 상태를 토글하는 함수
+  const handleShowComments = async (reviewId) => {
+    // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/comments?reviewId=${reviewId}`
+      );
+      if (!response.ok) {
+        throw new Error("댓글을 불러오는 데 실패했습니다.");
+      }
+      const data = await response.json();
+      setComments(data); // 댓글 데이터 상태를 업데이트합니다.
+      setCurrentReviewId(reviewId); // 현재 리뷰 ID 상태를 업데이트합니다.
+      setModalShow(true); // 모달을 표시합니다.
+    } catch (error) {
+      console.error(error);
+      // 여기에 에러 처리 로직을 추가할 수 있습니다. 예: 사용자에게 오류 메시지 표시
+    }
+  };
+
+  // 댓글 제출 핸들러
+  const handleSubmitComment = async (commentData) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/comments/write", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(commentData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit comment");
+      }
+
+      const addedComment = await response.json();
+      console.log("Comment added:", addedComment);
+
+      // 댓글 추가 후 댓글 목록 업데이트
+      setComments((prevComments) => [...prevComments, addedComment]);
+      // 모달을 닫거나, 필요한 경우 추가 UI 업데이트 처리
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+    }
+  };
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      if (isLoading || !hasMore) return;
+      setIsLoading(true);
+      setLoading(true); // 데이터 가져 오기 시작시 로딩 상태 설정
+      setError(null); // 오류 상태 재설정
+
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/store/review/list?page=${page}&size=9`
+        );
+        if (!response.ok) throw new Error("리뷰 가져오기 실패");
+        const data = await response.json();
+        setReviewList((prevReviews) => [...prevReviews, ...data.content]);
+        setHasMore(data.content.length > 0);
+      } catch (error) {
+        console.error("Failed to fetch reviews", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadReviews();
+  }, [page]);
+
+  useEffect(() => {
+    const handleScroll = throttle(() => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >=
+          document.documentElement.offsetHeight &&
+        hasMore &&
+        !isLoading
+      ) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }, 80);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasMore, isLoading]);
+
+  console.log(reviewList);
+  const handleClick = (partnerId) => {
+    navigate(`/userdetail/${partnerId}`);
+  };
+  return (
+    <div>
+      <style>
+        {`
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr; /* 모바일에서는 한 열만 표시 */
+      justify-items: center; /* 그리드 아이템들을 가운데 정렬 */
+    }
+
+    /* 태블릿과 데스크탑에서 보기 좋게 조정 */
+    @media (min-width: 840px) { /* 태블릿 */
+      .grid-container {
+        grid-template-columns: repeat(2, 1fr); /* 화면이 넓어지면 2열로 */
+        gap: 10px;
+        width: 100%;
+        max-width: 696px; /* 태블릿 및 데스크탑에서 최대 너비 적용 */
+      }
+    }
+
+    @media (min-width: 1280px) { /* 데스크탑 */
+      .grid-container {
+        grid-template-columns: repeat(3, 1fr); /* 더 넓은 화면에서는 3열로 */
+        gap: 10px;
+        /* width와 max-width는 태블릿 미디어 쿼리에 이미 정의되어 있으므로, 여기서는 생략 가능 */
+        width: 100%;
+        max-width: 1116px; /* 태블릿 및 데스크탑에서 최대 너비 적용 */
+      }
+    }
+  `}
+      </style>
+
+      <Container className="grid-container">
+        {reviewList.length > 0 ? (
+          reviewList.map((review, index) => (
+            <div
+              key={index}
+              style={{
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                marginBottom: "10px",
+                padding: "15px",
+                backgroundColor: "white",
+                // Col 내부 div의 너비를 직접 조절하는 대신 max-width를 사용하여 유연성을 높입니다.
+                width: "350px", // 너비를 100%로 설정하여 Col 내부에서 자동으로 조절되도록 합니다.
+                height: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>
+                  <img
+                    src={review.user.profileImageUrl}
+                    alt="Profile"
+                    style={{
+                      width: "30px",
+                      borderRadius: "50%",
+                      marginRight: "5px",
+                    }}
+                  />
+                  <span style={{ fontSize: "13px" }}>
+                    {review.user.nickName}
+                  </span>
+                </span>
+                <span style={{ fontSize: "13px", marginTop: "5px" }}>
+                  {review.createdAt}
+                </span>
+              </div>
+              <div
+                style={{
+                  marginLeft: "5px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>
+                  <img
+                    src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                    style={{
+                      width: "20px",
+                      marginLeft: "5px",
+                      marginBottom: "5px",
+                    }}
+                  />
+                  <span style={{ marginLeft: "5px" }}>{review.avg} </span>
+                  <span>
+                    <img
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708761693852-free-icon-comment-check-8316018.png"
+                      style={{
+                        width: "25px",
+                        marginBottom: "5px",
+                        marginLeft: "5px",
+                      }}
+                    />
+                  </span>
+                </span>
+                <span>
+                  {/* <Button
+                    style={{
+                      padding: "2px",
+                      fontSize: "10px",
+                      marginTop: "-3px",
+                    }}
+                  >
+                    팔로우
+                  </Button> */}
+                  <FollowButton
+                    toId={review.user.id}
+                    toId1={toId1}
+
+                    // handleFollowStatusChange 함수 구현 필요
+                  />
+                </span>
+              </div>
+
+              {/* 이미지 슬라이더 */}
+              <div
+                style={{
+                  position: "relative",
+                }}
+              >
+                <Swiper
+                  effect="coverflow"
+                  grabCursor={true}
+                  centeredSlides={true}
+                  slidesPerView="auto"
+                  coverflowEffect={{
+                    rotate: 50,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true,
+                  }}
+                  pagination={true}
+                  modules={[EffectCoverflow, Pagination]}
+                  onSlideChange={(swiper) =>
+                    setCurrentSlideIndex(swiper.realIndex)
+                  }
+                >
+                  {review.partnerReviewAttachments &&
+                    review.partnerReviewAttachments.map((attachment, idx) => (
+                      <SwiperSlide key={idx}>
+                        <img
+                          src={attachment.imageUrl}
+                          alt={`Review Attachment ${idx}`}
+                          style={{
+                            objectFit: "cover",
+                            width: "320px",
+                            height: "320px",
+                          }}
+                        />
+                      </SwiperSlide>
+                    ))}
+                </Swiper>
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    bottom: "10px",
+                    backgroundColor: "rgba(240, 240, 240, 0.5)",
+                    color: "white",
+                    padding: "5px 10px",
+                    borderRadius: "30px",
+                    zIndex: 1,
+                  }}
+                >
+                  {currentSlideIndex + 1} /{" "}
+                  {review.partnerReviewAttachments?.length}
+                </div>
+              </div>
+              {/* 리뷰 내용 */}
+              <div style={{ padding: "10px" }}>{review.content}</div>
+              <div>
+                <span>{review.partner.partnerReviewAttachments}</span>
+                <hr />
+                <div
+                  onClick={() => handleClick(review.partner.id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <span>{review.partner.storeName}</span>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      marginLeft: "5px",
+                      color: "gray",
+                    }}
+                  >
+                    {review.partner.favorite}
+                  </span>
+                </div>
+                <hr />
+                <div>
+                  {/* 리뷰 리스트 렌더링 로직 */}
+                  <Button onClick={() => handleShowComments(review.id)}>
+                    댓글 보기
+                  </Button>
+                  <CommentsModal
+                    show={modalShow}
+                    handleClose={() => setModalShow(false)}
+                    reviewId={currentReviewId}
+                    comments={comments}
+                    onSubmit={handleSubmitComment} // 추가
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div>리뷰가 없습니다.</div>
+        )}
+      </Container>
+      <hr />
+      {!isLoading && !hasMore && (
+        <p style={{ textAlign: "center" }}>모든 리뷰를 불러왔습니다.</p>
+      )}
+      <hr />
+    </div>
+  );
+};
+
+export default TimeLineReviewList;
