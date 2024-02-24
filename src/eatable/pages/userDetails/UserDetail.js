@@ -45,7 +45,7 @@ const UserDetail = () => {
   const [waitingCount, setWaitingCount] = useState(0); // 웨이팅 수를 저장하는 상태 변수 추가
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/waiting/waitingCount/${id}`) // 대기열 수를 가져오는 새로운 엔드포인트 호출
+    fetch(`http://localhost:8080/api/reservation/reservationCount/${id}`) // 대기열 수를 가져오는 새로운 엔드포인트 호출
         .then((response) => {
             if (response.status === 200) {
                 return response.json();
