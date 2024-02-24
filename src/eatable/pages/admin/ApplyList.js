@@ -2,6 +2,41 @@ import React, { useRef, useState, useEffect } from "react";
 import { Container,Row,Col,Button,Form,Modal,Table,Pagination} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import zIndex from "@material-ui/core/styles/zIndex";
+import styled from 'styled-components';
+
+const StyledOption = styled.option`
+ @media screen and (max-width: 600px) {
+  font-size: 0.5rem;
+ }
+`;
+
+const SelectMedia = styled(Form.Select)`
+ @media screen and (max-width: 600px){
+  font-size: 0.38rem;
+ 
+ }
+`;
+
+const StyledTable = styled(Table)`
+@media screen and (max-width: 600px) {
+  th,
+    td {
+      font-size: 0.5rem; 
+    }
+}
+`
+const StyledButton = styled(Button)`
+
+    padding: 4px 9px; 
+    font-size: 1rem;    
+    margin-top: 3px;
+
+  @media screen and (max-width: 600px) {
+    padding: 4px 9px; 
+    font-size: 0.35rem;    
+    margin-top: 3px;
+  }
+`;
 
 const ApplyList = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -11,7 +46,7 @@ const ApplyList = () => {
   const [disable, setDisable] = useState(JSON.parse(localStorage.getItem("disableState")) || []);
   const [page, setPage] = useState(0); // 현재 페이지
   const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
-  const number =2;
+  const number =5;
   const navi = useNavigate();
  
  
@@ -207,21 +242,21 @@ const ApplyList = () => {
       <Container>
         <Row>
           <Col>
-            <Form.Select
-              style={{ width: "13%" }}
+            <SelectMedia
+              style={{ width: "13%"}}
               onChange={(e)=>handleSelectChange(e.target.value)}
             >
-              <option value="ALL">모두 보기</option>
-              <option value="접수 대기중">접수 대기중</option>
-              <option value="접수 승인">접수 승인</option>
-              <option value="접수 거절">접수 거절</option>
-            </Form.Select>
+              <StyledOption value="ALL">모두 보기</StyledOption>
+              <StyledOption value="접수 대기중">접수 대기중</StyledOption>
+              <StyledOption value="접수 승인">접수 승인</StyledOption>
+              <StyledOption value="접수 거절">접수 거절</StyledOption>
+            </SelectMedia>
           </Col>
         </Row>
         <Row>
           <Col>
        
-            <Table striped bordered hover size="sm" className="list_table">
+            <StyledTable striped bordered hover size="sm" className="list_table">
               <thead>
                 <tr>
                   <th>id</th>
@@ -253,36 +288,36 @@ const ApplyList = () => {
                     <td>{list.user}</td>
                     <td style={{ maxWidth: "65px", minWidth: "65px" }}>
                       {list.partnerReqState === "접수 승인" && (
-                        <Button
+                        <StyledButton
                           variant="outline-success me-2"
                           onClick={() => clickUserId(list.userId, list.id)}
                           disabled={disable[list.id]}
                         >
                           입점신청
-                        </Button>
+                        </StyledButton>
                       )}
                      
                         {list.partnerReqState === "접수 대기중" && (
                           <>
-                            <Button
+                            <StyledButton
                               variant="outline-primary me-2"
                               onClick={() => handleOpenModal(list)}
                             >
                               승인
-                            </Button>
-                            <Button
+                            </StyledButton>
+                            <StyledButton
                               variant="outline-danger"
                               onClick={() => handleReject(list.id)}
                             >
                               거절
-                            </Button>
+                            </StyledButton>
                           </>
                         )}
                       </td>
                     </tr>
                   ))}
               </tbody>
-            </Table>
+            </StyledTable>
           
           </Col>
         </Row>
