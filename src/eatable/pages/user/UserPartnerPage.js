@@ -12,7 +12,7 @@ const UserPartnerPage = () => {
   const [menuData, setMenuData] = useState([]); // menuData 상태를 정의합니다.
   const navigate = useNavigate();
 
-  let {id} = useParams();
+  let { id } = useParams();
 
   // 현재 로그인한 사용자의 userId를 추출하는 함수
   const getUserIdFromToken = () => {
@@ -38,36 +38,34 @@ const UserPartnerPage = () => {
     }
   }, [stores.fileList]); // store.fileList가 변경될 때마다 효과를 다시 실행
 
-  
-
-   const fetchStores = (userId) => {
-  fetch("http://localhost:8080/api/partner/by-user", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ userId }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      setStores(data);
-      if (data.length > 0 && data[0].fileList.length > 0) {
-        setSelectedImage(data[0].fileList[0].imageUrl);
-      }
+  const fetchStores = (userId) => {
+    fetch("http://localhost:8080/api/partner/by-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
     })
-    .catch((error) => {
-      console.error("Error fetching partners:", error);
-    });
-};
+      .then((response) => response.json())
+      .then((data) => {
+        setStores(data);
+        if (data.length > 0 && data[0].fileList.length > 0) {
+          setSelectedImage(data[0].fileList[0].imageUrl);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching partners:", error);
+      });
+  };
 
-useEffect(() => {
-  const userId = getUserIdFromToken();
-  if (!userId) {
-    console.error("유저 ID를 찾을 수 없습니다.");
-    return;
-  }
-  fetchStores(userId); // 매장 정보를 불러오는 함수 호출
-}, []);
+  useEffect(() => {
+    const userId = getUserIdFromToken();
+    if (!userId) {
+      console.error("유저 ID를 찾을 수 없습니다.");
+      return;
+    }
+    fetchStores(userId); // 매장 정보를 불러오는 함수 호출
+  }, []);
 
   console.log(stores, "???!!!!!!!");
 
@@ -76,48 +74,44 @@ useEffect(() => {
     console.log(id);
   };
 
-const cancelPartner = async (userId) => {
-  // 사용자에게 확인 받기
-  const isConfirmed = window.confirm("정말 입점취소 하시겠습니까?");
-  if (isConfirmed) {
-    try {
-      const response = await fetch(
-        "http://localhost:8080/api/req/cancelPartner",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId }),
+  const cancelPartner = async (userId) => {
+    // 사용자에게 확인 받기
+    const isConfirmed = window.confirm("정말 입점취소 하시겠습니까?");
+    if (isConfirmed) {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/req/cancelPartner",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId }),
+          }
+        );
+
+        if (response.status === 201) {
+          alert("입점취소 신청 완료");
+          fetchStores(userId); // 입점 취소 후 매장 정보를 다시 불러옴
+        } else {
+          alert("입점취소 신청 실패");
         }
-      );
-
-      if (response.status === 201) {
-        alert("입점취소 신청 완료");
-        fetchStores(userId); // 입점 취소 후 매장 정보를 다시 불러옴
-      } else {
-        alert("입점취소 신청 실패");
+      } catch (error) {
+        console.error("입점취소 신청 중 오류 발생:", error);
+        alert("입점취소 신청 중 오류 발생");
       }
-    } catch (error) {
-      console.error("입점취소 신청 중 오류 발생:", error);
-      alert("입점취소 신청 중 오류 발생");
+    } else {
+      console.log("입점취소 신청이 취소되었습니다.");
     }
-  } else {
-    console.log("입점취소 신청이 취소되었습니다.");
-  }
-};
+  };
 
-
-  
   return (
     <div>
-      <Container className="col-8">
+      <Container style={{ maxWidth: "1000px" }}>
         <Card style={{ marginTop: "10px" }}>
           <Card.Body style={{ padding: "15px" }}>
             {" "}
             {/* Card.Body에 패딩 추가 */}
-            <br />
-            <br />
             <h2>매장관리</h2>
             <br />
             {stores.map((store, index) => (
@@ -151,8 +145,10 @@ const cancelPartner = async (userId) => {
                     src={selectedImage}
                     alt="Selected"
                     style={{
-                      width: "400px",
-                      height: "400px",
+                      width: "100%",
+                      height: "100%",
+                      maxWidth: "600px",
+                      maxHeight: "600px",
                       objectFit: "cover",
                       borderRadius: "25px",
                     }}
@@ -190,10 +186,14 @@ const cancelPartner = async (userId) => {
                 </div>
 
                 <p>
-                  매장상태 : {store.partnerState === "TRUE" ? "OPEN" 
-                  : store.partnerState === "WAITING" ? "입점 취소중"
-                   : store.partnerState === "FALSE" ? "CLOSE" : ""
- }
+                  매장상태 :{" "}
+                  {store.partnerState === "TRUE"
+                    ? "OPEN"
+                    : store.partnerState === "WAITING"
+                    ? "입점 취소중"
+                    : store.partnerState === "FALSE"
+                    ? "CLOSE"
+                    : ""}
                 </p>
 
                 <p>관리자 이름 : {store.partnerName}</p>
@@ -225,7 +225,7 @@ const cancelPartner = async (userId) => {
           <h2>메뉴관리</h2>
           {stores.map((store, index) => (
             <MenuSectionCRUD key={index} id={store.id} />
-        ))}
+          ))}
           <br />
           <br />
         </Card>
@@ -234,7 +234,7 @@ const cancelPartner = async (userId) => {
           <h2>예약관리</h2>
           {stores.map((store, index) => (
             <PartnerWaitingPage id={store.id} />
-        ))}
+          ))}
         </Card>
       </Container>
     </div>

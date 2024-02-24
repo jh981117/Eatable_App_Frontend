@@ -38,77 +38,71 @@ function StoreReviewList() {
     return <div>오류: {error}</div>; // 가져오기 실패시 오류 메시지 렌더링
   }
 
-console.log(reviews)
-
+  console.log(reviews);
 
   return (
-    <Container>
-      <div
- 
-      >
-        {reviews.map((review) => (
-          <Card
-            key={review.id}
-            className="mb-3"
-            style={{
-              width: "auto",
-              maxWidth: "500px",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-          >
-            <Card.Body>
+    <div>
+    
+      {reviews.map((review) => (
+        <Card
+          key={review.id}
+          className="mb-3"
+          style={{
+            width: "auto",
+            maxWidth: "500px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          <Card.Body>
+            <div>
               <div>
-                <div>
-                  <span>
-                    <img
-                      src={review.user.profileImageUrl}
-                      style={{
-                        width: "30px",
-                        borderRadius: "30px",
-                        marginRight: "5px",
-
-                        objectFit: "cover",
-                      }}
-                    />
-                  </span>
-                  <span>{review.user.nickName}</span>
-                </div>
                 <span>
                   <img
-                    src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
-                    style={{ width: "20px" }}
+                    src={review.user.profileImageUrl}
+                    style={{
+                      width: "30px",
+                      borderRadius: "30px",
+                      marginRight: "5px",
+
+                      objectFit: "cover",
+                    }}
                   />
                 </span>
-                <span style={{ marginRight: "10px" }}>{review.avg}</span>
-                <span>{review.createdAt}</span>
-
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    maxWidth: "500px",
-                    maxHeight: "600px",
-                  }}
-                >
-                  <ImageGallery
-                    images={review.partnerReviewAttachments.map(
-                      (attachment) => ({
-                        src: attachment.imageUrl,
-                        alt: `Review Image ${attachment.id}`,
-                      })
-                    )}
-                  />
-                </div>
-
-                <p>{review.content}</p>
-                {/* 추가적인 리뷰 정보 렌더링 */}
+                <span>{review.user.nickName}</span>
               </div>
-            </Card.Body>
-          </Card>
-        ))}
-      </div>
-    </Container>
+              <span>
+                <img
+                  src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                  style={{ width: "20px" }}
+                />
+              </span>
+              <span style={{ marginRight: "10px" }}>{review.avg}</span>
+              <span>{review.createdAt}</span>
+
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  maxWidth: "500px",
+                  maxHeight: "600px",
+                }}
+              >
+                <ImageGallery
+                  images={review.partnerReviewAttachments.map((attachment) => ({
+                    src: attachment.imageUrl,
+                    alt: `Review Image ${attachment.id}`,
+                  }))}
+                />
+              </div>
+
+              <p>{review.content}</p>
+              {/* 추가적인 리뷰 정보 렌더링 */}
+            </div>
+          </Card.Body>
+        </Card>
+      ))}
+    </div>
   );
 }
 

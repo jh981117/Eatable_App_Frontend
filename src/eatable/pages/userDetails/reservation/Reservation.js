@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { setHours, setMinutes } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
 import { Client } from '@stomp/stompjs';
-import * as encoding from 'text-encoding';
+
 
 const Reservation = () => {
     const navigate = useNavigate();

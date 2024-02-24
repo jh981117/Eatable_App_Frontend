@@ -49,6 +49,7 @@ const DetailTab = ({ id }) => {
                 <PartnerReviewLength partnerId={id} />
               }
           >
+          
               <StoreReviewList id={id} />
               <br />
               <br />
