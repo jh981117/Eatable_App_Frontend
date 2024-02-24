@@ -46,15 +46,13 @@ const DetailTab = ({ id }) => {
           <Tab
             eventKey="storereview"
             title={
-              <>
-                <span>리뷰</span>
                 <PartnerReviewLength partnerId={id} />
-                <br />
-                <br />
-              </>
-            }
+              }
           >
-            <StoreReviewList id={id} />
+          
+              <StoreReviewList id={id} />
+              <br />
+              <br />
           </Tab>
         </Tabs>
       </Container>

@@ -30,7 +30,7 @@ const PartnerReviewLength = ({partnerId}) => {
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>에러: {error}</div>;
 
-  return <>{length}</>;
+  return <>리뷰{length}</>;
 };
 
 export default PartnerReviewLength;
