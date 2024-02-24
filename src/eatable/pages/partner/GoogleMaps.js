@@ -55,50 +55,78 @@ const GoogleMaps = () => {
   const onMapLoad = useCallback(
     (map) => {
       GeoJson.features.forEach((feature) => {
-        // 다중 폴리곤을 지원하기 위해 coordinates[0] 대신 coordinates를 순회합니다.
-        feature.geometry.coordinates.forEach((polygonCoords) => {
-          const polygon = new window.google.maps.Polygon({
-            paths: polygonCoords.map((coord) => ({
-              lat: coord[1],
-              lng: coord[0],
-            })),
-            strokeColor: "#64CD34C", // 외곽선 색상 지정
-            strokeOpacity: 0.2, // 외곽선 투명도
-            strokeWeight: 2, // 외곽선 두께
-            fillColor: "#ffffff", // 내부 색상
-            fillOpacity: 0.1, // 내부 색상 투명도
-          });
+        const coordinates = feature.geometry.coordinates[0];
+        const polygon = new window.google.maps.Polygon({
+          paths: coordinates.map((coord) => ({ lat: coord[1], lng: coord[0] })),
+          strokeColor: "#64CD3C",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#64CD3C",
+          fillOpacity: 0.35,
+        });
 
-          polygon.setMap(map);
+        // 클릭 이벤트 핸들러
+        window.google.maps.event.addListener(polygon, "click", function (event) {
+          if (clickedPolygonRef.current !== null) {
+            clickedPolygonRef.current.setOptions({ fillColor: "#64CD3C" });
+          }
 
-          polygon.addListener("click", (event) => {
-            if (clickedPolygonRef.current !== polygon) {
-              polygon.setOptions({ fillColor: "#FF0000" });
-              clickedPolygonRef.current = polygon;
-              map.setCenter(event.latLng);
-              map.setZoom(13);
-            } else {
-              clickedPolygonRef.current = null;
-              map.setZoom(13);
-              map.setCenter(center);
-            }
-          });
+          // 클릭한 폴리곤이 이미 클릭되었는지 확인
+          if (clickedPolygonRef.current === polygon) {
+            // 이미 클릭된 폴리곤을 다시 클릭한 경우
+            map.setZoom(11); // 지도의 줌을 초기 확대 수준으로 되돌림
+            clickedPolygonRef.current = null; // 클릭된 폴리곤을 null로 설정하여 다음 클릭을 대비
+          } else {
+            // 새로운 폴리곤을 클릭한 경우
+            map.setCenter(event.latLng);
+            map.setZoom(13);
+            polygon.setOptions({ fillColor: "#FF0000" });
+            clickedPolygonRef.current = polygon; // 클릭된 폴리곤을 저장
+          }
+        });
 
-          // 마우스 오버 이벤트 핸들러
-          polygon.addListener("mouseover", () => {
-            if (hoveredPolygonRef.current !== polygon) {
-              polygon.setOptions({ fillColor: "#FFBB00" });
-              hoveredPolygonRef.current = polygon;
-            }
-          });
+        // 마우스 오버 이벤트 핸들러
+        window.google.maps.event.addListener(polygon, "mouseover", function () {
+          if (clickedPolygonRef.current !== polygon) {
+            polygon.setOptions({ fillColor: "#FFBB00" });
+            hoveredPolygonRef.current = polygon;
+          }
+        });
 
-          // 마우스 아웃 이벤트 핸들러 수정
-          polygon.addListener("mouseout", () => {
-            if (hoveredPolygonRef.current === polygon) {
-              polygon.setOptions({ fillColor: "#64CD3C" });
-              hoveredPolygonRef.current = null;
-            }
-          });
+        // 마우스 아웃 이벤트 핸들러
+        window.google.maps.event.addListener(polygon, "mouseout", function () {
+          if (clickedPolygonRef.current !== polygon) {
+            polygon.setOptions({ fillColor: "#64CD3C" });
+            hoveredPolygonRef.current = null;
+          }
+        });
+
+        polygon.setMap(map);
+
+        // 각 구의 중심점을 계산하여 구 이름을 표시합니다.
+        const bounds = new window.google.maps.LatLngBounds();
+        coordinates.forEach((coord) =>
+          bounds.extend(new window.google.maps.LatLng(coord[1], coord[0]))
+        );
+        const center = bounds.getCenter();
+
+        // 종로구인 경우에만 라벨의 중심점을 왼쪽으로 이동시킵니다.
+        let labelCenterX = center.lng(); // 중심점의 x 좌표를 설정합니다.
+        if (feature.properties.SIG_KOR_NM === "종로구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+
+        const textLabel = new window.google.maps.Marker({
+          position: { lat: center.lat(), lng: labelCenterX }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
+          label: {
+            text: feature.properties.SIG_KOR_NM, // 구 이름을 표시합니다.
+            color: "#000000",
+            fontWeight: "bold",
+          },
+          icon: {
+            path: "M 0,0",
+          },
+          map: map,
         });
       });
     },
@@ -166,6 +194,7 @@ const GoogleMaps = () => {
 };
 
 export default GoogleMaps;
+
 
 // import React, { useEffect, useRef, useState } from "react";
 // import { GeoJson } from "./components/GeoJson";
