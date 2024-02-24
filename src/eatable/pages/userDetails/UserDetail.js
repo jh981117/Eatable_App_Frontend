@@ -135,6 +135,7 @@ const UserDetail = () => {
                   style={{
                     width: "450px",
                     height: "450px",
+                    objectFit: "cover",
                   }}
                 />
               </div>
@@ -148,9 +149,9 @@ const UserDetail = () => {
                       style={{
                         width: "50px",
                         height: "50px",
-                        objectFit: "cover",
                         cursor: "pointer",
                         marginLeft: windowWidth <= 770 ? "10px" : "0", // 화면 너비에 따라 마진 조정
+                        objectFit: "cover",
                         borderRadius: "5px",
                       }}
                       onClick={() => setSelectedImage(file.imageUrl)}
