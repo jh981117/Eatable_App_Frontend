@@ -18,9 +18,7 @@ const HomePage = () => {
     "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877700672-222.png",
   ]; // 이미지 URL 배열
 
-  const changeImage = () => {
-    setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // 다음 이미지로 인덱스 변경
-  };
+
 
   console.log(partners);
   useEffect(() => {
@@ -87,13 +85,13 @@ const HomePage = () => {
 }
 
 /* 태블릿과 데스크탑에서 보기 좋게 조정 */
-@media (min-width: 768px) { /* 태블릿 */
+@media (min-width: 840px) { /* 태블릿 */
   .grid-container {
     grid-template-columns: repeat(2, 1fr); /* 화면이 넓어지면 2열로 */
   }
 }
 
-@media (min-width: 1024px) { /* 데스크탑 */
+@media (min-width: 1280px) { /* 데스크탑 */
   .grid-container {
     grid-template-columns: repeat(3, 1fr); /* 더 넓은 화면에서는 3열로 */
   }
@@ -107,7 +105,9 @@ const HomePage = () => {
       >
         <div>
           <div style={{ marginTop: "10px" }}>
+            <hr/>
             <TopCategoty />
+            <hr/>
           </div>
           {/* 조건부 렌더링으로 GoogleMap  Roulette 컴포넌트 표시 제어 */}
           <hr />
@@ -118,7 +118,7 @@ const HomePage = () => {
             className="grid-container"
             style={{
               display: "grid",
-             
+
               gap: "20px",
             }}
           >
@@ -246,15 +246,17 @@ const HomePage = () => {
                 </div>
               </div>
             ))}
-        </div>
-            {isLoading && (
-              <div className="d-flex justify-content-center">
-                <Spinner animation="border" />
-              </div>
-            )}
           </div>
-          {!isLoading && !hasMore && <p>END</p>}
+        </div>
       </Container>
+        <hr />
+          {isLoading && (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" />
+            </div>
+          )}
+        {!isLoading && !hasMore && <p style={{textAlign:"center"}}>END</p>}
+        <hr />
     </>
   );
 };
