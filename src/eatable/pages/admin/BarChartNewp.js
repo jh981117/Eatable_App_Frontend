@@ -43,6 +43,13 @@ const fadeOut = keyframes`
 const AnimatedTable = styled(Table)`
   opacity: 0;
   animation: ${({ show }) => (show ? fadeIn : fadeOut)} 0.3s ease-in-out forwards;
+
+  @media screen and (max-width: 600px){
+    th,td{
+      font-size: 0.4rem;
+    }
+    
+  }
 `;
 
 const BarChartNewp = () => {
@@ -123,7 +130,7 @@ const BarChartNewp = () => {
       <Row>
         <Col>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Bar options={{ ...options, onClick: BarClick }} data={data} width={600} height={300} />
+            <Bar options={{ ...options, onClick: BarClick }} data={data}/>
           </div>
         </Col>
       </Row>
