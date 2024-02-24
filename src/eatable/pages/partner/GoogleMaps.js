@@ -65,6 +65,22 @@ const GoogleMaps = () => {
           fillOpacity: 0.35,
         });
 
+        const nonPolygonArea = new window.google.maps.Rectangle({
+          bounds: {
+            north: 100.5,
+    south: 5.5,
+    east: 140.5,
+    west: 60.5,
+          },
+          fillColor: "#FFFFFF", // 하얀색으로 설정
+          fillOpacity: 1, // Opacity 설정
+          strokeWeight: 0, // 테두리 없음
+          zIndex: -1, // 폴리곤 이외의 지역은 폴리곤보다 아래에 표시
+          map: map,
+        });
+
+        nonPolygonArea.setMap(map);
+
         // 클릭 이벤트 핸들러
         window.google.maps.event.addListener(polygon, "click", function (event) {
           if (clickedPolygonRef.current !== null) {
@@ -145,14 +161,19 @@ const GoogleMaps = () => {
         {(clusterer) =>
           locations.map((location) => (
             <Marker
-              key={location.id}
-              position={{
-                lat: location.address.lat,
-                lng: location.address.lng,
-              }}
-              onClick={() => setSelectedLocation(location)}
-              clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
-            />
+            key={location.id}
+            position={{
+              lat: location.address.lat,
+              lng: location.address.lng,
+            }}
+            onClick={() => setSelectedLocation(location)}
+            clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
+            icon={{
+              url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+              scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
+            }}
+          />
+          
           ))
         }
       </MarkerClusterer>
