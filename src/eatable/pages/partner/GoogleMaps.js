@@ -12,11 +12,12 @@ import { GeoJson } from "./components/GeoJson"; // GeoJson.js 파일에서 GeoJs
 const GoogleMaps = () => {
   const [locations, setLocations] = useState([]); // 서버로부터 받아온 위치 데이터를 저장할 상태
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 정보
+  const [map,setMap] = useState(null);
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
 
   const options = { 
-    zoom: 13,
+    zoom: 11,
     mapId: "81bc4809ac9f2bc7"
   };
 
@@ -136,7 +137,7 @@ const GoogleMaps = () => {
         if (feature.properties.SIG_KOR_NM === "종로구") {
           labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
         }
-
+        setMap(map);
         const textLabel = new window.google.maps.Marker({
           position: { lat: center.lat(), lng: labelCenterX }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
           label: {
@@ -151,15 +152,25 @@ const GoogleMaps = () => {
         });
       });
     },
-    [center]
+    []
   );
+
+  // useEffect(() => {
+  //   if (map !== null && selectedLocation !== null) {
+  //     map.setZoom(13);
+  //   }
+  // }, [map, selectedLocation]);
+  
 
   return isLoaded ? (
     <GoogleMap
       id="google-map-test"
       mapContainerStyle={mapContainerStyle}
       center={center}
-      options={options}
+      options={{
+        mapId: "81bc4809ac9f2bc7",
+        zoom: 12.4 // 여기에서 zoom 속성을 설정합니다.
+      }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
       <MarkerClusterer>
@@ -180,18 +191,16 @@ const GoogleMaps = () => {
               scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
             }}
           />
-          
           ))
         }
       </MarkerClusterer>
-      {selectedLocation && (
-        <InfoWindow
+      {selectedLocation && ( 
+        <InfoWindow 
           position={{
             lat: selectedLocation.address.lat,
             lng: selectedLocation.address.lng,
           }}
           onCloseClick={() => setSelectedLocation(null)}
-          
         >
           <div>
             <p>{selectedLocation.id}</p>
@@ -204,7 +213,7 @@ const GoogleMaps = () => {
 
                 <img
                   src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
-                  style={{ width: "25px" }}
+                  style={{ width: "15px" }}
                 />
               </h2>
             </Link>
