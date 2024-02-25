@@ -23,12 +23,8 @@ import { jwtDecode } from "jwt-decode";
 
 const StyledContainer = styled(Container)`
     @media screen and (max-width: 600px) {
-
-  .col-8 {
-    width: 100%; /* 600px 이하에서는 컨테이너가 전체 너비를 차지하도록 설정 */
     font-size: 0.8rem; /* 카드 내부 요소의 글자 크기를 줄임 */ 
     padding: 10px; /* 카드의 패딩을 조정하여 요소들 사이의 간격을 조절함 */
-  }
     }
 `;
 
@@ -374,33 +370,31 @@ if (temperature <= 0 && temperature >= -50) {
   };
 
   return (
-    <Container className="col-8">
+    <Container style={{width: "100%", maxWidth: "700px"}}>
       <ToastContainer position="top-center" />
       <Row>
         <Col className="d-flex align-items-center">
           <Card style={{ width: "100%" }} className="mb-2">
             <Card.Body className="align-items-start"><input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleImageChange}/>
-            {isPartner() && (<div className="d-flex justify-content-end mb-2"><Link to={"/userpartnerpage"}><Button style={{textAlign: "right"}}>매장 관리</Button></Link></div>)}              
-            <div className="d-flex align-items-center">
-                <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
+              {isPartner() && (<div className="d-flex justify-content-end mb-2"><Link to={"/userpartnerpage"}><Button style={{textAlign: "right"}}>매장 관리</Button></Link></div>)}              
+              
+              <div className="d-flex align-items-center" style={{ display: "flex", justifyContent: "center" }}>
+              <span style={{ width: "100%", flex: 1, marginRight: "20px"}}>
+                  <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
+              </span>
+              <span style={{width: "100%",  flex: 1, marginRight: "20px"}}>
                 <div className={`flex align-items-center ml-3 ${edit.bio ? 'input-active' : ''}`}>
-                  
-                  
-                  
-                  <div style={{ border: "none", backgroundColor: "transparent", borderBottom: "none" }}>닉네임 : {profile.nickName}</div><br/>
+                  <span style={{ border: "none", backgroundColor: "transparent", borderBottom: "none" }}>닉네임 : {profile.nickName}</span><br/><br/>
                   내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button variant="secondary" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
                   {edit.bio && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("bio")}>확인</Button>)}<br/><br/>
-                  온도 : <span className="responsive-span" style={{ marginRight: "5px" }}>
-                    <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "30px"}}/>
-                    {auth.profile ? auth.profile.temperature : ""}
-                  </span><br/>
-
+                  온도 : <span className="responsive-span" style={{ marginRight: "5px" }}></span><br/>
+                
                   <div>
-                    <div style={{backgroundColor: "gray", width: "300px", height: "20px", borderRadius: "10px"}}>
-                      <div className="temperature-bar" style={{backgroundColor: "gray", width: "100%", height: "20px", position: "relative", borderRadius: "10px", animation: "wave 2s infinite linear alternate"}}>
+                    <span style={{backgroundColor: "white", width: "300px", height: "20px", borderRadius: "10px"}}>
+                      <span className="temperature-bar" style={{display: "flex", alignItems: "center", justifyContent: "space-between", backgroundColor: "white", border: "1px solid gray", width: "100%", height: "20px", position: "relative", borderRadius: "10px"}}>
                         {/* 막대의 최대 너비를 100%로 설정 */}
                         {/* 온도 바 */}
-                        <div style={{ backgroundColor: color, width: barWidth, height: "100%", position: "absolute", borderRadius: "10px", left: barLeft /*animation: "wave 2s infinite"*/}}></div>
+                        <span style={{ backgroundColor: color, width: barWidth, height: "100%", position: "absolute", borderRadius: "10px", left: barLeft}}></span>
                         {/* barWidth와 barLeft를 사용하여 막대의 위치와 너비 설정 */}
                         {/* 온도가 0인 경우 가운데 아래에 0 표시 */}
                         <span style={{position: "absolute", left: "100%", bottom: "-20px"}}>30</span>
@@ -409,33 +403,38 @@ if (temperature <= 0 && temperature >= -50) {
                         <span style={{position: "absolute", left: "50%", bottom: "-20px"}}>0</span>
                         <span style={{position: "absolute", left: "25%", bottom: "-20px"}}>-25</span>
                         <span style={{position: "absolute", left: "0%", bottom: "-20px"}}>-50</span>
-                      </div>
-                    </div>
-                  </div><br/>
-
-                  {/* <Button variant="primary" onClick={decreaseTemperature}>온도 감소</Button>
-                  <Button variant="danger" onClick={increaseTemperature}>온도 증가</Button> */}
-                  <div className="d-flex justify-content-end mb-2">
-                  <Button variant="primary" onClick={handleTogglePasswordInput} style={{marginRight: "5px"}}>비밀번호 변경</Button>
-                  <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
+                      </span>
+                    </span>
                   </div>
-                    {/* 회원탈퇴 모달 */}
-                    <Modal show={modal} onHide={handleCloseSignOutModal}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>회원탈퇴</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <SignDrop/><Button variant="secondary" onClick={handleCloseSignOutModal}>닫기</Button>
-                        </Modal.Body>
-                    </Modal>
                 </div>
+              </span>
+
+              <span style={{width: "100%",  flex: 1, marginLeft: "20px"}}>
+                <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "60px"}}/>
+                {auth.profile ? auth.profile.temperature : ""}
+              </span>
               </div>
+
+              <div className="d-flex justify-content-end mb-2">
+                <Button variant="primary" onClick={handleTogglePasswordInput} style={{marginRight: "5px"}}>비밀번호 변경</Button>
+                <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
+              </div>
+
+              
+              {/* 회원탈퇴 모달 */}
+              <Modal show={modal} onHide={handleCloseSignOutModal}>
+                  <Modal.Header closeButton>
+                      <Modal.Title>회원탈퇴</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                      <SignDrop/><Button variant="secondary" onClick={handleCloseSignOutModal}>닫기</Button>
+                  </Modal.Body>
+              </Modal>
+                
               <div>
                 {showPasswordInput ? (
                   <Form onSubmit={handleSubmit}>
-                    <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                      <h2>비밀번호 변경</h2>
-                    </div>
+                    <div style={{ textAlign: "center", marginBottom: "20px" }}><h2>비밀번호 변경</h2></div>
                     <Form.Group>
                       <Form.Label>현재 비밀번호</Form.Label>
                       <Form.Control type="password" name="oldPassword" required onChange={handleChange}/>
@@ -457,7 +456,7 @@ if (temperature <= 0 && temperature >= -50) {
                     <Tab eventKey="profile" title="프로필">
                       <ListGroup variant="flush">
                         <ListGroup.Item style={{ border: 'none' }}>
-                           <div>아이디 : {profile.username}</div>
+                            <div>아이디 : {profile.username}</div>
                         </ListGroup.Item>
                         <ListGroup.Item>
                           닉네임 : {edit.nickName ? (<Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, "nickName")}/>) : (<span>{profile.nickName}</span>)}<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("nickName")}>{edit.nickName ? "취소" : "수정"}</Button>
