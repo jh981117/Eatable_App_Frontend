@@ -119,7 +119,7 @@ const editReviewImages = async (reviewId) => {
   try {
     // 이미지 파일 전송
     const imageResponse = await fetch(
-      `http://localhost:8080/api/store/reviews/update/attachments`,
+      `http://localhost:8080/api/store/reviews/update/attachments + ${reviewId}` ,
       {
         method: "PUT",
         body: formData, // Content-Type을 설정하지 않음. 브라우저가 자동으로 처리

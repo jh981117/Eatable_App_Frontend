@@ -203,12 +203,21 @@ const MenuListCRUD = ({ id }) => {
         {/* 새로운 메뉴 입력 폼 */}
         <tr>
           <td style={tableCellStyle}>
-            <img
-              src={previewImage}
-              alt="Upload Preview"
-              onClick={handleImageClick}
-              style={{ cursor: "pointer", width: "100px", height: "100px" }}
-            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100px",
+              }}
+            >
+              <img
+                src={previewImage}
+                alt="Upload Preview"
+                onClick={handleImageClick}
+                style={{ cursor: "pointer", width: "70px", height: "70px" }}
+              />
+            </div>
             <input
               type="file"
               ref={fileInputRef}
@@ -319,6 +328,7 @@ const tableRowStyle = {
 
 const tableCellStyle = {
   padding: "10px",
+  
 };
 
 export default MenuListCRUD;

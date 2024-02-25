@@ -1,0 +1,15 @@
+/* customTabs.css */
+.custom-tab-nav {
+  justify-content: center; /* 탭 헤더를 중앙으로 정렬 */
+  border-bottom: 0px;
+  
+}
+
+
+.custom-tab-nav .nav-link {
+  border-radius: 0.25rem; /* 탭 버튼의 모서리 둥글기 */
+  margin-right: 50px; /* 탭 버튼 사이의 간격 */
+  margin-left: 50px;
+  margin-bottom: 10px;
+}
+
