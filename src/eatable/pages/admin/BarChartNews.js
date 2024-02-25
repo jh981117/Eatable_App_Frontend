@@ -46,6 +46,13 @@ const fadeOut = keyframes`
 const AnimatedTable = styled(Table)`
   opacity: 0;
   animation: ${({ show }) => (show ? fadeIn : fadeOut)} 0.3s ease-in-out forwards;
+
+  @media screen and (max-width: 600px){
+    th,td{
+      font-size: 0.4rem;
+    }
+    
+  }
 `;
 
    const BarChartNews = () => {
@@ -126,18 +133,24 @@ const AnimatedTable = styled(Table)`
   };
 // height={600} width={1000}
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>   
-     <Bar options={{ ...options, onClick: BarClick }} data={data} />   
 
-      <CSSTransition
-        in={!!selectDate}
-        timeout={300}
-        classNames="table"
-        unmountOnExit
-      >
-        <Container>     
+      
+        <Container> 
+        <Row>
+        <Col>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Bar options={{ ...options, onClick: BarClick }} data={data}/>
+          </div>
+        </Col>
+      </Row>    
           <Row>
             <Col>
+              <CSSTransition
+                in={!!selectDate}
+                timeout={300}
+                classNames="table"
+                unmountOnExit
+              >
               <AnimatedTable show={!!selectDate} striped bordered hover size="sm" className="list_table">
                 <thead>
                   <tr>
@@ -168,11 +181,10 @@ const AnimatedTable = styled(Table)`
                     ))}
                 </tbody>
               </AnimatedTable>
+             </CSSTransition>
             </Col>
           </Row>
-        </Container>
-      </CSSTransition>
-    </div>
+        </Container>   
   );
   }
 
