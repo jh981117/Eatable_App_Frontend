@@ -135,11 +135,11 @@ const LoginPage = () => {
 
   return (
     
-    <Container className="mt-3 col-6 flex justify-content-center">
-      <h2>로그인 페이지</h2>      
+    <Container className="mt-3 col-6 flex justify-content-center" style={{backgroundColor: "white", marginTop: "250px"}}>
+      {/* <h2>로그인 페이지</h2>       */}
       <Form onSubmit={submitUser}>
         <Form.Group className="mt-3" controlId="formBasicUsername">
-          <Form.Label>아이디 : </Form.Label>
+          <Form.Label>아이디</Form.Label>
           <Form.Control
             type="text"
             name="username"
@@ -153,7 +153,7 @@ const LoginPage = () => {
         </Form.Group>
 
         <Form.Group className="mt-3" controlId="formBasicPassword">
-          <Form.Label>비밀번호 : </Form.Label>
+          <Form.Label>비밀번호</Form.Label>
           <Form.Control type="password" name="password" placeholder="비밀번호를 입력해주세요." value={user.password} onChange={changeValue}/>
           {user.passwordError && (<div className="text-danger">{user.passwordError}</div>)}
         </Form.Group>
@@ -164,7 +164,7 @@ const LoginPage = () => {
 
         {user.submitError && (<div className="text-danger">{user.submitError}</div>)}
         <Button variant="primary" type="submit">로그인</Button>
-        <Button className="m-2" variant="primary" type="button" onClick={provision}>회원가입</Button>
+        <Button variant="primary" type="button" onClick={provision}>회원가입</Button>
         <NaverLogin/>
       </Form>
     </Container>

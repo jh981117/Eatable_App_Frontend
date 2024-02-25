@@ -1,6 +1,7 @@
-import { jwtDecode } from 'jwt-decode';
 import React, { useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { Button, Card, Form } from 'react-bootstrap';
+import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -138,12 +139,59 @@ const editReviewImages = async (reviewId) => {
     console.error(error);
   }
 };
-  
-const addNewImage = (e) => {
-  const file = e.target.files[0];
-  setUpdateImage({ ...updateImage, imgList: [...updateImage.imgList, file] }); // 새 이미지를 기존 이미지 배열에 추가
-  console.log("사진" ,file);
+
+const deleteImage = (imageId) => {
+  const confirm = window.confirm("정말 삭제하시겠습니까?");
+  if (confirm) {
+    const newImage = updateImage.imgList.filter((image) => image.id !== imageId);
+    setUpdateImage((prevUpdateImage) => ({
+      ...prevUpdateImage,
+      imageList: newImage,
+    }));
+
+    fetch(`http://localhost:8080/api/store/reviews/delete/${imageId}`,{
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      if (response.ok) {
+        const newImage = updateImage.imgList.filter((image) => image.id !== imageId);
+        setUpdateImage((prevUpdateImage) => ({
+          ...prevUpdateImage,
+          imageList: newImage,
+        }));
+        console.log("이미지 삭제 성공");
+      } else {
+        console.error("이미지 삭제 실패");
+      }
+    })
+  }
+  console.log("이미지아이디 : ",imageId);
 };
+  
+const addNewImage = ((acceptedImage) => {
+  if (acceptedImage.length) {
+    for (const file of acceptedImage) {
+      console.log("파일명?",file.name);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = (e) => {
+        const newId = Math.random().toString(36).substr(2,9);
+        setUpdateImage((prevUpdateImage) => ({
+          ...prevUpdateImage,
+          imageList: [
+            ...prevUpdateImage,
+            {id: newId, imageUrl: e.target.result},
+          ],
+        }));
+      }
+    }
+  }
+}, []);
+// const { getRootProps, getInputProps } = useDropzone({ onDrop: deleteImage });
+
 const cancelUpdate = () => {
   setEditReview(null); // 수정 취소 시 수정 중인 리뷰 상태 초기화
 };

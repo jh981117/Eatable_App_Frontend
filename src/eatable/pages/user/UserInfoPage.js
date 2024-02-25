@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Card, Col, Container, ListGroup, Row, Tab, Tabs, Image, Button, Modal, Form } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
 import ReservePage from "./ReservePage";
-import ReservedPage from "./ReservedPage";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
@@ -18,7 +17,7 @@ import { jwtDecode } from "jwt-decode";
 
 
 const UserInfoPage = () => {
-  const [showSignOutModal, setShowSignOutModal] = useState(false); // 모달 열림/닫힘 상태 관리
+  
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [edit, setEdit] = useState(false);
@@ -162,6 +161,24 @@ const handleCloseSignOutModal = () => {
       ...profile,
       [field]: e.target.value,
     });
+  };
+
+  const temperColor = (temperature) => {
+    if (temperature >= 20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070778358-1.png";
+    } else if (temperature >= 10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070780292-2.png";
+    } else if (temperature >= 0) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070782389-3.png";
+    } else if (temperature >= -10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070790881-33.png";
+    } else if (temperature >= -20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070787692-22.png";
+    } else if (temperature >= -30) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070784217-11.png";
+    } else {
+      return "Gray"; // 기본값은 회색
+    }
   };
 
   // 온도바 테스트용코드
@@ -364,7 +381,10 @@ if (temperature <= 0 && temperature >= -50) {
                   닉네임 : <Input type="text" value={profile.nickName} readOnly /><br/>
                   내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
                   {edit.bio && (<Button onClick={() => updateOk("bio")}>확인</Button>)}<br/>
-                  온도 : {temperature}<br/>
+                  온도 : <span className="responsive-span" style={{ marginRight: "5px" }}>
+                    <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "30px"}}/>
+                    {auth.profile ? auth.profile.temperature : ""}
+                  </span><br/>
 
                   <div>
                     <div style={{backgroundColor: "gray", width: "100%", height: "20px", borderRadius: "10px"}}>
@@ -447,35 +467,10 @@ if (temperature <= 0 && temperature >= -50) {
                         {/* <Button onClick={dropOK}>회원탈퇴</Button> */}
                       </ListGroup>
                     </Tab>
-                    <Tab eventKey="reserve" title="예약 현황">
-
-                      <ListGroup variant="flush">
-                        <ListGroup.Item>예약 현황</ListGroup.Item>
-                        <ListGroup.Item>
-                          <ListGroup.Item><UserWaitingPage userId={profile.id}/></ListGroup.Item>
-                        </ListGroup.Item>
-                      </ListGroup>
-                    </Tab>
-                    <Tab eventKey="reserved" title="예약 했던곳">
-                      <ListGroup variant="flush">
-                        <ListGroup.Item>예약 했던곳</ListGroup.Item>
-                        <ListGroup.Item>
-                          <ListGroup.Item></ListGroup.Item>
-                        </ListGroup.Item>
-                      </ListGroup>
-
-                      {ReservePage}
-                    </Tab>
-                    <Tab eventKey="reserved" title="예약 했던곳">
-                      {ReservedPage}                    
-                    </Tab>
-                    <Tab eventKey="review" title="내가 쓴 리뷰">
-                      {<ReviewPage/>}
-                    </Tab>
-                    <Tab eventKey="follow" title="팔로우">
-                      {FollowPage}
-
-                    </Tab>
+                    <Tab eventKey="reserve" title="예약 현황"><UserWaitingPage userId={profile.id}/></Tab>
+                    <Tab eventKey="reserved" title="예약 했던곳"><ReservePage/></Tab>
+                    <Tab eventKey="review" title="내가 쓴 리뷰"><ReviewPage/></Tab>
+                    <Tab eventKey="follow" title="팔로우"><FollowPage/></Tab>
                   </Tabs>
                 )}
               </div>
