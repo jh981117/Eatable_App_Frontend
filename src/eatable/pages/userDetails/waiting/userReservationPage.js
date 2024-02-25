@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import WaitingCount from '../item/WaitingCount';
 
-const UserReservationPage = ({ userId }) => {
-    const [userReservations, setUserReservations] = useState([]);
+const UserReservationPage = ({userId}) => {
 
-    const fetchUserReservations = async () => {
+    const[userReservations, setUserReservations] = useState([]);
+
+    const fetchUserReservations = async() => {
         try {
             // GET 요청을 보내어 사용자의 예약 정보를 가져옴
             const response = await fetch(`http://localhost:8080/api/reservation/userReservation/${userId}`);
@@ -17,7 +19,7 @@ const UserReservationPage = ({ userId }) => {
             console.error('Error fetching user reservations:', error);
         }
     };
-
+    
     useEffect(() => {
         fetchUserReservations();
     }, [userId]); // userId에 대한 의존성이 있다면 배열 안에 추가
@@ -37,20 +39,6 @@ const UserReservationPage = ({ userId }) => {
         }
     };
 
-    // reservationState 값에 따라 입장 상태 텍스트를 반환하는 함수
-    const getEntranceStatusText = (reservationState) => {
-        switch (reservationState) {
-            case 'TRUE':
-                return '입장 완료';
-            case 'WAITING':
-                return '입장 대기';
-            case 'FALSE':
-                return '입장 안함';
-            default:
-                return '';
-        }
-    };
-
     return (
         <div>
             <h2>나의 대기열</h2>
@@ -58,6 +46,7 @@ const UserReservationPage = ({ userId }) => {
                 <thead>
                     <tr>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>이미지</th>
+                        <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약몇명있을까요</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>가게 이름</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>인원</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약 일시</th>
@@ -67,14 +56,17 @@ const UserReservationPage = ({ userId }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {userReservations.map((reservation) => (
+                    {userReservations.map(reservation => (
                         <tr key={reservation.id}>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}><img src={reservation.partner.fileList[0].imageUrl} alt="가게 이미지" style={{ width: '100px', height: '100px' }} /></td>
+                            <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>
+                                <WaitingCount partnerId={reservation.partner.id} reservationId={reservation.id} />
+                            </td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{reservation.partner.storeName}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{reservation.people}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{new Date(reservation.reservationRegDate).toLocaleString()}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{reservation.partner.address.area}</td>
-                            <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{getEntranceStatusText(reservation.reservationState)}</td>
+                            <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{reservation.reservationState ? '확인됨' : '확인 대기 중'}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>
                                 <button onClick={() => handleDeleteReservation(reservation.partner.id, reservation.id)}>예약 삭제</button>
                             </td>

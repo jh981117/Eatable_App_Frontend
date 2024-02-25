@@ -222,8 +222,8 @@ const UserDetail = () => {
                 {""}{" "}
                 <div>
                   매장 웨이팅{" "}
-                  {waitingCount > detail.tableCnt
-                    ? `${waitingCount - detail.tableCnt} 팀이 있습니다.`
+                  {waitingCount > 0
+                    ? `${waitingCount} 팀이 있습니다.`
                     : "없음"}
                 </div>{" "}
                 {""}

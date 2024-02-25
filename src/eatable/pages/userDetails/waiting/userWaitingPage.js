@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const UserWaitingPage = ({ userId }) => {
     const [userWaitings, setUserWaitings] = useState([]);
+    const [waitingOrder, setWaitingOrder] = useState(null);
 
     const fetchUserWaitings = async () => {
         try {
@@ -20,7 +21,9 @@ const UserWaitingPage = ({ userId }) => {
 
     useEffect(() => {
         fetchUserWaitings();
-    }, [userId]); // userId에 대한 의존성이 있다면 배열 안에 추가
+    }, [userId]);
+    
+
 
     const handleDeleteReservation = async (partnerId, waitingId) => {
         try {
@@ -50,6 +53,8 @@ const UserWaitingPage = ({ userId }) => {
                     return '';
             }
         };
+
+        console.log(waitingOrder+"웨이팅순서")
 
     return (
         <div>
