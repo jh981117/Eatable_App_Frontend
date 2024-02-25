@@ -73,8 +73,14 @@ const PartnerWaitingPage = ({ id }) => {
                             <td>{waiting.waitingState}</td>
                             <td>
                                 {/* 버튼 클릭 시 대기 상태를 변경 */}
-                                <button onClick={() => updateWaitingState(waiting.id, waiting.waitingState === "TRUE" ? "FALSE" : "TRUE")}>
-                                    {waiting.waitingState === "TRUE" ? "대기 중" : "입장완료"}
+                                <button onClick={() => updateWaitingState(waiting.id, 'TRUE')}>
+                                    입장 완료
+                                </button>
+                                <button onClick={() => updateWaitingState(waiting.id, 'FALSE')}>
+                                    입장 안함
+                                </button>
+                                <button onClick={() => updateWaitingState(waiting.id, 'WAITING')}>
+                                    입장 대기
                                 </button>
                             </td>
                         </tr>

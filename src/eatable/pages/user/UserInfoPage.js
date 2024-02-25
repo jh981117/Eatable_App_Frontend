@@ -14,6 +14,7 @@ import SignDrop from "./SignDrop";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
+import UserReservationPage from "../userDetails/waiting/userReservationPage";
 
 
 
@@ -451,6 +452,9 @@ if (temperature <= 0 && temperature >= -50) {
 
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 현황</ListGroup.Item>
+                        <ListGroup.Item>
+                          <ListGroup.Item><UserReservationPage userId={profile.id}/></ListGroup.Item>
+                        </ListGroup.Item>
                         <ListGroup.Item>
                           <ListGroup.Item><UserWaitingPage userId={profile.id}/></ListGroup.Item>
                         </ListGroup.Item>

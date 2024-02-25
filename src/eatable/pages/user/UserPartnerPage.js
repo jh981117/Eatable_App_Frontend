@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import MenuSectionCRUD from "../userDetails/menuComponents/MenuSectionCRUD";
 import MenuListCRUD from "../userDetails/menuComponents/MenuListCRUD";
 import PartnerWaitingPage from "../userDetails/waiting/partnerWaitingPage";
+import PartnerReservationPage from "../userDetails/waiting/partnerReservationPage";
 
 const UserPartnerPage = () => {
   const [stores, setStores] = useState([]);
@@ -234,6 +235,10 @@ const UserPartnerPage = () => {
           <h2>예약관리</h2>
           {stores.map((store, index) => (
             <PartnerWaitingPage id={store.id} />
+          ))}
+
+          {stores.map((store, index) => (
+            <PartnerReservationPage id={store.id} />
           ))}
         </Card>
       </Container>
