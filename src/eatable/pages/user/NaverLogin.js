@@ -6,13 +6,11 @@ const NaverLogin = ({ setGetToken, setUserInfo }) => {
     const [accessToken,setAccessToken] = useState();  
     const navigate = useNavigate();
 	const { naver } = window
-	const NAVER_CLIENT_ID = 'YsJrZssQT5uMuONnqPfW';
-	const NAVER_CALLBACK_URL = 'http://localhost:3000/login';
 
 	const initializeNaverLogin = () => {
 		const naverLogin = new naver.LoginWithNaverId({
-			clientId: NAVER_CLIENT_ID,
-			callbackUrl: NAVER_CALLBACK_URL,                   
+			clientId: process.env.REACT_APP_NAVER_CLIENT_ID,
+			callbackUrl: process.env.REACT_APP_NAVER_CALLBACK_URL,                   
 			isPopup: false,        
 			loginButton: { color: 'green', type: 3, height: 40 },
 			
@@ -33,7 +31,7 @@ const NaverLogin = ({ setGetToken, setUserInfo }) => {
         if (!location.hash) return;
         const accessToken = location.hash.split('=')[1].split('&')[0];
         setAccessToken(accessToken);
-        console.log(accessToken);
+        console.log(location);
         };      
     
         const sendToken = (accessToken) => {

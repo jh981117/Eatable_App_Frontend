@@ -13,6 +13,8 @@ import {
 import { Bar } from 'react-chartjs-2';
 import {Col, Container, Row, Table } from 'react-bootstrap';
 
+
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -40,9 +42,17 @@ const fadeOut = keyframes`
   }
 `;
 
+
 const AnimatedTable = styled(Table)`
   opacity: 0;
   animation: ${({ show }) => (show ? fadeIn : fadeOut)} 0.3s ease-in-out forwards;
+
+  @media screen and (max-width: 600px){
+    th,td{
+      font-size: 0.4rem;
+    }
+    
+  }
 `;
 
    const BarChartNews = () => {
@@ -61,7 +71,7 @@ const AnimatedTable = styled(Table)`
   console.log("1",storeLists)
   
     const options = {
-      responsive: false,
+      responsive: true,
       plugins: {
         legend: {
           position: 'top' ,
@@ -121,54 +131,60 @@ const AnimatedTable = styled(Table)`
       setSelectDate(date => (date === clickedDate ? null : clickedDate));
     }
   };
-
+// height={600} width={1000}
   return (
-    <div>
-    <Bar options={{ ...options, onClick: BarClick }} data={data} height="600px" width="1000px" />
-    <CSSTransition
-      in={!!selectDate}
-      timeout={300}
-      classNames="table"
-      unmountOnExit
-    >
-      <Container>     
+
+      
+        <Container> 
         <Row>
-          <Col>
-            <AnimatedTable show={!!selectDate} striped bordered hover size="sm" className="list_table">
-              <thead>
-                <tr>
-                  <th>id</th>                  
-                  <th>매장이름</th>
-                  <th>매장주소</th>
-                  <th>관리자이름</th>
-                  <th>관리자연락처</th>
-                  <th>매장연락처</th>
-                  <th>업종</th>
-                  <th>작성일</th>
-                </tr>
-              </thead>
-              <tbody>
-                {storeLists
-                  .filter(store => new Date(store.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) === selectDate)
-                  .map(store => (
-                    <tr key={store.id}>
-                      <td>{store.id}</td>
-                      <td>{store.storeName}</td>
-                      <td>{store.area}</td>
-                      <td>{store.partnerName}</td>
-                      <td>{store.partnerPhone}</td>
-                      <td>{store.storePhone}</td>
-                      <td>{store.storeInfo}</td>                    
-                      <td>{new Date(store.createdAt).toLocaleString('ko-KR')}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </AnimatedTable>
-          </Col>
-        </Row>
-      </Container>
-    </CSSTransition>
-  </div>
+        <Col>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Bar options={{ ...options, onClick: BarClick }} data={data}/>
+          </div>
+        </Col>
+      </Row>    
+          <Row>
+            <Col>
+              <CSSTransition
+                in={!!selectDate}
+                timeout={300}
+                classNames="table"
+                unmountOnExit
+              >
+              <AnimatedTable show={!!selectDate} striped bordered hover size="sm" className="list_table">
+                <thead>
+                  <tr>
+                    <th>id</th>                  
+                    <th>매장이름</th>
+                    <th>매장주소</th>
+                    <th>관리자이름</th>
+                    <th>관리자연락처</th>
+                    <th>매장연락처</th>
+                    <th>업종</th>
+                    <th>작성일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {storeLists
+                    .filter(store => new Date(store.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) === selectDate)
+                    .map(store => (
+                      <tr key={store.id}>
+                        <td>{store.id}</td>
+                        <td>{store.storeName}</td>
+                        <td>{store.area}</td>
+                        <td>{store.partnerName}</td>
+                        <td>{store.partnerPhone}</td>
+                        <td>{store.storePhone}</td>
+                        <td>{store.storeInfo}</td>                    
+                        <td>{new Date(store.createdAt).toLocaleString('ko-KR')}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </AnimatedTable>
+             </CSSTransition>
+            </Col>
+          </Row>
+        </Container>   
   );
   }
 

@@ -20,47 +20,27 @@ const DetailHome = ({id}) => {
         });
     }, [id]); 
 
-   
-
-
-
-
-
-
     return (
       <>
-        <Card style={{ width: "100%", maxWidth: "700px" }}>
-          <Card.Title>
             <small
               style={{
                 marginTop: "5px",
                 marginLeft: "5px",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                // boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
               }}
             >
               매장소개
             </small>
+        <Card style={{ width: "100%", maxWidth: "700px" , boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",}}>
+          <Card.Title>
           </Card.Title>
           <Card.Body>
             <div>{detail.storeInfo}</div>
           </Card.Body>
         </Card>
-        <Card
-          style={{
-            width: "100%",
-            maxWidth: "700px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <Card.Title>
             <small style={{ marginTop: "5px", marginLeft: "5px" }}>
               오픈시간
             </small>
-            <Card.Body>
-              <div>{detail.openTime}</div>
-            </Card.Body>
-          </Card.Title>
-        </Card>
         <Card
           style={{
             width: "100%",
@@ -69,9 +49,22 @@ const DetailHome = ({id}) => {
           }}
         >
           <Card.Title>
+          </Card.Title>
+            <Card.Body>
+              <div>{detail.openTime}</div>
+            </Card.Body>
+        </Card>
             <small style={{ marginTop: "5px", marginLeft: "5px" }}>
               예약정보
             </small>
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: "700px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          <Card.Title>
           </Card.Title>
           <Card.Body>
             <div>{detail.reserveInfo}</div>

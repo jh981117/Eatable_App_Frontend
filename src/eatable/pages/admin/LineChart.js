@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,7 +24,6 @@ ChartJS.register(
 );
 
 
-
 const LineChart = () => {
   const [userLists, setUserLists] = useState([]);
   useEffect(()=>{
@@ -39,7 +39,7 @@ const LineChart = () => {
 },[])
 console.log(userLists)
   const options = {
-    responsive: false,
+    responsive: true,
     plugins: {
       legend: {
         position: 'top',
@@ -92,11 +92,15 @@ console.log(userLists)
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
       }    
-    ]
-    
+    ]    
   };
+  
   console.log(data);
-    return <Line options={options} data={data} height="600px" width="1000px"/>;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Line options={options} data={data}/>
+    </div>
+  );
   }
 
   export default LineChart;

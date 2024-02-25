@@ -11,23 +11,16 @@ const SearchPage = () => {
   const [prevPartners, setPrevPartners] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState("");
+  const [numberOfElements, setNumberOfElements] = useState(0);
 
-  // Intersection Observer를 위한 ref 생성
-  const sentinelRef = useRef();
+  const sentinelRef = useRef();   // Intersection Observer를 위한 ref 생성
   const location = useLocation(); // useLocation 훅 사용
   const queryParams = new URLSearchParams(location.search); // URL 쿼리 매개변수 파싱
-
-  // 쿼리 매개변수에서 keyword 값을 받아오기
   const item = queryParams.get("keyword");
 
-  useEffect(() => {
-    const keywordString = item.toString(); // 문자열로 변환
-    console.log(keywordString);
-
-    setTimeout(() => handleInputChange(keywordString), 50)
-  }, [item])
-
+  const handleItem = () => {
+    setTimeout(() => handleInputChange(item), 500)
+  };
 
   useEffect(() => {
 
@@ -55,6 +48,8 @@ const SearchPage = () => {
     }
   };
 
+  console.log(page);
+
   const images = [
     "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877698462-111.png",
     "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877700672-222.png",
@@ -72,20 +67,27 @@ const SearchPage = () => {
         }
         const data = await response.json();
 
-        // if (data.content.length === 0) {
-        //   setLoading(false);
-        //   return;
-        // }
-
-        console.log(data.content);
+        console.log(data);
+        setNumberOfElements(data.numberOfElements);
 
         if (page === 0) {
           setPartners(data.content);
-        } else {
+        }
+        else if (data.content.length === 0) {
+          setLoading(false);
+          return;
+        }
+        else if (numberOfElements === 5) {
           setPartners((prevPartners) => [...prevPartners, ...data.content.filter(
             (partner) => !prevPartners.some((p) => p.id === partner.id)
           )]);
         }
+        else if (item) {
+          handleItem(item);
+        }
+
+
+
 
         setTimeout(() => {
           setLoading(false); // 일정 시간 후에 로딩 상태 변경
@@ -104,6 +106,7 @@ const SearchPage = () => {
     setInputValue(input);
     setPage(0);
   };
+
 
   return (
     <Container

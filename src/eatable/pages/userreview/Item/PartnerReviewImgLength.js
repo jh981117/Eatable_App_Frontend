@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const PartnerReviewImgLength = ({ id }) => {
+const PartnerReviewImgLength = () => {
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [length, setLength] = useState(0);
 
-  console.log(id , "!!@!!!!");
+  console.log(id, "!!@!!!!");
 
   useEffect(() => {
     setLoading(true); // 데이터 가져 오기 시작시 로딩 상태 설정
