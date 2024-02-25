@@ -39,7 +39,7 @@ const UserWaitingPage = ({ userId }) => {
 
     return (
         <div>
-            <h2>나의 예약</h2>
+            <h5>나의 예약</h5>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                     <tr>

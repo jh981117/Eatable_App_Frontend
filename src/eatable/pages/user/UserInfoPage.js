@@ -1,21 +1,41 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card, Col, Container, ListGroup, Row, Tab, Tabs, Image, Button, Modal, Form } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import ReservePage from "./ReservePage";
 import { Link, useNavigate } from "react-router-dom";
-import { Input } from "@material-ui/core";
+import { Input} from "@material-ui/core";
+import styled from 'styled-components';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserWaitingPage from "../userDetails/waiting/userWaitingPage"; // userWaitingPage import 추가
 import SignDrop from "./SignDrop";
+import ReservePage from "./ReservePage";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 
 
+// const ResponsiveTabs = styled(Tabs)`
+//     @media screen and (max-width: 600px) {
+//       font-size:0.5rem; /* 600px 이하일 때 h3 요소의 글자 크기를 줄임 */ 
+     
+//     }
+// `;
+
+const StyledContainer = styled(Container)`
+    @media screen and (max-width: 600px) {
+
+  .col-8 {
+    width: 100%; /* 600px 이하에서는 컨테이너가 전체 너비를 차지하도록 설정 */
+    font-size: 0.8rem; /* 카드 내부 요소의 글자 크기를 줄임 */ 
+    padding: 10px; /* 카드의 패딩을 조정하여 요소들 사이의 간격을 조절함 */
+  }
+    }
+`;
+
+
 
 const UserInfoPage = () => {
-  
+
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [edit, setEdit] = useState(false);
@@ -178,17 +198,6 @@ const handleCloseSignOutModal = () => {
       return "Gray"; // 기본값은 회색
     }
   };
-
-  // 온도바 테스트용코드
-  // 온도 증가
-  // const increaseTemperature = () => {
-  //   setTemperature((prevTemperature) => prevTemperature + 1);
-  // };
-
-  // // 온도 감소
-  // const decreaseTemperature = () => {
-  //   setTemperature((prevTemperature) => prevTemperature - 1);
-  // };
 
   // 온도바
   const tempColor = (temperature) => {
@@ -371,21 +380,23 @@ if (temperature <= 0 && temperature >= -50) {
         <Col className="d-flex align-items-center">
           <Card style={{ width: "100%" }} className="mb-2">
             <Card.Body className="align-items-start"><input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleImageChange}/>
-            {isPartner() && (<Link to={"/userpartnerpage"}><Button>매장 관리</Button></Link>)}              
+            {isPartner() && (<div className="d-flex justify-content-end mb-2"><Link to={"/userpartnerpage"}><Button style={{textAlign: "right"}}>매장 관리</Button></Link></div>)}              
             <div className="d-flex align-items-center">
                 <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
-                <div className="flex align-items-center ml-3">
-
-                  닉네임 : <Input type="text" value={profile.nickName} readOnly /><br/>
-                  내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
-                  {edit.bio && (<Button onClick={() => updateOk("bio")}>확인</Button>)}<br/>
+                <div className={`flex align-items-center ml-3 ${edit.bio ? 'input-active' : ''}`}>
+                  
+                  
+                  
+                  <div style={{ border: "none", backgroundColor: "transparent", borderBottom: "none" }}>닉네임 : {profile.nickName}</div><br/>
+                  내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button variant="secondary" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
+                  {edit.bio && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("bio")}>확인</Button>)}<br/><br/>
                   온도 : <span className="responsive-span" style={{ marginRight: "5px" }}>
                     <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "30px"}}/>
                     {auth.profile ? auth.profile.temperature : ""}
                   </span><br/>
 
                   <div>
-                    <div style={{backgroundColor: "gray", width: "100%", height: "20px", borderRadius: "10px"}}>
+                    <div style={{backgroundColor: "gray", width: "300px", height: "20px", borderRadius: "10px"}}>
                       <div className="temperature-bar" style={{backgroundColor: "gray", width: "100%", height: "20px", position: "relative", borderRadius: "10px", animation: "wave 2s infinite linear alternate"}}>
                         {/* 막대의 최대 너비를 100%로 설정 */}
                         {/* 온도 바 */}
@@ -400,13 +411,14 @@ if (temperature <= 0 && temperature >= -50) {
                         <span style={{position: "absolute", left: "0%", bottom: "-20px"}}>-50</span>
                       </div>
                     </div>
-                  </div>
+                  </div><br/>
 
                   {/* <Button variant="primary" onClick={decreaseTemperature}>온도 감소</Button>
                   <Button variant="danger" onClick={increaseTemperature}>온도 증가</Button> */}
-                  <Button variant="primary" onClick={handleTogglePasswordInput}>비밀번호 변경</Button>
+                  <div className="d-flex justify-content-end mb-2">
+                  <Button variant="primary" onClick={handleTogglePasswordInput} style={{marginRight: "5px"}}>비밀번호 변경</Button>
                   <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
-
+                  </div>
                     {/* 회원탈퇴 모달 */}
                     <Modal show={modal} onHide={handleCloseSignOutModal}>
                         <Modal.Header closeButton>
@@ -444,22 +456,22 @@ if (temperature <= 0 && temperature >= -50) {
                   <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
                     <Tab eventKey="profile" title="프로필">
                       <ListGroup variant="flush">
-                        <ListGroup.Item>
-                          아이디 : <Input type="text" value={profile.username} readOnly/>
+                        <ListGroup.Item style={{ border: 'none' }}>
+                           <div>아이디 : {profile.username}</div>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          닉네임 : {edit.nickName ? (<Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, "nickName")}/>) : (<span>{profile.nickName}</span>)}<Button onClick={() => fieldEdit("nickName")}>{edit.nickName ? "취소" : "수정"}</Button>
-                          {edit.nickName && (<Button onClick={() => updateOk("nickName")}>확인</Button>)}
+                          닉네임 : {edit.nickName ? (<Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, "nickName")}/>) : (<span>{profile.nickName}</span>)}<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("nickName")}>{edit.nickName ? "취소" : "수정"}</Button>
+                          {edit.nickName && (<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("nickName")}>확인</Button>)}
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          이름 : <Input type="text" value={profile.name} readOnly />
+                          <div>이름 : {profile.name}</div>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          연락처 : {edit.phone ? (<Input type="text" value={profile.phone} onChange={(e) => changeValue(e, "phone")}/>) : (<span>{profile.phone}</span>)}<Button onClick={() => fieldEdit("phone")}>{edit.phone ? "취소" : "수정"}</Button>
-                          {edit.phone && (<Button onClick={() => updateOk("phone")}>확인</Button>)}
+                          연락처 : {edit.phone ? (<Input type="text" value={profile.phone} onChange={(e) => changeValue(e, "phone")}/>) : (<span>{profile.phone}</span>)}<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("phone")}>{edit.phone ? "취소" : "수정"}</Button>
+                          {edit.phone && (<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("phone")}>확인</Button>)}
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          이메일 : <Input type="text" value={profile.email} readOnly />
+                        <div>이메일 : {profile.email}</div>
                         </ListGroup.Item>
                         {/* <Button onClick={updateInfo}>수정</Button> */}
                         {/* <Button onClick={dropOK}>회원탈퇴</Button> */}

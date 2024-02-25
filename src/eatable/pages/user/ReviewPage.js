@@ -13,18 +13,13 @@ const ReviewPage = () => {
   const [error, setError] = useState();
   const [editReview, setEditReview] = useState(null);  // 리뷰수정상태인지 아닌지 수정중:리뷰객체담음, 수정X : null
   const [editContent, setEditContent] = useState(""); // 내용수정
-  const [updateImage, setUpdateImage] = useState({ imgList: [] });  // 이미지수정
-  const [newImage, setNewImage] = useState(null); // 이미지 추가
-  
+
   useEffect(() => {
    
     const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
     const decoded = jwtDecode(token); // 토큰 디코딩
-    // console.log(decoded)
-
     setLoading(true);
     setError();
-    
     fetch(`http://localhost:8080/api/store/user/${decoded.userId}`)
     .then((response) => {
       if (!response.ok) {
@@ -38,13 +33,8 @@ const ReviewPage = () => {
     })
   }, []);
 
-  if (loading) {
-    return <div>로딩중...</div>
-  }
-  if (error) {
-    return <div>에러 : {error}</div>
-  }
-  
+  if (loading) { return <div>로딩중...</div> }
+  if (error) { return <div>에러 : {error}</div> }
   const updateReview = (review) => {
     setEditReview(review);
     setEditContent(review.content);
@@ -52,7 +42,6 @@ const ReviewPage = () => {
   
   // 리뷰 수정
   const handleUpdate =  (review) => {
-    // 서버로 수정된 리뷰 보내야됨
     fetch(`http://localhost:8080/api/store/reviews/update`, {
       method: "PUT",
       headers: {"Content-Type": "application/json",},
@@ -73,7 +62,6 @@ const ReviewPage = () => {
       alert("리뷰글이 수정되었습니다.");
       setReviews(updatedReviews);
       // 이미지 수정
-      editReviewImages(review.id);
       setEditReview(null); // 수정완료후 editReview를 null로 설정 편집모드종료
   })
   .catch((error) => {
@@ -82,7 +70,6 @@ const ReviewPage = () => {
 };
 // 리뷰삭제
   const deleteReview = (review) => {
-
     fetch(`http://localhost:8080/api/store/reviews/delete/${review.id}`, {
     method: "DELETE",
   })
@@ -97,105 +84,21 @@ const ReviewPage = () => {
       if (response.status === 200) {
         setReviews(updatedReviews);
         navigate("/usermypage");
-    } else if (response.status !== 200) {
-        navigate(-1);
+      } else if (response.status !== 200) {
+          navigate(-1);
+      }
     }
-    }
-    
-    
   })
   .catch((error) => {
     setError(error.message);
   });
 };
 
-const editReviewImages = async (reviewId) => {
-  const formData = new FormData();
-  updateImage.imgList.forEach((file) => {
-    formData.append("files", file); // 이미지 파일 추가
-    setNewImage(file);
-    console.log("파일?",setNewImage);
-  });
-
-  try {
-    // 이미지 파일 전송
-    const imageResponse = await fetch(
-      `http://localhost:8080/api/store/reviews/update/attachments/${reviewId}` ,
-      {
-        method: "PUT",
-        body: formData, // Content-Type을 설정하지 않음. 브라우저가 자동으로 처리
-      }
-    );
-    console.log("응답" , imageResponse);
-
-      if (!imageResponse.ok) {
-        throw new Error("이미지 URL 수정 실패");
-      } else {
-        console.log("이미지 URL 수정 성공");
-        setNewImage(imageResponse.file);
-        console.log("파일 : ", imageResponse.file);
-      }
-    } catch (error) {
-    console.error(error);
-  }
-};
-
-const deleteImage = (imageId) => {
-  const confirm = window.confirm("정말 삭제하시겠습니까?");
-  if (confirm) {
-    const newImage = updateImage.imgList.filter((image) => image.id !== imageId);
-    setUpdateImage((prevUpdateImage) => ({
-      ...prevUpdateImage,
-      imageList: newImage,
-    }));
-
-    fetch(`http://localhost:8080/api/store/reviews/delete/${imageId}`,{
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((response) => {
-      if (response.ok) {
-        const newImage = updateImage.imgList.filter((image) => image.id !== imageId);
-        setUpdateImage((prevUpdateImage) => ({
-          ...prevUpdateImage,
-          imageList: newImage,
-        }));
-        console.log("이미지 삭제 성공");
-      } else {
-        console.error("이미지 삭제 실패");
-      }
-    })
-  }
-  console.log("이미지아이디 : ",imageId);
-};
-  
-const addNewImage = ((acceptedImage) => {
-  if (acceptedImage.length) {
-    for (const file of acceptedImage) {
-      console.log("파일명?",file.name);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = (e) => {
-        const newId = Math.random().toString(36).substr(2,9);
-        setUpdateImage((prevUpdateImage) => ({
-          ...prevUpdateImage,
-          imageList: [
-            ...prevUpdateImage,
-            {id: newId, imageUrl: e.target.result},
-          ],
-        }));
-      }
-    }
-  }
-}, []);
-// const { getRootProps, getInputProps } = useDropzone({ onDrop: deleteImage });
-
 const cancelUpdate = () => {
   setEditReview(null); // 수정 취소 시 수정 중인 리뷰 상태 초기화
 };
 console.log(reviews, "re");
+
 
   return (
     <div>
@@ -219,17 +122,16 @@ console.log(reviews, "re");
           {editReview === review ? (
               <>
                 <Form.Control as="textarea" rows={3} value={editContent} onChange={(e) => setEditContent(e.target.value)}/>
-                <input type="file" onChange={addNewImage}/>
                 <Button onClick={() => deleteReview(review)}>삭제</Button>
                 <Button onClick={cancelUpdate}>취소</Button> {/* 수정 취소 버튼 */}
                 <Button onClick={() => handleUpdate(review)}>완료</Button>
               </>
             ) : (
               <span>{review.content}</span>
-            )}<br/><br/>
+            )}<br/>
             
-          <span>{"댓글"}</span><hr/>
-          <span>{"댓글목록"}</span>
+          {/* <span>{"댓글"}</span><hr/>
+          <span>{"댓글목록"}</span> */}
 
         </Card.Body>
 

@@ -135,8 +135,7 @@ const LoginPage = () => {
 
   return (
     
-    <Container className="mt-3 col-6 flex justify-content-center" style={{backgroundColor: "white", marginTop: "250px"}}>
-      {/* <h2>로그인 페이지</h2>       */}
+    <Container className="mt-3 col-6 flex justify-content-center" style={{backgroundColor: "white", marginTop: "250px", borderRadius: "10px"}}>
       <Form onSubmit={submitUser}>
         <Form.Group className="mt-3" controlId="formBasicUsername">
           <Form.Label>아이디</Form.Label>
@@ -158,13 +157,9 @@ const LoginPage = () => {
           {user.passwordError && (<div className="text-danger">{user.passwordError}</div>)}
         </Form.Group>
 
-
-      
-          
-
         {user.submitError && (<div className="text-danger">{user.submitError}</div>)}
-        <Button variant="primary" type="submit">로그인</Button>
-        <Button variant="primary" type="button" onClick={provision}>회원가입</Button>
+        <Button variant="light" type="submit" style={{marginRight: "5px", marginBottom: "5px"}}>로그인</Button>
+        <Button variant="light" type="button" onClick={provision} style={{marginBottom: "5px"}}>회원가입</Button>
         <NaverLogin/>
       </Form>
     </Container>
