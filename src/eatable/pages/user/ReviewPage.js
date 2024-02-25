@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { Button, Card, Form } from 'react-bootstrap';
-import { useDropzone } from 'react-dropzone';
+
 import { useNavigate } from 'react-router-dom';
 
 
@@ -15,7 +15,6 @@ const ReviewPage = () => {
   const [editContent, setEditContent] = useState(""); // 내용수정
   const [updateImage, setUpdateImage] = useState({ imgList: [] });  // 이미지수정
   const [newImage, setNewImage] = useState(null); // 이미지 추가
-
   
   useEffect(() => {
    
@@ -51,6 +50,7 @@ const ReviewPage = () => {
     setEditContent(review.content);
   }
   
+  // 리뷰 수정
   const handleUpdate =  (review) => {
     // 서버로 수정된 리뷰 보내야됨
     fetch(`http://localhost:8080/api/store/reviews/update`, {
@@ -80,7 +80,7 @@ const ReviewPage = () => {
     setError(error.message);
   });
 };
-
+// 리뷰삭제
   const deleteReview = (review) => {
 
     fetch(`http://localhost:8080/api/store/reviews/delete/${review.id}`, {
@@ -120,7 +120,7 @@ const editReviewImages = async (reviewId) => {
   try {
     // 이미지 파일 전송
     const imageResponse = await fetch(
-      `http://localhost:8080/api/store/reviews/update/attachments`,
+      `http://localhost:8080/api/store/reviews/update/attachments/${reviewId}` ,
       {
         method: "PUT",
         body: formData, // Content-Type을 설정하지 않음. 브라우저가 자동으로 처리
@@ -228,7 +228,7 @@ console.log(reviews, "re");
               <span>{review.content}</span>
             )}<br/><br/>
             
-          <span>{"댓글"} {"❤️ 13"}</span><hr/>
+          <span>{"댓글"}</span><hr/>
           <span>{"댓글목록"}</span>
 
         </Card.Body>

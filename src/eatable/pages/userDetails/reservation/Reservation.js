@@ -3,93 +3,117 @@ import { Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { setHours, setMinutes, format } from 'date-fns';
+import { setHours, setMinutes } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
+import { Client } from '@stomp/stompjs';
+
 
 const Reservation = () => {
-
-  
-
-
     const navigate = useNavigate();
-    let { id } = useParams();
+    const { id } = useParams();
 
     const [showGreeting, setShowGreeting] = useState(false);
     const [selectedDate, setSelectedDate] = useState(
         setHours(setMinutes(new Date(), 30), 16)
     );
     const [adultCount, setAdultCount] = useState(0);
-    const [infantCount, setInfantCount] = useState(0);
-    const [userId, setUserId] = useState("")
+    const [waitingCount, setWaitingCount] = useState(0);
+    const [userId, setUserId] = useState("");
+    const [webSocketConnected, setWebSocketConnected] = useState(false);
+
     const handleChangeDate = (date) => {
         setSelectedDate(date);
     };
-    console.log(userId , "유저아이디")
 
     const goReservationOk = () => {
         setShowGreeting(true);
-        // 이후 예약확정 등 다른 작업 수행
-        // navigate("/reservationOk");
     };
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const decoded = jwtDecode(token);
-          setUserId(decoded.userId);
-        }
-      }, []); // 빈 배열을 의존성 배열로 전달하여 최초 렌더링 시에만 실행되도록 함
 
     const showReservationOk = () => {
         const reservationData = {
             partnerId: id,
             userId: userId,
             people: adultCount,
-            waitingRegDate: selectedDate.toISOString(), // 서버에서 Date 형식으로 파싱하기 위해 ISO 문자열로 변환
+            waitingRegDate: selectedDate.toISOString(),
             waitingState: "True"
         };
     
-        fetch(`http://localhost:8080/api/waiting/addWaiting/`+ id ,   {
+        fetch(`http://localhost:8080/api/waiting/addWaiting/` + id, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(reservationData),
         })
-        // console.log(reservationData )
         .then(response => {
             if (response.ok) {
                 alert("예약 성공")
-                // 예약 성공 시 처리
-                // navigate(`/reservationOk/${id}`);
             } else {
-                // 예약 실패 시 처리
                 throw new Error('Failed to save reservation');
             }
         })
         .catch(error => {
             console.error('Error saving reservation:', error);
-            // 예약 실패 시 처리
         });
     };
-    console.log(adultCount);
-    console.log(selectedDate);
+
+    useEffect(() => {
+        console.log('웹소켓 연결 시도 중...');
+    
+        const client = new Client({
+            brokerURL: 'ws://localhost:8080/ws',
+            debug: function (str) {
+                console.log(str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
+
+        client.onConnect = function (frame) {
+            console.log('웹소켓 연결 성공');
+            client.subscribe('/topic/waitingCount', function (message) {
+                setWaitingCount(parseInt(message.body));
+            });
+            // 웹소켓 연결 상태 업데이트
+            setWebSocketConnected(true);
+        };
+
+            client.onStompError = function (frame) {
+        console.error('웹소켓 연결 실패:', frame);
+        // 웹소켓 연결 상태 업데이트
+        setWebSocketConnected(false);
+    };
+
+        client.activate();
+
+        return () => {
+            client.deactivate();
+            console.log('웹소켓 연결 해제');
+            // 웹소켓 연결 상태 업데이트
+            setWebSocketConnected(false);
+        };
+    }, [waitingCount]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const decoded = jwtDecode(token);
+            setUserId(decoded.userId);
+        }
+    }, []); 
+
     return (
         <div>
             예약 인원 설정하기 <br />
-
-            {/* 성인수 조절 버튼 */}
             <Button onClick={() => setAdultCount(adultCount > 0 ? adultCount - 1 : 0)}>-</Button>
             총원: {adultCount}
             <Button onClick={() => setAdultCount(adultCount + 1)}>+</Button>
-            <br />
-
             <hr />
-
             <Button onClick={goReservationOk}>다음</Button> <br />
             {showGreeting && (
                 <>
                 예약일 설정 <br/>
-                {/* Integrate the DatePicker */}
                 <DatePicker
                     selected={selectedDate}
                     onChange={handleChangeDate}
@@ -101,7 +125,7 @@ const Reservation = () => {
                         setHours(setMinutes(new Date(), 30), 18),
                         setHours(setMinutes(new Date(), 0), 19),
                         setHours(setMinutes(new Date(), 30), 19),
-                    ]}  /*영업시간 설정*/
+                    ]}
                     dateFormat="MMMM d, yyyy h:mm aa"
                 />
                     <br />
@@ -119,6 +143,7 @@ const Reservation = () => {
                     </div>
                 </>
             )}
+            <div>현재 대기열 수: {waitingCount}</div>
         </div>
     );
 };

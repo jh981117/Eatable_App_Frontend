@@ -12,7 +12,12 @@ function ReviewImg() {
   const [selectedStoreName, setSelectedStoreName] = useState(""); // 선택된 이미지에 해당하는 매장 이름
   const [selectedFavorite, setSelectedFavorite] = useState("");
   const [partnerId, setPartnerId] = useState("");
+  const [reviewUser,setReviewUser] = useState();
   console.log(reviewImages, "!23123123123");
+
+
+
+  
   useEffect(() => {
     fetch(`http://localhost:8080/api/store/partner/${id}`)
       .then((response) => {
@@ -40,11 +45,12 @@ function ReviewImg() {
   }
 
   // 이미지 클릭 핸들러
-  const handleImageClick = (imageUrl, storeName, favorite, partnerId) => {
+  const handleImageClick = (imageUrl, storeName, favorite, partnerId , user) => {
     setSelectedImage(imageUrl); // 선택된 이미지 URL 상태 업데이트
     setSelectedStoreName(storeName); // 선택된 이미지에 해당하는 매장 이름 상태 업데이트
     setSelectedFavorite(favorite);
     setPartnerId(partnerId);
+    setReviewUser(user)
     setShowModal(true); // 모달 표시
   };
   return (
@@ -109,7 +115,8 @@ function ReviewImg() {
                       attachment.imageUrl,
                       review.partner.storeName,
                       review.partner.favorite,
-                      review.partner.id
+                      review.partner.id,
+                      review.user
                     )
                   } // storeName을 인자로 추가
                 />
@@ -117,7 +124,12 @@ function ReviewImg() {
             )
           )}
         </div>
-        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          style={{ width: "100%", margin: "auto" }}
+          centered
+        >
           <Modal.Title style={{ marginLeft: "10px" }}>
             <div
               style={{
@@ -136,6 +148,7 @@ function ReviewImg() {
             </div>
           </Modal.Title>
           <Modal.Body>
+            <div> {reviewUser} </div>
             <img
               src={selectedImage}
               alt="Selected"

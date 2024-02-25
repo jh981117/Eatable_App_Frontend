@@ -2,6 +2,26 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { styled } from "styled-components";
+
+const StyleDate = styled(DatePicker)`
+ @media screen and (max-width: 600px) {
+    width: 60px;
+ }
+`
+
+const StyledTable = styled(Table)`
+
+ width: 1270px;
+
+@media screen and (max-width: 600px) {
+  th,
+    td {
+      font-size: 0.5rem; 
+    }
+    width: 500px;
+}
+`
 
 const History = () => {
     const [historyLists, setHistoryLists] = useState([]);
@@ -36,7 +56,7 @@ const History = () => {
         <Container>
             <Row>
                 <Col>
-                    <DatePicker
+                    <StyleDate
                         selected={selectedDate}
                         onChange={handleDateChange}
                         dateFormat="yyyy/MM/dd"
@@ -45,7 +65,7 @@ const History = () => {
                     />
                 </Col>
             </Row>
-            <Table striped bordered hover size="sm" className="list_table" style={{ width: '1270px' }}>
+            <StyledTable striped bordered hover size="sm" className="list_table" >
                 <thead>
                     <tr>
                         <th>히스토리</th>
@@ -60,7 +80,7 @@ const History = () => {
                         </tr>
                     ))}
                 </tbody>
-            </Table>
+            </StyledTable>
         </Container>
     );
 };

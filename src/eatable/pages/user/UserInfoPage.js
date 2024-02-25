@@ -6,9 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import UserWaitingPage from "../userDetails/waiting/userWaitingPage"; // userWaitingPage import 추가
-
 import SignDrop from "./SignDrop";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";

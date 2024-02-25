@@ -64,13 +64,37 @@ const HomeReview = () => {
 
   return (
     <>
+      <style>
+        {`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+            
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d3d3d3;
+            border-radius: 15px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #b3b3b3;
+          }
+        `}
+      </style>
+      <div>
+        <small>방문자 리뷰</small>
+      </div>
       <div
         ref={scrollRef}
+        className="custom-scrollbar"
         style={{
           display: "flex",
           overflowX: "auto",
           cursor: "grab",
           userSelect: "none",
+          paddingTop: "5px",
+          paddingBottom: "5px",
         }}
         onMouseDown={startDragging}
         onMouseMove={onDragging}
@@ -79,28 +103,40 @@ const HomeReview = () => {
       >
         {reviews.map((review, reviewIndex) =>
           review.partnerReviewAttachments.map((attachment, attachmentIndex) => (
-            <Card
+            <div
               key={`${review.id}-${attachment.id}`}
-              style={{ flex: "0 0 auto", marginRight: "10px" }}
+              style={{
+                flex: "0 0 auto",
+                marginRight: "10px",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+              }}
             >
-              <Card.Header>
-                <div><img src={review.user.profileImageUrl} style={{width:"30px"}}/>{review.user.nickName}</div>
-              </Card.Header>
-              <Card.Body>
-                <img
-                  src={attachment.imageUrl}
-                  alt={`Review ${reviewIndex} Attachment ${attachmentIndex}`}
-                  style={{
-                    width: "350px",
-                    height: "350px",
-                    borderRadius: "10px",
-                    objectFit: "cover",
-                  }}
-                  onMouseDown={(e) => e.preventDefault()} // 이미지 드래그 방지
-                />
-                <div>{review.content}</div>
-              </Card.Body>
-            </Card>
+              <Card>
+                <Card.Header>
+                  <div>
+                    <img
+                      src={review.user.profileImageUrl}
+                      style={{ width: "30px" }}
+                    />
+                    {review.user.nickName}
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  <img
+                    src={attachment.imageUrl}
+                    alt={`Review ${reviewIndex} Attachment ${attachmentIndex}`}
+                    style={{
+                      width: "350px",
+                      height: "350px",
+                      borderRadius: "10px",
+                      objectFit: "cover",
+                    }}
+                    onMouseDown={(e) => e.preventDefault()} // 이미지 드래그 방지
+                  />
+                  <div>{review.content}</div>
+                </Card.Body>
+              </Card>
+            </div>
           ))
         )}
       </div>
@@ -108,4 +144,3 @@ const HomeReview = () => {
   );
 };
 export default HomeReview;
-
