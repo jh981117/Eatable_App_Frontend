@@ -27,6 +27,7 @@ const TimeLineTab = () => {
           onSelect={handleTabChange}
           id="detail-tab"
           className="custom-tab-nav" // 커스텀 클래스 적용
+          
         >
           <Tab eventKey="storemenu" title="추천">
             <RandomReviewList toId1={selectedTabToId} />

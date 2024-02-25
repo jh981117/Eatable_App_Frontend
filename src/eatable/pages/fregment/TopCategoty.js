@@ -16,7 +16,7 @@ const TopCategoty = () => {
   const handleShowRoulette = () => setShowRoulette(true);
   return (
     <div>
-      <div className="d-flex justify-content-center" style={{ gap: "40px" }}>
+      <div className="d-flex justify-content-center" style={{ gap: "40px"  }}>
         <span>
           <Image
             src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708051385932-map.png"
