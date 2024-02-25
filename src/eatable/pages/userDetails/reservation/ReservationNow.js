@@ -28,11 +28,11 @@ const ReservationNow = () => {
             partnerId: id,
             userId: userId,
             people: adultCount,
-            waitingRegDate: new Date().toISOString(), // 현재 시간으로 설정
-            waitingState: "True"
+            reservationRegDate: new Date().toISOString(), // 현재 시간으로 설정
+            reservationState: "True"
         };
 
-        fetch(`http://localhost:8080/api/waiting/addWaiting/` + id, {
+        fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

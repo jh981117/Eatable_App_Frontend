@@ -40,20 +40,23 @@ const UserDetail = () => {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/waiting/waitingCount/${id}`) // 대기열 수를 가져오는 새로운 엔드포인트 호출
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        } else {
-          return null;
-        }
-      })
-      .then((data) => {
-        if (data !== null) {
-          setWaitingCount(data); // 가져온 웨이팅 수를 상태 변수에 저장
-        }
-      });
-  }, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
+
+    fetch(`http://localhost:8080/api/reservation/reservationCount/${id}`) // 대기열 수를 가져오는 새로운 엔드포인트 호출
+        .then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                return null;
+            }
+        })
+        .then((data) => {
+            if (data !== null) {
+                setWaitingCount(data); // 가져온 웨이팅 수를 상태 변수에 저장
+            }
+        });
+}, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
+
+
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/partner/base/detail/${id}`)
