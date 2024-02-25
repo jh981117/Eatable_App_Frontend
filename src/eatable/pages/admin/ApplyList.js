@@ -285,7 +285,7 @@ const ApplyList = () => {
                     </td>
                     <td>{list.phone}</td>
                     <td>{list.createdAt}</td>
-                    <td>{list.user}</td>
+                    <td>{list.userId}</td>
                     <td style={{ maxWidth: "65px", minWidth: "65px" }}>
                       {list.partnerReqState === "접수 승인" && (
                         <StyledButton
