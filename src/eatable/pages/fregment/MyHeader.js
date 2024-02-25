@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import { jwtDecode } from "jwt-decode";
+import "../partner/components/AutoComplete.css";
 
 const MyHeader = () => {
   const navigate = useNavigate();
@@ -107,10 +107,23 @@ const MyHeader = () => {
               />
             </Link>
           </Navbar.Brand>
+
           <Nav className="ml-auto">
             {auth.isLoggedIn ? (
               <>
                 {/* 로그인 했을 때 보여줄 링크들 */}
+                <Link to="/searchPage" style={{ marginRight: "10px" ,marginTop:"10px",textDecoration:"none" ,color:"gray"}}>
+                  <span
+                    className="d-flex align-items-center"
+                    style={{ width: "60px" }}
+                  >
+                    <img
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708835552667-free-icon-magnifier-2866321.png"
+                      style={{ width: "30px" }}
+                    />{" "}
+                    검색
+                  </span>
+                </Link>
                 <Nav.Link
                   as={Link}
                   to="/usermypage"
