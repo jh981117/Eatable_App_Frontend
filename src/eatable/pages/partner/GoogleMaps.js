@@ -12,15 +12,19 @@ import { GeoJson } from "./components/GeoJson"; // GeoJson.js 파일에서 GeoJs
 const GoogleMaps = () => {
   const [locations, setLocations] = useState([]); // 서버로부터 받아온 위치 데이터를 저장할 상태
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 정보
+  const [map,setMap] = useState(null);
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
 
-  const options = { zoom: 11 };
+  const options = { 
+    zoom: 11,
+    mapId: "81bc4809ac9f2bc7"
+  };
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_KEY,
+   
   });
 
   useEffect(() => {
@@ -56,6 +60,7 @@ const GoogleMaps = () => {
     (map) => {
       GeoJson.features.forEach((feature) => {
         const coordinates = feature.geometry.coordinates[0];
+
         const polygon = new window.google.maps.Polygon({
           paths: coordinates.map((coord) => ({ lat: coord[1], lng: coord[0] })),
           strokeColor: "#64CD3C",
@@ -64,27 +69,28 @@ const GoogleMaps = () => {
           fillColor: "#64CD3C",
           fillOpacity: 0.35,
         });
+        
 
-        const nonPolygonArea = new window.google.maps.Rectangle({
-          bounds: {
-            north: 100.5,
-    south: 5.5,
-    east: 140.5,
-    west: 60.5,
-          },
-          fillColor: "#FFFFFF", // 하얀색으로 설정
-          fillOpacity: 1, // Opacity 설정
-          strokeWeight: 0, // 테두리 없음
-          zIndex: -1, // 폴리곤 이외의 지역은 폴리곤보다 아래에 표시
-          map: map,
-        });
+    //     const nonPolygonArea = new window.google.maps.Rectangle({
+    //       bounds: {
+    //         north: 100.5,
+    // south: 5.5,
+    // east: 140.5,
+    // west: 60.5,
+    //       },
+    //       fillColor: "#FFFFFF", // 하얀색으로 설정
+    //       fillOpacity: 1, // Opacity 설정
+    //       strokeWeight: 0, // 테두리 없음
+    //       map: map,
+    //     });
 
-        nonPolygonArea.setMap(map);
+    //     nonPolygonArea.setMap(map);
 
         // 클릭 이벤트 핸들러
         window.google.maps.event.addListener(polygon, "click", function (event) {
           if (clickedPolygonRef.current !== null) {
             clickedPolygonRef.current.setOptions({ fillColor: "#64CD3C" });
+
           }
 
           // 클릭한 폴리곤이 이미 클릭되었는지 확인
@@ -131,7 +137,7 @@ const GoogleMaps = () => {
         if (feature.properties.SIG_KOR_NM === "종로구") {
           labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
         }
-
+        setMap(map);
         const textLabel = new window.google.maps.Marker({
           position: { lat: center.lat(), lng: labelCenterX }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
           label: {
@@ -146,15 +152,25 @@ const GoogleMaps = () => {
         });
       });
     },
-    [center]
+    []
   );
+
+  // useEffect(() => {
+  //   if (map !== null && selectedLocation !== null) {
+  //     map.setZoom(13);
+  //   }
+  // }, [map, selectedLocation]);
+  
 
   return isLoaded ? (
     <GoogleMap
       id="google-map-test"
       mapContainerStyle={mapContainerStyle}
       center={center}
-      options={options}
+      options={{
+        mapId: "81bc4809ac9f2bc7",
+        zoom: 12.4 // 여기에서 zoom 속성을 설정합니다.
+      }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
       <MarkerClusterer>
@@ -166,19 +182,20 @@ const GoogleMaps = () => {
               lat: location.address.lat,
               lng: location.address.lng,
             }}
-            onClick={() => setSelectedLocation(location)}
+            onClick={(event) => {
+              setSelectedLocation(location);
+            }}
             clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
             icon={{
               url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
               scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
             }}
           />
-          
           ))
         }
       </MarkerClusterer>
-      {selectedLocation && (
-        <InfoWindow
+      {selectedLocation && ( 
+        <InfoWindow 
           position={{
             lat: selectedLocation.address.lat,
             lng: selectedLocation.address.lng,
@@ -196,7 +213,7 @@ const GoogleMaps = () => {
 
                 <img
                   src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
-                  style={{ width: "25px" }}
+                  style={{ width: "15px" }}
                 />
               </h2>
             </Link>
@@ -204,7 +221,6 @@ const GoogleMaps = () => {
               src={selectedLocation.fileList[0].imageUrl}
               style={{ width: "100%" }}
             ></img>
-            {/* 기타 필요한 매장 정보를 표시 */}
           </div>
         </InfoWindow>
       )}
@@ -272,13 +288,13 @@ export default GoogleMaps;
 //     loadGoogleMapsAPI();
 //   }, [isLoaded]);
 
-//   useEffect(() => {
-//     if (isLoaded) {
-//       const map = new window.google.maps.Map(mapRef.current, {
-//         center: { lat: 37.5665, lng: 126.978 },
-//         zoom: 12,
-//         mapId: "81bc4809ac9f2bc7",
-//       });
+  // useEffect(() => {
+  //   if (isLoaded) {
+  //     const map = new window.google.maps.Map(mapRef.current, {
+  //       center: { lat: 37.5665, lng: 126.978 },
+  //       zoom: 12,
+  //       mapId: "81bc4809ac9f2bc7",
+  //     });
 
 //       // 서울의 구 경계 GeoJSON 데이터를 사용하여 지도에 폴리곤을 추가합니다.
 //       GeoJson.features.forEach((feature) => {
