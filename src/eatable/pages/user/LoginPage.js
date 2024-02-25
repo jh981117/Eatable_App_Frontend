@@ -45,6 +45,13 @@ const LoginPage = () => {
       passwordError: passwordError,
     });
 
+
+
+    const saveTokensToLocalStorage = (accessToken, refreshToken) => {
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+    };
+
     if (!usernameError && !passwordError) {
       try {
         const response = await fetch("http://localhost:8080/api/authenticate", {
@@ -62,9 +69,8 @@ const LoginPage = () => {
           const data = await response.json();
           console.log("로그인 성공", data);
           alert("로그인 성공!");
-         
+          saveTokensToLocalStorage(data.token, data.refreshToken); // 액세스 토큰과 리프레시 토큰 저장
 
-          saveTokenToLocalStorage(data.token); // JWT 저장
           // JWT에서 사용자 정보 추출 (예: 닉네임)
 
       const profileResponse = await fetch('http://localhost:8080/api/user/profile', {
