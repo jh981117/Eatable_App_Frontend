@@ -23,7 +23,6 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                     // console.log(data.content);
                     setWholeTextArray(data.content);
                     updateDropDownList(data.content);
-                    onAutoCompleteData(inputValue);
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
@@ -61,6 +60,7 @@ const AutoComplete = ({ onAutoCompleteData }) => {
 
     const clickDropDownItem = clickedItem => {
         setInputValue(clickedItem);
+        onAutoCompleteData(inputValue);
         setIsHaveInputValue(false);
     };
 
@@ -81,6 +81,7 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             }
             if (event.key === 'Enter') {
                 setIsHaveInputValue(false);
+                onAutoCompleteData(inputValue);
             }
 
 
