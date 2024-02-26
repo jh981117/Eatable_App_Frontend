@@ -127,11 +127,9 @@ const PartnerWrite = () => {
       });
   };
 
-<<<<<<< HEAD
+
   //email js//
-=======
-  // email js
->>>>>>> 99458635580bb58b0c59ac85850c55b76164e58b
+
   const form = useRef();
 
   const sendEmail = e => {
