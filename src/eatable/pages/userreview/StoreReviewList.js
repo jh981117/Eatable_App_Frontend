@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Card, Container } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import ImageGallery from "./Item/ImageGallery";
+import FollowButton from "./Item/FollowButton ";
 
-function StoreReviewList() {
+function StoreReviewList(toId1) {
   const { id } = useParams();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +43,6 @@ function StoreReviewList() {
 
   return (
     <div>
-    
       {reviews.map((review) => (
         <Card
           key={review.id}
@@ -56,29 +56,43 @@ function StoreReviewList() {
         >
           <Card.Body>
             <div>
-              <div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>
-                  <img
-                    src={review.user.profileImageUrl}
-                    style={{
-                      width: "30px",
-                      borderRadius: "30px",
-                      marginRight: "5px",
+                  <span>
+                    <img
+                      src={review.user.profileImageUrl}
+                      style={{
+                        width: "30px",
+                        borderRadius: "30px",
+                        marginRight: "5px",
 
-                      objectFit: "cover",
-                    }}
+                        objectFit: "cover",
+                      }}
+                    />
+                  </span>
+                  <span>{review.user.nickName}</span>
+                </span>
+                <span>{review.createdAt}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>
+                  <span>
+                    <img
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
+                      style={{ width: "20px" }}
+                    />
+                  </span>
+                  <span style={{ marginRight: "10px" }}>{review.avg}</span>
+                </span>
+                <span>
+                  <FollowButton
+                    toId={review.user.id}
+                    toId1={toId1}
+
+                    // handleFollowStatusChange 함수 구현 필요
                   />
                 </span>
-                <span>{review.user.nickName}</span>
               </div>
-              <span>
-                <img
-                  src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1707877717526-123123.png"
-                  style={{ width: "20px" }}
-                />
-              </span>
-              <span style={{ marginRight: "10px" }}>{review.avg}</span>
-              <span>{review.createdAt}</span>
 
               <div
                 style={{

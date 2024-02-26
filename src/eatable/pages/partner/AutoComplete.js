@@ -7,10 +7,11 @@ const AutoComplete = ({ onAutoCompleteData }) => {
     const [isHaveInputValue, setIsHaveInputValue] = useState(false);
     const [dropDownList, setDropDownList] = useState([]);
     const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
-    const [wholeTextArray, setWholeTextArray] = useState([]);
+    // const [wholeTextArray, setWholeTextArray] = useState([]);
+    const [keyword,setKeyword] = useState("");
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue}`)
+        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue || keyword}`)
             .then((response) => {
                 if (response.status === 200) {
                     return response.json();
@@ -21,13 +22,12 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             .then((data) => {
                 if (data !== null) {
                     // console.log(data.content);
-                    setWholeTextArray(data.content);
+                    // setWholeTextArray(data.content);
                     updateDropDownList(data.content);
-                    onAutoCompleteData(inputValue);
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
-    }, [inputValue]);
+    }, [inputValue || keyword]);
 
     const updateDropDownList = (data) => {
         if (inputValue === '') {
@@ -47,12 +47,11 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                     filteredList.push(item.address.area);
                 }
             });
-
             setDropDownList(filteredList);
             setIsHaveInputValue(true);
+            
         }
     };
-
 
     const changeInputValue = event => {
         setInputValue(event.target.value);
@@ -61,35 +60,38 @@ const AutoComplete = ({ onAutoCompleteData }) => {
 
     const clickDropDownItem = clickedItem => {
         setInputValue(clickedItem);
+        onAutoCompleteData(clickedItem);
         setIsHaveInputValue(false);
     };
 
-    const handleDropDownKey = event => {
-        if (isHaveInputValue) {
-            if (
-                event.key === 'ArrowDown' &&
-                dropDownList.length - 1 > dropDownItemIndex
-            ) {
-                setDropDownItemIndex(dropDownItemIndex + 1);
-            }
-
-            if (event.key === 'ArrowUp' && dropDownItemIndex >= 0)
-                setDropDownItemIndex(dropDownItemIndex - 1);
-            if (event.key === 'Enter' && dropDownItemIndex >= 0) {
-                clickDropDownItem(dropDownList[dropDownItemIndex]);
-                setDropDownItemIndex(-1);
-            }
-            if (event.key === 'Enter') {
-                setIsHaveInputValue(false);
-            }
-
-
+    const handleEnterKey = () => {
+        if (dropDownItemIndex >= 0) {
+            clickDropDownItem(dropDownList[dropDownItemIndex]);
+            setDropDownItemIndex(-1);
+        } else {
+            setIsHaveInputValue(false);
+            onAutoCompleteData(inputValue);
         }
     };
+    
+    const handleDropDownKey = event => {
+        if (isHaveInputValue) {
+            if (event.key === 'ArrowDown' && dropDownList.length - 1 > dropDownItemIndex) {
+                setDropDownItemIndex(dropDownItemIndex + 1);
+            }
+            if (event.key === 'ArrowUp' && dropDownItemIndex >= 0) {
+                setDropDownItemIndex(dropDownItemIndex - 1);
+            }
+            if (event.key === 'Enter') {
+                handleEnterKey();
+            }
+        }
+    };
+    
 
-    useEffect(() => {
-        updateDropDownList(wholeTextArray);
-    }, [wholeTextArray]);
+    // useEffect(() => {
+    //     updateDropDownList(wholeTextArray);
+    // }, [wholeTextArray]);
 
     return (
         <div className="whole-box">

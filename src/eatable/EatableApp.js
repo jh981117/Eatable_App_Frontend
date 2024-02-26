@@ -41,6 +41,9 @@ import Out from "./pages/user/Out";
 import UserInfoPage from "./pages/user/UserInfoPage";
 import UserPageAccess from "./rolecomponents/UserPageAccess";
 import { MenuList } from "@material-ui/core";
+import Timeline from "./pages/userreview/Timeline";
+import TimeLineTab from "./pages/userreview/TimeLineTab";
+import TabMenu from "./pages/partner/TabMenu";
 
 
 const EatableApp = () => {
@@ -76,6 +79,14 @@ const EatableApp = () => {
               element={
                 // <AdminRoute>
                 <GoogleMap />
+                // </AdminRoute>
+              }
+            ></Route>
+                <Route
+              path="/tabMenu"
+              element={
+                // <AdminRoute>
+                <TabMenu />
                 // </AdminRoute>
               }
             ></Route>
@@ -201,7 +212,7 @@ const EatableApp = () => {
 
             {/* 민호 */}
             <Route path="/reviewlist" Component={ReviewList}></Route>
-            <Route path="/eatabletimeline" Component={EatableTimeLine}></Route>
+            <Route path="/eatabletimeline" Component={TimeLineTab}></Route>
             <Route path="/detailtab" Component={DetailTab}></Route>
             <Route path="/reviewimg" Component={ReviewImg}></Route>
             <Route path="/reviewwrite" Component={ReviewWrite}></Route>

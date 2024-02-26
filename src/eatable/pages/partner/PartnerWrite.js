@@ -41,6 +41,7 @@ const PartnerWrite = () => {
     lng: "",
     area: "",
     zipCode: "",
+    district: "", // 새로 추가한 구 정보 상태
   });
   console.log(post)
   const [errorMessages, setErrorMessages] = useState({
@@ -87,12 +88,12 @@ const PartnerWrite = () => {
           fieldName === "storeName"
             ? "매장이름은"
             : fieldName === "partnerName"
-            ? "관리자이름은"
-            : fieldName === "partnerPhone"
-            ? "관리자 전화번호는"
-            : fieldName === "storePhone"
-            ? "매장 전화번호는"
-            : "주소는";
+              ? "관리자이름은"
+              : fieldName === "partnerPhone"
+                ? "관리자 전화번호는"
+                : fieldName === "storePhone"
+                  ? "매장 전화번호는"
+                  : "주소는";
         setErrorMessages((prevErrors) => ({
           ...prevErrors,
           [fieldName]: `${errorMessage} 필수입니다`,
@@ -126,7 +127,11 @@ const PartnerWrite = () => {
       });
   };
 
+<<<<<<< HEAD
   //email js//
+=======
+  // email js
+>>>>>>> 99458635580bb58b0c59ac85850c55b76164e58b
   const form = useRef();
 
   const sendEmail = e => {
@@ -195,6 +200,8 @@ const PartnerWrite = () => {
               placeService.getDetails(
                 { placeId: predictions[0].place_id },
                 function (placeDetails, placeStatus) {
+                  console.log(placeDetails);
+
                   if (placeStatus === "OK") {
                     handleSetPost("lat", placeDetails.geometry.location.lat());
                     handleSetPost("lng", placeDetails.geometry.location.lng());
@@ -244,7 +251,23 @@ const PartnerWrite = () => {
       document.getElementById("lng").value = place.geometry.location.lng();
       document.getElementById("area").value = place.formatted_address;
 
-      // 우편번호 찾기 -----------------------------------------------------------
+      // 주소 파싱하여 구 추출하기 -------------------------------------------
+      const addressComponents = place.address_components;
+
+      for (let i = 0; i < addressComponents.length; i++) {
+        const component = addressComponents[i];
+        if (component.types.includes("sublocality_level_1")) {
+          // 구 = component.long_name;
+          handleSetPost(
+            "district",
+            component.long_name
+          );
+          document.getElementById("district").value = component.long_name;
+        }
+      }
+
+
+      // 우편번호 찾기 -----------------------------------------------------------  
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode(
         { location: place.geometry.location },
@@ -353,7 +376,7 @@ const PartnerWrite = () => {
             id="id"
             value={post.userId}
             name="id"
-            
+
             readOnly
           />
         </div>
@@ -367,10 +390,10 @@ const PartnerWrite = () => {
                   {fieldName === "storeName"
                     ? "매장이름"
                     : fieldName === "partnerName"
-                    ? "관리자이름"
-                    : fieldName === "partnerPhone"
-                    ? "관리자 전화번호"
-                    : "매장 전화번호"}
+                      ? "관리자이름"
+                      : fieldName === "partnerPhone"
+                        ? "관리자 전화번호"
+                        : "매장 전화번호"}
                 </h5>
               </label>
               <input
@@ -381,8 +404,8 @@ const PartnerWrite = () => {
                   fieldName === "partnerPhone"
                     ? "전화번호를 입력하세요   ex) 01042364123"
                     : fieldName === "storePhone"
-                    ? "전화번호를 입력하세요   ex) 0242364123"
-                    : "이름을 입력하세요"
+                      ? "전화번호를 입력하세요   ex) 0242364123"
+                      : "이름을 입력하세요"
                 }
                 name={fieldName}
                 onChange={handleChange}
@@ -431,6 +454,13 @@ const PartnerWrite = () => {
               placeholder="lng"
               onChange={handleChange}
             />
+            <input
+              type="text"
+              name="district"
+              id="district"
+              placeholder="district"
+              onChange={handleChange}
+            />
             {/* 주소와 우편번호 입력 */}
             <div>
               {errorMessages.area && (
@@ -475,8 +505,10 @@ const PartnerWrite = () => {
 
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">
-          <Form ref={form}> 
-            <Form.Control type="hidden" name="user_name" value="부트스트랩" />
+
+          <Form ref={form}>
+            <Form.Control type="hidden" name="user_name" value="Eatable" />
+
             <Form.Control
               type="hidden"
               name="user_email"
@@ -491,13 +523,14 @@ const PartnerWrite = () => {
               as="textarea"
               style={{ display: "none" }}
               name="message"
-              value="부트스트랩 이게 맞냐 어?"
+              value="입점신청 승인이 완료되었습니다."
             />
-            <button type="submit" className="button-link" onClick={(e) => {handleSubmit(e); sendEmail(e)}}>
+
+            <button type="submit" className="button-link" onClick={(e) => { handleSubmit(e); sendEmail(e); }}>
               작성완료
             </button>
           </Form>
-       
+
           <Link to="/partnerlist" className="button-link">
             목록
           </Link>

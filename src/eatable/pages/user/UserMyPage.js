@@ -8,11 +8,11 @@ import { jwtDecode } from "jwt-decode";
 import UserPartnerPage from "./UserPartnerPage";
 
 
+
+
 const checkPartnerRole = () => {
   const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
   
-  if (!token) return false; // 토큰이 없다면 false 반환
-
   try {
     const decoded = jwtDecode(token); // 토큰 디코딩
     console.log(decoded)

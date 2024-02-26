@@ -8,40 +8,50 @@ import {
 } from "@react-google-maps/api";
 import { Link } from "react-router-dom";
 import { GeoJson } from "./components/GeoJson"; // GeoJson.js 파일에서 GeoJson 데이터 import
+import TabMenu from "./TabMenu";
 
 const GoogleMaps = () => {
   const [locations, setLocations] = useState([]); // 서버로부터 받아온 위치 데이터를 저장할 상태
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 정보
+  const [map,setMap] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [Keyword,setKeyword] = useState("");
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
 
-  const options = { zoom: 11 };
+  const options = { 
+    zoom: 11,
+    mapId: "81bc4809ac9f2bc7"
+  };
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_KEY,
+   
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/partner/totallist"
-        );
-        if (response.status === 200) {
-          const data = await response.json();
-          setLocations(data); // 데이터를 상태 변수에 설정
-        } else {
-          console.error("Failed to fetch data");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+    fetchPosts();
+  }, [inputValue, Keyword]);
 
-    fetchData();
-  }, []);
+  const fetchPosts = () => {
+    fetch(`http://localhost:8080/api/partner/google?keyword=${inputValue || Keyword}`)
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return null;
+        }
+      })
+      .then((data) => {
+        if (data !== null) {
+          console.log(data);
+          setLocations(data);
+        }
+      })
+      .catch((error) => console.error("Error fetching search results:", error));
+  };
+
 
   const mapContainerStyle = {
     height: "500px",
@@ -55,81 +65,157 @@ const GoogleMaps = () => {
   const onMapLoad = useCallback(
     (map) => {
       GeoJson.features.forEach((feature) => {
-        // 다중 폴리곤을 지원하기 위해 coordinates[0] 대신 coordinates를 순회합니다.
-        feature.geometry.coordinates.forEach((polygonCoords) => {
-          const polygon = new window.google.maps.Polygon({
-            paths: polygonCoords.map((coord) => ({
-              lat: coord[1],
-              lng: coord[0],
-            })),
-            strokeColor: "#64CD34C", // 외곽선 색상 지정
-            strokeOpacity: 0.2, // 외곽선 투명도
-            strokeWeight: 2, // 외곽선 두께
-            fillColor: "#ffffff", // 내부 색상
-            fillOpacity: 0.1, // 내부 색상 투명도
-          });
+        const coordinates = feature.geometry.coordinates[0];
 
-          polygon.setMap(map);
+        const polygon = new window.google.maps.Polygon({
+          paths: coordinates.map((coord) => ({ lat: coord[1], lng: coord[0] })),
+          strokeColor: "#64CD3C",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#64CD3C",
+          fillOpacity: 0.35,
+        });
+        
+        // 클릭 이벤트 핸들러
+        window.google.maps.event.addListener(polygon, "click", function (event) {
+          if (clickedPolygonRef.current !== null) {
+            clickedPolygonRef.current.setOptions({ fillColor: "#64CD3C" });
 
-          polygon.addListener("click", (event) => {
-            if (clickedPolygonRef.current !== polygon) {
-              polygon.setOptions({ fillColor: "#FF0000" });
-              clickedPolygonRef.current = polygon;
-              map.setCenter(event.latLng);
-              map.setZoom(13);
-            } else {
-              clickedPolygonRef.current = null;
-              map.setZoom(13);
-              map.setCenter(center);
-            }
-          });
+          }
 
-          // 마우스 오버 이벤트 핸들러
-          polygon.addListener("mouseover", () => {
-            if (hoveredPolygonRef.current !== polygon) {
-              polygon.setOptions({ fillColor: "#FFBB00" });
-              hoveredPolygonRef.current = polygon;
-            }
-          });
+          // 클릭한 폴리곤이 이미 클릭되었는지 확인
+          if (clickedPolygonRef.current === polygon) {
+            // 이미 클릭된 폴리곤을 다시 클릭한 경우
+            map.setZoom(11); // 지도의 줌을 초기 확대 수준으로 되돌림
+            clickedPolygonRef.current = null; // 클릭된 폴리곤을 null로 설정하여 다음 클릭을 대비
+          } else {
+            // 새로운 폴리곤을 클릭한 경우
+            map.setCenter(event.latLng);
+            map.setZoom(13);
+            polygon.setOptions({ fillColor: "#FF0000" });
+            clickedPolygonRef.current = polygon; // 클릭된 폴리곤을 저장
+          }
+        });
 
-          // 마우스 아웃 이벤트 핸들러 수정
-          polygon.addListener("mouseout", () => {
-            if (hoveredPolygonRef.current === polygon) {
-              polygon.setOptions({ fillColor: "#64CD3C" });
-              hoveredPolygonRef.current = null;
-            }
-          });
+        // 마우스 오버 이벤트 핸들러
+        window.google.maps.event.addListener(polygon, "mouseover", function () {
+          if (clickedPolygonRef.current !== polygon) {
+            polygon.setOptions({ fillColor: "#FFBB00" });
+            hoveredPolygonRef.current = polygon;
+          }
+        });
+
+        // 마우스 아웃 이벤트 핸들러
+        window.google.maps.event.addListener(polygon, "mouseout", function () {
+          if (clickedPolygonRef.current !== polygon) {
+            polygon.setOptions({ fillColor: "#64CD3C" });
+            hoveredPolygonRef.current = null;
+          }
+        });
+
+        polygon.setMap(map);
+
+        // 각 구의 중심점을 계산하여 구 이름을 표시합니다.
+        const bounds = new window.google.maps.LatLngBounds();
+        coordinates.forEach((coord) =>
+          bounds.extend(new window.google.maps.LatLng(coord[1], coord[0]))
+        );
+        const center = bounds.getCenter();
+
+        // 종로구인 경우에만 라벨의 중심점을 왼쪽으로 이동시킵니다.
+        let labelCenterX = center.lng(); // 중심점의 x 좌표를 설정합니다.
+        let labelCenterY = center.lat();
+        if (feature.properties.SIG_KOR_NM === "종로구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "서초구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강남구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강북구") {
+          labelCenterX -= 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강남구") {
+          labelCenterX += 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "양천구") {
+          labelCenterY -= 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        
+        setMap(map);
+        const textLabel = new window.google.maps.Marker({
+          position: { lng: labelCenterX , lat: labelCenterY }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
+          label: {
+            text: feature.properties.SIG_KOR_NM, // 구 이름을 표시합니다.
+            color: "#000000",
+            fontWeight: "bold",
+          },
+          icon: {
+            path: "M 0,0",
+          },
+          map: map,
         });
       });
     },
-    [center]
+    []
   );
 
+  // useEffect(() => {
+  //   if (map !== null && selectedLocation !== null) {
+  //     map.setZoom(13);
+  //   }
+  // }, [map, selectedLocation]);
+
   return isLoaded ? (
+    <>
+   <div>
+    <TabMenu setInputValue={setKeyword} />
+  </div>
+
+    <div className="search-container mt-1 mb-3">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="매장찾기"
+        />
+      </div>
+      
     <GoogleMap
       id="google-map-test"
       mapContainerStyle={mapContainerStyle}
       center={center}
-      options={options}
+      options={{
+        mapId: "81bc4809ac9f2bc7",
+        zoom: 11 // 여기에서 zoom 속성을 설정합니다.
+      }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
       <MarkerClusterer>
         {(clusterer) =>
           locations.map((location) => (
             <Marker
-              key={location.id}
-              position={{
-                lat: location.address.lat,
-                lng: location.address.lng,
-              }}
-              onClick={() => setSelectedLocation(location)}
-              clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
-            />
+            key={location.id}
+            position={{
+              lat: location.address.lat,
+              lng: location.address.lng,
+            }}
+            onClick={(event) => {
+              setSelectedLocation(location);
+            }}
+            clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
+            icon={{
+              // url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+              scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
+            }}
+          />
           ))
         }
       </MarkerClusterer>
-      {selectedLocation && (
-        <InfoWindow
+      {selectedLocation && ( 
+        <InfoWindow 
           position={{
             lat: selectedLocation.address.lat,
             lng: selectedLocation.address.lng,
@@ -144,10 +230,9 @@ const GoogleMaps = () => {
             >
               <h2>
                 {selectedLocation.storeName}
-
-                <img
+                <img 
                   src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
-                  style={{ width: "25px" }}
+                  style={{ width: "15px", marginLeft: "14px"}}
                 />
               </h2>
             </Link>
@@ -155,17 +240,18 @@ const GoogleMaps = () => {
               src={selectedLocation.fileList[0].imageUrl}
               style={{ width: "100%" }}
             ></img>
-            {/* 기타 필요한 매장 정보를 표시 */}
           </div>
         </InfoWindow>
       )}
     </GoogleMap>
+    </>
   ) : (
     <></>
   );
 };
 
 export default GoogleMaps;
+
 
 // import React, { useEffect, useRef, useState } from "react";
 // import { GeoJson } from "./components/GeoJson";
@@ -222,13 +308,13 @@ export default GoogleMaps;
 //     loadGoogleMapsAPI();
 //   }, [isLoaded]);
 
-//   useEffect(() => {
-//     if (isLoaded) {
-//       const map = new window.google.maps.Map(mapRef.current, {
-//         center: { lat: 37.5665, lng: 126.978 },
-//         zoom: 12,
-//         mapId: "81bc4809ac9f2bc7",
-//       });
+  // useEffect(() => {
+  //   if (isLoaded) {
+  //     const map = new window.google.maps.Map(mapRef.current, {
+  //       center: { lat: 37.5665, lng: 126.978 },
+  //       zoom: 12,
+  //       mapId: "81bc4809ac9f2bc7",
+  //     });
 
 //       // 서울의 구 경계 GeoJSON 데이터를 사용하여 지도에 폴리곤을 추가합니다.
 //       GeoJson.features.forEach((feature) => {

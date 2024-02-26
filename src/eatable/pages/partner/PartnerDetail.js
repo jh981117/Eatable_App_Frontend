@@ -2,6 +2,8 @@ import { Button } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow, Pagination } from "swiper"
 
 const PartnerDetail = () => {
   const token = localStorage.getItem("token");
@@ -15,6 +17,8 @@ const PartnerDetail = () => {
 
   const navigate = useNavigate();
   let { id } = useParams();
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
 
   const [post, setPost] = useState({
     storeName: "",
@@ -48,6 +52,7 @@ const PartnerDetail = () => {
     ["치킨", "레스토랑", "피자"],
     ["백반", "국수", "비건"],
   ];
+  
 
   useEffect(() => {
     fetch("http://localhost:8080/api/partner/detail/" + id)
@@ -108,10 +113,10 @@ const PartnerDetail = () => {
                 {fieldName === "storeName"
                   ? "매장이름"
                   : fieldName === "partnerName"
-                  ? "관리자이름"
-                  : fieldName === "partnerPhone"
-                  ? "관리자 전화번호"
-                  : "매장 전화번호"}
+                    ? "관리자이름"
+                    : fieldName === "partnerPhone"
+                      ? "관리자 전화번호"
+                      : "매장 전화번호"}
               </h5>
             </label>
             <input
@@ -122,8 +127,8 @@ const PartnerDetail = () => {
                 fieldName === "partnerPhone"
                   ? "전화번호를 입력하세요   ex) 01042364123"
                   : fieldName === "storePhone"
-                  ? "전화번호를 입력하세요   ex) 0242364123"
-                  : "이름을 입력하세요"
+                    ? "전화번호를 입력하세요   ex) 0242364123"
+                    : "이름을 입력하세요"
               }
               name={fieldName}
               value={post[fieldName] || ""}
@@ -289,8 +294,8 @@ const PartnerDetail = () => {
               {item === "corkCharge"
                 ? "콜키지"
                 : item === "dog"
-                ? "애완견"
-                : "주차정보"}
+                  ? "애완견"
+                  : "주차정보"}
             </label>
             <div className="d-flex">
               <div
@@ -342,27 +347,79 @@ const PartnerDetail = () => {
       </div>
 
       {/* 이미지 파일 표시 */}
-      <div className="mt-3" style={{ overflowX: "auto" }}>
+      <div className="mt-3">
         <h5>첨부 이미지</h5>
-        <div className="mt-3" style={{ whiteSpace: "nowrap" }}>
-          {" "}
-          {/* 내부 요소를 한 줄에 배치하기 위해 whiteSpace: nowrap; 속성 추가 */}
-          {post.fileList &&
-            post.fileList.map((file, index) => (
-              <div
-                className="gallery--box"
-                key={index}
-                style={{ display: "inline-block", marginRight: "10px" }}
-              >
-                {" "}
-                {/* 이미지를 가로로 배열하기 위해 display: inline-block; 속성 추가 */}
-                <img
-                  src={file.imageUrl}
-                  alt={file.filename}
-                  style={{ maxWidth: "200px", maxHeight: "200px" }}
-                />
-              </div>
-            ))}
+
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              position: "relative", // 여기에 추가
+              width: "100%",
+              height: "100%",
+              maxWidth: "700px",
+              maxHeight: "400px",
+              borderRadius: "15px",
+            }}
+          >
+            <Swiper
+              effect="coverflow"
+              grabCursor={true}
+              centeredSlides={true}
+              slidesPerView="auto"
+              coverflowEffect={{
+                rotate: 50,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: true,
+               
+              }}
+              pagination={true}
+              modules={[EffectCoverflow, Pagination]}
+              onSlideChange={(swiper) => setCurrentSlideIndex(swiper.realIndex)}
+              autoplay={{ delay: 3000 }}
+              style={{ borderRadius: "15px" }}
+            >
+              {post.fileList &&
+                post.fileList.length > 0 &&
+                post.fileList.map((file, index) => (
+                  <SwiperSlide key={index}>
+                    <img
+                      src={file.imageUrl}
+                      alt={`Slide ${index}`}
+                      style={{
+                        width: "100%",
+                        // height: "100%",
+                        // maxWidth: "300px",
+                        maxHeight: "300px",
+                        borderRadius: "15px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+            </Swiper>
+            <div
+              style={{
+                position: "absolute",
+                right: "10px",
+                bottom: "10px",
+                backgroundColor: "rgba(140, 240, 240, 0.5)",
+                color: "yellow",
+                padding: "5px 10px",
+                borderRadius: "30px",
+                zIndex: 1, // 여기에 추가
+              }}
+            >
+              {currentSlideIndex + 1} / {post.fileList?.length}
+            </div>
+          </div>
         </div>
       </div>
 
