@@ -1,10 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Client } from '@stomp/stompjs';
 
 const PartnerWaitingPage = ({ id }) => {
     const [waitings, setWaitings] = useState([]);
+    const [stompClient, setStompClient] = useState(null);
 
-    // fetchWaitings 함수를 정의
+      // 웹소켓 연결
+      useEffect(() => {
+        const webSocket = new WebSocket('ws://localhost:8080/ws');
+    
+        webSocket.onopen = () => {
+            console.log('WebSocket 연결 성공');
+        };
+    
+        webSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'waitingList') {
+                setWaitings(data.waitingList);
+            }
+        };
+    
+        webSocket.onerror = (error) => {
+            console.error('WebSocket 연결 에러:', error);
+        };
+    
+        webSocket.onclose = () => {
+            console.log('WebSocket 연결 종료');
+        };
+    
+        return () => {
+            webSocket.close();
+        };
+    }, []);
+
+    // fetchWaitings 함수 정의
     const fetchWaitings = async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/waiting/waitingList/${id}`);
@@ -15,6 +45,7 @@ const PartnerWaitingPage = ({ id }) => {
             // 예약 시간이 빠른 순으로 정렬
             data.sort((a, b) => new Date(a.waitingRegDate) - new Date(b.waitingRegDate));
             setWaitings(data);
+            console.log('대기열이 업데이트되었습니다:', data);
         } catch (error) {
             console.error('Error fetching waitings:', error);
         }
@@ -30,7 +61,7 @@ const PartnerWaitingPage = ({ id }) => {
         const waitingDto = {
             waitingState: newWaitingState
         };
-    
+
         try {
             const response = await fetch(`http://localhost:8080/api/waiting/updateWaitingState/${id}/${waitingId}`, {
                 method: 'PUT',
@@ -42,12 +73,16 @@ const PartnerWaitingPage = ({ id }) => {
             if (!response.ok) {
                 throw new Error('Failed to update waiting state');
             }
-            // 대기열 상태 업데이트 후 다시 대기열을 불러옴
-            fetchWaitings();
+            // 대기열 상태 업데이트 후 웹소켓을 통해 실시간으로 대기열을 다시 불러옴
+
+            // 대기열 상태 업데이트 성공 시 로그 출력
+            console.log('Waiting state updated successfully.');
+
         } catch (error) {
             console.error('Error updating waiting state:', error);
         }
     };
+
 
     return (
         <div>

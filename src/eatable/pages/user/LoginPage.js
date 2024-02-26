@@ -47,9 +47,9 @@ const LoginPage = () => {
 
 
 
-    const saveTokensToLocalStorage = (accessToken, refreshToken) => {
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+    const saveTokensToLocalStorage = (accessToken) => {
+      localStorage.setItem("token", accessToken);
+     
     };
 
     if (!usernameError && !passwordError) {
@@ -69,7 +69,7 @@ const LoginPage = () => {
           const data = await response.json();
           console.log("로그인 성공", data);
           alert("로그인 성공!");
-          saveTokensToLocalStorage(data.token, data.refreshToken); // 액세스 토큰과 리프레시 토큰 저장
+          saveTokensToLocalStorage(data.token); // 액세스 토큰과 리프레시 토큰 저장
 
           // JWT에서 사용자 정보 추출 (예: 닉네임)
 

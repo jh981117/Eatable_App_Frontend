@@ -34,7 +34,7 @@ const ReservationNow = () => {
             reservationRegDate: new Date().toISOString(),
             reservationState: "True"
         };
-
+    
         fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
             method: 'POST',
             headers: {
@@ -52,6 +52,30 @@ const ReservationNow = () => {
             .then(data => {
                 setReservationId(data.reservationId);
                 alert('예약이 확정되었습니다.');
+    
+                // 웹소켓을 이용하여 대기열 정보를 업데이트
+                const webSocket = new WebSocket('ws://localhost:8080/ws');
+    
+                webSocket.onopen = () => {
+                    console.log('WebSocket 연결 성공');
+                    // 대기열 정보 요청
+                    webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
+                };
+    
+                webSocket.onmessage = (event) => {
+                    // 대기열 정보를 받아서 처리
+                    const waitingCount = JSON.parse(event.data);
+                    console.log('대기열 정보:', waitingCount);
+                    // 여기서 대기열 정보를 상태에 반영하거나 다른 작업을 수행할 수 있습니다.
+                };
+    
+                webSocket.onerror = (error) => {
+                    console.error('WebSocket 연결 에러:', error);
+                };
+    
+                webSocket.onclose = () => {
+                    console.log('WebSocket 연결 종료');
+                };
             })
             .catch(error => {
                 console.error('Error saving reservation:', error);
