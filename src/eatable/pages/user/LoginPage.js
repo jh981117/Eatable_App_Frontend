@@ -49,7 +49,6 @@ const LoginPage = () => {
 
     const saveTokensToLocalStorage = (accessToken) => {
       localStorage.setItem("token", accessToken);
-     
     };
 
     if (!usernameError && !passwordError) {
@@ -69,36 +68,44 @@ const LoginPage = () => {
           const data = await response.json();
           console.log("로그인 성공", data);
           alert("로그인 성공!");
+ 
           saveTokensToLocalStorage(data.token); // 액세스 토큰과 리프레시 토큰 저장
-
+          // JWT에서 사용자 정보 추출 (예: 닉네임)
+          // 이후 로직...
           // JWT에서 사용자 정보 추출 (예: 닉네임)
 
-      const profileResponse = await fetch('http://localhost:8080/api/user/profile', {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${data.token}`,
-              'Content-Type': 'application/json',
-            },
-          });
+          const profileResponse = await fetch(
+            "http://localhost:8080/api/user/profile",
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${data.token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
           if (!profileResponse.ok) {
-            throw new Error('Failed to fetch profile');
+            throw new Error("Failed to fetch profile");
           }
 
           const profileData = await profileResponse.json();
 
           // 로그인 상태와 프로필 정보를 함께 업데이트
-          setAuth({ isLoggedIn: true, user: profileData, profile: profileData });
+          setAuth({
+            isLoggedIn: true,
+            user: profileData,
+            profile: profileData,
+          });
 
-              const attemptedUrl = sessionStorage.getItem("attemptedUrl");
-      if (attemptedUrl) {
-        navigate("/home");
-        sessionStorage.removeItem("attemptedUrl"); // 더 이상 필요 없으므로 삭제
-      } else {
-        // 기본 페이지로 리디렉션
-        navigate("/");
-      }
-
+          const attemptedUrl = sessionStorage.getItem("attemptedUrl");
+          if (attemptedUrl) {
+            navigate("/home");
+            sessionStorage.removeItem("attemptedUrl"); // 더 이상 필요 없으므로 삭제
+          } else {
+            // 기본 페이지로 리디렉션
+            navigate("/");
+          }
         } else {
           console.error("로그인 실패:", response.status);
           if (response.status === 401) {
@@ -106,7 +113,7 @@ const LoginPage = () => {
           } else if (response.status === 403) {
             window.confirm("탈퇴한 회원입니다."); // 탈퇴한 회원일 경우의 처리
           } else {
-            window.confirm("아이디가 존재하지 않습니다.");  // 404
+            window.confirm("아이디가 존재하지 않습니다."); // 404
           }
         }
       }
