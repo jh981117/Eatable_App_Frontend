@@ -46,9 +46,9 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                     filteredList.push(item.address.area);
                 }
             });
-
             setDropDownList(filteredList);
             setIsHaveInputValue(true);
+            
         }
     };
 
@@ -60,33 +60,34 @@ const AutoComplete = ({ onAutoCompleteData }) => {
 
     const clickDropDownItem = clickedItem => {
         setInputValue(clickedItem);
-        onAutoCompleteData(inputValue);
+        onAutoCompleteData(clickedItem);
         setIsHaveInputValue(false);
     };
 
-    const handleDropDownKey = event => {
-        if (isHaveInputValue) {
-            if (
-                event.key === 'ArrowDown' &&
-                dropDownList.length - 1 > dropDownItemIndex
-            ) {
-                setDropDownItemIndex(dropDownItemIndex + 1);
-            }
-
-            if (event.key === 'ArrowUp' && dropDownItemIndex >= 0)
-                setDropDownItemIndex(dropDownItemIndex - 1);
-            if (event.key === 'Enter' && dropDownItemIndex >= 0) {
-                clickDropDownItem(dropDownList[dropDownItemIndex]);
-                setDropDownItemIndex(-1);
-            }
-            if (event.key === 'Enter') {
-                setIsHaveInputValue(false);
-                onAutoCompleteData(inputValue);
-            }
-
-
+    const handleEnterKey = () => {
+        if (dropDownItemIndex >= 0) {
+            clickDropDownItem(dropDownList[dropDownItemIndex]);
+            setDropDownItemIndex(-1);
+        } else {
+            setIsHaveInputValue(false);
+            onAutoCompleteData(inputValue);
         }
     };
+    
+    const handleDropDownKey = event => {
+        if (isHaveInputValue) {
+            if (event.key === 'ArrowDown' && dropDownList.length - 1 > dropDownItemIndex) {
+                setDropDownItemIndex(dropDownItemIndex + 1);
+            }
+            if (event.key === 'ArrowUp' && dropDownItemIndex >= 0) {
+                setDropDownItemIndex(dropDownItemIndex - 1);
+            }
+            if (event.key === 'Enter') {
+                handleEnterKey();
+            }
+        }
+    };
+    
 
     useEffect(() => {
         updateDropDownList(wholeTextArray);
