@@ -8,29 +8,35 @@ const PartnerWaitingPage = ({ id }) => {
 
       // 웹소켓 연결
       useEffect(() => {
-        const webSocket = new WebSocket('ws://localhost:8080/ws');
-    
-        webSocket.onopen = () => {
-            console.log('WebSocket 연결 성공');
+        const client = new Client({
+            brokerURL: 'ws://localhost:8080/ws',
+            debug: function (str) {
+                console.log(str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
+
+        client.onConnect = function () {
+            console.log('웹소켓 연결 성공');
+            client.subscribe('/topic/waitingList', function (message) {
+                const receivedWaitings = JSON.parse(message.body);
+                setWaitings(receivedWaitings); // 받은 대기열 리스트를 상태로 설정
+                console.log('대기열이 업데이트되었습니다:', receivedWaitings);
+            });
+            setStompClient(client);
         };
-    
-        webSocket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'waitingList') {
-                setWaitings(data.waitingList);
-            }
+
+        client.onStompError = function (frame) {
+            console.error('웹소켓 연결 실패:', frame);
         };
-    
-        webSocket.onerror = (error) => {
-            console.error('WebSocket 연결 에러:', error);
-        };
-    
-        webSocket.onclose = () => {
-            console.log('WebSocket 연결 종료');
-        };
-    
+
+        client.activate();
+
         return () => {
-            webSocket.close();
+            client.deactivate();
+            console.log('웹소켓 연결 해제');
         };
     }, []);
 
