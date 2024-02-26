@@ -115,7 +115,7 @@ const HomePage = () => {
           minHeight: "100vh",
         }}
       >
-        <div>
+         <div style={{width: "100%"}} >
           <hr />
           <TopCategoty />
           <hr />

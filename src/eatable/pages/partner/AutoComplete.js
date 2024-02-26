@@ -7,10 +7,11 @@ const AutoComplete = ({ onAutoCompleteData }) => {
     const [isHaveInputValue, setIsHaveInputValue] = useState(false);
     const [dropDownList, setDropDownList] = useState([]);
     const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
-    const [wholeTextArray, setWholeTextArray] = useState([]);
+    // const [wholeTextArray, setWholeTextArray] = useState([]);
+    const [keyword,setKeyword] = useState("");
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue}`)
+        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue || keyword}`)
             .then((response) => {
                 if (response.status === 200) {
                     return response.json();
@@ -21,12 +22,12 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             .then((data) => {
                 if (data !== null) {
                     // console.log(data.content);
-                    setWholeTextArray(data.content);
+                    // setWholeTextArray(data.content);
                     updateDropDownList(data.content);
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
-    }, [inputValue]);
+    }, [inputValue || keyword]);
 
     const updateDropDownList = (data) => {
         if (inputValue === '') {
@@ -51,7 +52,6 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             
         }
     };
-
 
     const changeInputValue = event => {
         setInputValue(event.target.value);
@@ -89,9 +89,9 @@ const AutoComplete = ({ onAutoCompleteData }) => {
     };
     
 
-    useEffect(() => {
-        updateDropDownList(wholeTextArray);
-    }, [wholeTextArray]);
+    // useEffect(() => {
+    //     updateDropDownList(wholeTextArray);
+    // }, [wholeTextArray]);
 
     return (
         <div className="whole-box">
