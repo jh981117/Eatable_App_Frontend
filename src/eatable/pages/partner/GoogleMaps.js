@@ -15,6 +15,7 @@ const GoogleMaps = () => {
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 정보
   const [map,setMap] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [Keyword,setKeyword] = useState("");
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
 
@@ -31,10 +32,10 @@ const GoogleMaps = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [inputValue]);
+  }, [inputValue, Keyword]);
 
   const fetchPosts = () => {
-    fetch(`http://localhost:8080/api/partner/google?keyword=${inputValue}`)
+    fetch(`http://localhost:8080/api/partner/google?keyword=${inputValue || Keyword}`)
       .then((response) => {
         if (response.status === 200) {
           return response.json();
@@ -75,22 +76,6 @@ const GoogleMaps = () => {
           fillOpacity: 0.35,
         });
         
-
-    //     const nonPolygonArea = new window.google.maps.Rectangle({
-    //       bounds: {
-    //         north: 100.5,
-    // south: 5.5,
-    // east: 140.5,
-    // west: 60.5,
-    //       },
-    //       fillColor: "#FFFFFF", // 하얀색으로 설정
-    //       fillOpacity: 1, // Opacity 설정
-    //       strokeWeight: 0, // 테두리 없음
-    //       map: map,
-    //     });
-
-    //     nonPolygonArea.setMap(map);
-
         // 클릭 이벤트 핸들러
         window.google.maps.event.addListener(polygon, "click", function (event) {
           if (clickedPolygonRef.current !== null) {
@@ -139,12 +124,29 @@ const GoogleMaps = () => {
 
         // 종로구인 경우에만 라벨의 중심점을 왼쪽으로 이동시킵니다.
         let labelCenterX = center.lng(); // 중심점의 x 좌표를 설정합니다.
+        let labelCenterY = center.lat();
         if (feature.properties.SIG_KOR_NM === "종로구") {
           labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
         }
+        if (feature.properties.SIG_KOR_NM === "서초구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강남구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강북구") {
+          labelCenterX -= 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강남구") {
+          labelCenterX += 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "양천구") {
+          labelCenterY -= 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        
         setMap(map);
         const textLabel = new window.google.maps.Marker({
-          position: { lat: center.lat(), lng: labelCenterX }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
+          position: { lng: labelCenterX , lat: labelCenterY }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
           label: {
             text: feature.properties.SIG_KOR_NM, // 구 이름을 표시합니다.
             color: "#000000",
@@ -169,7 +171,7 @@ const GoogleMaps = () => {
   return isLoaded ? (
     <>
    <div>
-    <TabMenu setInputValue={setInputValue} />
+    <TabMenu setInputValue={setKeyword} />
   </div>
 
     <div className="search-container mt-1 mb-3">
@@ -205,7 +207,7 @@ const GoogleMaps = () => {
             }}
             clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
             icon={{
-              url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+              // url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
               scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
             }}
           />
@@ -228,10 +230,9 @@ const GoogleMaps = () => {
             >
               <h2>
                 {selectedLocation.storeName}
-
-                <img
+                <img 
                   src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
-                  style={{ width: "15px" }}
+                  style={{ width: "15px", marginLeft: "14px"}}
                 />
               </h2>
             </Link>
