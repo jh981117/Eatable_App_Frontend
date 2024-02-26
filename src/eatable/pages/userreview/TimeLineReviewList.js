@@ -11,6 +11,7 @@ import FollowButton from "./Item/FollowButton ";
 import { useNavigate } from "react-router-dom";
 import CommentForm from "./Item/CommentForm";
 import CommentsModal from "./Item/CommentsModal";
+import { jwtDecode } from "jwt-decode";
 
 const TimeLineReviewList = (toId1) => {
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,9 @@ const TimeLineReviewList = (toId1) => {
     // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
     try {
       const response = await fetch(
-        `http://localhost:8080/api/comments?reviewId=${reviewId}`
+        `http://localhost:8080/api/comments/list/${reviewId}`,
+      
+      
       );
       if (!response.ok) {
         throw new Error("댓글을 불러오는 데 실패했습니다.");
@@ -46,31 +49,42 @@ const TimeLineReviewList = (toId1) => {
     }
   };
 
+
+  useEffect(() => {
+    console.log(comments, "댓글 데이터 업데이트 후");
+  }, [comments]);
+
   // 댓글 제출 핸들러
-  const handleSubmitComment = async (commentData) => {
-    try {
-      const response = await fetch("http://localhost:8080/api/comments/write", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(commentData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit comment");
-      }
-
-      const addedComment = await response.json();
-      console.log("Comment added:", addedComment);
-
-      // 댓글 추가 후 댓글 목록 업데이트
-      setComments((prevComments) => [...prevComments, addedComment]);
-      // 모달을 닫거나, 필요한 경우 추가 UI 업데이트 처리
-    } catch (error) {
-      console.error("Error submitting comment:", error);
+  const handleSubmitComment = async ({ reviewId, text }) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Authentication token is not found.");
     }
-  };
+
+    // 토큰 디코딩하여 사용자 ID 얻기
+    const decoded = jwtDecode(token);
+    const userId = decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 맞게 조정해야 할 수 있음
+
+    const response = await fetch("http://localhost:8080/api/comments/write", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: text, // CommentsModal에서 받은 댓글 내용
+        userId, // 사용자 ID
+        storeReviewId: reviewId, // 댓글이 달리는 리뷰의 ID
+      }),
+    });
+    const addedComment = await response.json();
+     setComments(prevComments => [...prevComments, addedComment]);
+    // 나머지 로직...
+  } catch (error) {
+    console.error("Error submitting comment:", error);
+  }
+};
+
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -316,12 +330,18 @@ const TimeLineReviewList = (toId1) => {
                   <Button onClick={() => handleShowComments(review.id)}>
                     댓글 보기
                   </Button>
+                 /
                   <CommentsModal
                     show={modalShow}
                     handleClose={() => setModalShow(false)}
                     reviewId={currentReviewId}
                     comments={comments}
-                    onSubmit={handleSubmitComment} // 추가
+                    onSubmit={(commentData) =>
+                      handleSubmitComment({
+                        ...commentData,
+                        reviewId: currentReviewId,
+                      })
+                    }
                   />
                 </div>
               </div>
