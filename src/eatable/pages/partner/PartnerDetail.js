@@ -378,6 +378,7 @@ const PartnerDetail = () => {
                 depth: 100,
                 modifier: 1,
                 slideShadows: true,
+               
               }}
               pagination={true}
               modules={[EffectCoverflow, Pagination]}
@@ -398,7 +399,7 @@ const PartnerDetail = () => {
                         // maxWidth: "300px",
                         maxHeight: "300px",
                         borderRadius: "15px",
-                        objectFit: "fill",
+                        objectFit: "cover",
                       }}
                     />
                   </SwiperSlide>

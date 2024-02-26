@@ -174,9 +174,12 @@ const GoogleMaps = () => {
   return isLoaded ? (
     <>
    <div>
-    {districts.map((district, index) => (
-      <button key={index} onClick={() => setInputValue(district)}>{district}</button>
-    ))}
+   <select onChange={(e) => setInputValue(e.target.value)}>
+      <option value="">지역을 선택하세요</option>
+      {districts.map((district, index) => (
+        <option key={index} value={district}>{district}</option>
+      ))}
+    </select>
   </div>
 
     <div className="search-container mt-1 mb-3">
