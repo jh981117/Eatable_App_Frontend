@@ -385,7 +385,7 @@ if (temperature <= 0 && temperature >= -50) {
               <span style={{width: "100%",  flex: 1, marginRight: "20px"}}>
                 <div className={`flex align-items-center ml-3 ${edit.bio ? 'input-active' : ''}`}>
                   <span style={{ border: "none", backgroundColor: "transparent", borderBottom: "none" }}>닉네임 : {profile.nickName}</span><br/><br/>
-                  내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button variant="secondary" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
+                  내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
                   {edit.bio && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("bio")}>확인</Button>)}<br/><br/>
                   온도 : <span className="responsive-span" style={{ marginRight: "5px" }}></span><br/>
                 
@@ -410,12 +410,12 @@ if (temperature <= 0 && temperature >= -50) {
               </span>
 
               <span style={{width: "100%",  flex: 1, marginLeft: "20px"}}>
-                <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "60px"}}/>
+                <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "80px"}}/>
                 {auth.profile ? auth.profile.temperature : ""}
               </span>
               </div>
 
-              <div className="d-flex justify-content-end mb-2">
+              <div className="d-flex justify-content-end mb-2" style={{marginTop: "-50px"}}>
                 <Button variant="primary" onClick={handleTogglePasswordInput} style={{marginRight: "5px"}}>비밀번호 변경</Button>
                 <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
               </div>
