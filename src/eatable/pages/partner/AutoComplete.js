@@ -8,10 +8,10 @@ const AutoComplete = ({ onAutoCompleteData }) => {
     const [dropDownList, setDropDownList] = useState([]);
     const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
     // const [wholeTextArray, setWholeTextArray] = useState([]);
-    const [keyword,setKeyword] = useState("");
+    const [keyword, setKeyword] = useState("");
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue || keyword}`)
+        fetch(`http://localhost:8080/api/partner/search?keyword=${inputValue}`)
             .then((response) => {
                 if (response.status === 200) {
                     return response.json();
@@ -49,17 +49,18 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             });
             setDropDownList(filteredList);
             setIsHaveInputValue(true);
-            
+
         }
     };
 
     const changeInputValue = event => {
         setInputValue(event.target.value);
+        setKeyword(event.target.value);
         setIsHaveInputValue(true);
     };
 
     const clickDropDownItem = clickedItem => {
-        setInputValue(clickedItem);
+        setKeyword(clickedItem);
         onAutoCompleteData(clickedItem);
         setIsHaveInputValue(false);
     };
@@ -73,7 +74,7 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             onAutoCompleteData(inputValue);
         }
     };
-    
+
     const handleDropDownKey = event => {
         if (isHaveInputValue) {
             if (event.key === 'ArrowDown' && dropDownList.length - 1 > dropDownItemIndex) {
@@ -87,7 +88,7 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             }
         }
     };
-    
+
 
     // useEffect(() => {
     //     updateDropDownList(wholeTextArray);
@@ -98,12 +99,12 @@ const AutoComplete = ({ onAutoCompleteData }) => {
             <div className={`input-box ${isHaveInputValue ? 'active' : ''}`}>
                 <input
                     type='text'
-                    value={inputValue}
+                    value={keyword}
                     onChange={changeInputValue}
                     onKeyUp={handleDropDownKey}
                     className="input3"
                 />
-                <div className="delete-button" onClick={() => setInputValue('')}>&times;</div>
+                <div className="delete-button" onClick={() => setKeyword('')}>&times;</div>
             </div>
             {isHaveInputValue && (
                 <ul className="drop-down-box">
