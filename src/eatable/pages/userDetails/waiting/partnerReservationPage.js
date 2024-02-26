@@ -23,7 +23,34 @@ const PartnerReservationPage = ({ id }) => {
         fetchReservations();
     }, [id]);
 
-    const updateReservationState = async (reservationId, newReservationState) => {
+    useEffect(() => {
+        const webSocket = new WebSocket('ws://localhost:8080/ws');
+    
+        webSocket.onopen = () => {
+            console.log('WebSocket 연결 성공');
+        };
+    
+        webSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'reservationList') {
+                setReservations(data.reservationList);
+            }
+        };
+    
+        webSocket.onerror = (error) => {
+            console.error('WebSocket 연결 에러:', error);
+        };
+    
+        webSocket.onclose = () => {
+            console.log('WebSocket 연결 종료');
+        };
+    
+        return () => {
+            webSocket.close();
+        };
+    }, []);
+    
+    const handleReservationConfirmation = async (reservationId, newReservationState) => {
         try {
             const response = await fetch(`http://localhost:8080/api/reservation/updateReservationState/${id}/${reservationId}`, {
                 method: 'PUT',
@@ -41,11 +68,11 @@ const PartnerReservationPage = ({ id }) => {
             console.error('Error updating reservation state:', error);
         }
     };
-
+    
     return (
         <div>
             <h1>현재 대기열 관리</h1>
-
+    
             <table style={{ width: '100%', textAlign: 'center' }}>
                 <thead>
                     <tr>
@@ -66,13 +93,13 @@ const PartnerReservationPage = ({ id }) => {
                             <td>{reservation.reservationRegDate}</td>
                             <td>{reservation.reservationState}</td>
                             <td>
-                                <button onClick={() => updateReservationState(reservation.id, 'TRUE')}>
+                                <button onClick={() => handleReservationConfirmation(reservation.id, 'TRUE')}>
                                     입장 완료
                                 </button>
-                                <button onClick={() => updateReservationState(reservation.id, 'FALSE')}>
+                                <button onClick={() => handleReservationConfirmation(reservation.id, 'FALSE')}>
                                     입장 안함
                                 </button>
-                                <button onClick={() => updateReservationState(reservation.id, 'WAITING')}>
+                                <button onClick={() => handleReservationConfirmation(reservation.id, 'WAITING')}>
                                     입장 대기
                                 </button>
                             </td>
@@ -82,6 +109,7 @@ const PartnerReservationPage = ({ id }) => {
             </table>
         </div>
     );
+    
 };
 
 export default PartnerReservationPage;

@@ -1,10 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Client } from '@stomp/stompjs';
 
 const PartnerWaitingPage = ({ id }) => {
     const [waitings, setWaitings] = useState([]);
+    const [stompClient, setStompClient] = useState(null);
 
-    // fetchWaitings 함수를 정의
+      // 웹소켓 연결
+      useEffect(() => {
+        const client = new Client({
+            brokerURL: 'ws://localhost:8080/ws',
+            debug: function (str) {
+                console.log(str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
+
+        client.onConnect = function () {
+            console.log('웹소켓 연결 성공');
+            client.subscribe('/topic/waitingList', function (message) {
+                const receivedWaitings = JSON.parse(message.body);
+                setWaitings(receivedWaitings); // 받은 대기열 리스트를 상태로 설정
+                console.log('대기열이 업데이트되었습니다:', receivedWaitings);
+            });
+            setStompClient(client);
+        };
+
+        client.onStompError = function (frame) {
+            console.error('웹소켓 연결 실패:', frame);
+        };
+
+        client.activate();
+
+        return () => {
+            client.deactivate();
+            console.log('웹소켓 연결 해제');
+        };
+    }, []);
+
+    // fetchWaitings 함수 정의
     const fetchWaitings = async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/waiting/waitingList/${id}`);
@@ -15,6 +51,7 @@ const PartnerWaitingPage = ({ id }) => {
             // 예약 시간이 빠른 순으로 정렬
             data.sort((a, b) => new Date(a.waitingRegDate) - new Date(b.waitingRegDate));
             setWaitings(data);
+            console.log('대기열이 업데이트되었습니다:', data);
         } catch (error) {
             console.error('Error fetching waitings:', error);
         }
@@ -30,7 +67,7 @@ const PartnerWaitingPage = ({ id }) => {
         const waitingDto = {
             waitingState: newWaitingState
         };
-    
+
         try {
             const response = await fetch(`http://localhost:8080/api/waiting/updateWaitingState/${id}/${waitingId}`, {
                 method: 'PUT',
@@ -42,12 +79,16 @@ const PartnerWaitingPage = ({ id }) => {
             if (!response.ok) {
                 throw new Error('Failed to update waiting state');
             }
-            // 대기열 상태 업데이트 후 다시 대기열을 불러옴
-            fetchWaitings();
+            // 대기열 상태 업데이트 후 웹소켓을 통해 실시간으로 대기열을 다시 불러옴
+
+            // 대기열 상태 업데이트 성공 시 로그 출력
+            console.log('Waiting state updated successfully.');
+
         } catch (error) {
             console.error('Error updating waiting state:', error);
         }
     };
+
 
     return (
         <div>
