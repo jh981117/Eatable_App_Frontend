@@ -43,6 +43,7 @@ import UserPageAccess from "./rolecomponents/UserPageAccess";
 import { MenuList } from "@material-ui/core";
 import Timeline from "./pages/userreview/Timeline";
 import TimeLineTab from "./pages/userreview/TimeLineTab";
+import TabMenu from "./pages/partner/TabMenu";
 
 
 const EatableApp = () => {
@@ -78,6 +79,14 @@ const EatableApp = () => {
               element={
                 // <AdminRoute>
                 <GoogleMap />
+                // </AdminRoute>
+              }
+            ></Route>
+                <Route
+              path="/tabMenu"
+              element={
+                // <AdminRoute>
+                <TabMenu />
                 // </AdminRoute>
               }
             ></Route>
