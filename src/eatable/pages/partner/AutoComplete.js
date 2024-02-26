@@ -27,12 +27,13 @@ const AutoComplete = ({ onAutoCompleteData }) => {
                 }
             })
             .catch((error) => console.error("Error fetching search results:", error));
-    }, [inputValue || keyword]);
+    }, [inputValue]);
 
     const updateDropDownList = (data) => {
         if (inputValue === '') {
             setIsHaveInputValue(false);
             setDropDownList([]);
+            onAutoCompleteData(inputValue);
         } else {
             const filteredList = [];
 
