@@ -8,6 +8,7 @@ import {
 } from "@react-google-maps/api";
 import { Link } from "react-router-dom";
 import { GeoJson } from "./components/GeoJson"; // GeoJson.js 파일에서 GeoJson 데이터 import
+import TabMenu from "./TabMenu";
 
 const GoogleMaps = () => {
   const [locations, setLocations] = useState([]); // 서버로부터 받아온 위치 데이터를 저장할 상태
@@ -165,21 +166,10 @@ const GoogleMaps = () => {
   //   }
   // }, [map, selectedLocation]);
 
-  const districts = [
-    "종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구",
-    "도봉구", "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구",
-    "영등포구", "동작구", "관악구", "서초구", "강남구", "송파구", "강동구"
-  ];
-
   return isLoaded ? (
     <>
    <div>
-   <select onChange={(e) => setInputValue(e.target.value)}>
-      <option value="">지역을 선택하세요</option>
-      {districts.map((district, index) => (
-        <option key={index} value={district}>{district}</option>
-      ))}
-    </select>
+    <TabMenu setInputValue={setInputValue} />
   </div>
 
     <div className="search-container mt-1 mb-3">
