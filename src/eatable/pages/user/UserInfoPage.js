@@ -12,6 +12,7 @@ import ReservePage from "./ReservePage";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
+import UserReservationPage from "../userDetails/waiting/userReservationPage";
 
 
 // const ResponsiveTabs = styled(Tabs)`
@@ -476,10 +477,35 @@ if (temperature <= 0 && temperature >= -50) {
                         {/* <Button onClick={dropOK}>회원탈퇴</Button> */}
                       </ListGroup>
                     </Tab>
+<<<<<<< HEAD
                     <Tab eventKey="reserve" title="예약 현황"><UserWaitingPage userId={profile.id}/></Tab>
                     <Tab eventKey="reserved" title="예약 했던곳"><ReservePage/></Tab>
                     <Tab eventKey="review" title="내가 쓴 리뷰"><ReviewPage/></Tab>
                     <Tab eventKey="follow" title="팔로우"><FollowPage/></Tab>
+=======
+                    <Tab eventKey="reserve" title="예약 현황">
+
+                      <ListGroup variant="flush">
+                        <ListGroup.Item>예약 현황</ListGroup.Item>
+                        <ListGroup.Item>
+                          <ListGroup.Item><UserReservationPage userId={profile.id}/></ListGroup.Item>
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                          <ListGroup.Item><UserWaitingPage userId={profile.id}/></ListGroup.Item>
+                        </ListGroup.Item>
+                      </ListGroup>
+                    </Tab>
+                    <Tab eventKey="reserved" title="예약 했던곳">
+                      <ReservedPage userId={profile.id}/>                   
+                    </Tab>
+                    <Tab eventKey="review" title="내가 쓴 리뷰">
+                      {<ReviewPage/>}
+                    </Tab>
+                    <Tab eventKey="follow" title="팔로우">
+                      {FollowPage}
+
+                    </Tab>
+>>>>>>> a5041c690188c00cf1f01160167752da3e3ed70e
                   </Tabs>
                 )}
               </div>

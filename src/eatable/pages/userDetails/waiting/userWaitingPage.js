@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const UserWaitingPage = ({ userId }) => {
     const [userWaitings, setUserWaitings] = useState([]);
+    const [waitingOrder, setWaitingOrder] = useState(null);
 
     const fetchUserWaitings = async () => {
         try {
@@ -20,7 +21,9 @@ const UserWaitingPage = ({ userId }) => {
 
     useEffect(() => {
         fetchUserWaitings();
-    }, [userId]); // userId에 대한 의존성이 있다면 배열 안에 추가
+    }, [userId]);
+    
+
 
     const handleDeleteReservation = async (partnerId, waitingId) => {
         try {
@@ -36,6 +39,22 @@ const UserWaitingPage = ({ userId }) => {
             console.error('Error deleting reservation:', error);
         }
     };
+
+        //waitingState 값에 따라 입장 상태 텍스트를 반환하는 함수
+        const getEntranceStatusText = (waitingState) => {
+            switch (waitingState) {
+                case 'TRUE':
+                    return '입장 완료';
+                case 'WAITING':
+                    return '입장 대기';
+                case 'FALSE':
+                    return '입장 안함';
+                default:
+                    return '';
+            }
+        };
+
+        console.log(waitingOrder+"웨이팅순서")
 
     return (
         <div>
@@ -60,7 +79,7 @@ const UserWaitingPage = ({ userId }) => {
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{waiting.people}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{new Date(waiting.waitingRegDate).toLocaleString()}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{waiting.partner.address.area}</td>
-                            <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{waiting.waitingState ? '확인됨' : '확인 대기 중'}</td>
+                            <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{getEntranceStatusText(waiting.waitingState)}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>
                                 <button onClick={() => handleDeleteReservation(waiting.partner.id, waiting.id)}>예약 삭제</button>
                             </td>
