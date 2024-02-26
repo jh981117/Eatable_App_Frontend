@@ -6,17 +6,12 @@ import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 import UserPartnerPage from "./UserPartnerPage";
-import checkBlackToken from "../../rolecomponents/CheckBlackToken";
+
+
 
 
 const checkPartnerRole = () => {
   const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
-  if (!token) return false; // 토큰이 없다면 false 반환
-  const isValid =  checkBlackToken(token);
-
-   if (!isValid) {
-    alert('접근이 거부 되었습니다. ');
-   }
   
   try {
     const decoded = jwtDecode(token); // 토큰 디코딩

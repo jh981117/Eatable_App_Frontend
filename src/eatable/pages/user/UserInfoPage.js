@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Card, Col, Container, ListGroup, Row, Tab, Tabs, Image, Button, Modal, Form } from "react-bootstrap";
+import {
+  Card,
+  Col,
+  Container,
+  ListGroup,
+  Row,
+  Tab,
+  Tabs,
+  Image,
+  Button,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
 import ReservePage from "./ReservePage";
 import ReservedPage from "./ReservedPage";
@@ -15,8 +27,8 @@ import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
-
-
+import BlackToken from "../chenkBlackToken";
+import { isValid } from "date-fns";
 
 const UserInfoPage = () => {
   const [showSignOutModal, setShowSignOutModal] = useState(false); // 모달 열림/닫힘 상태 관리
@@ -40,16 +52,16 @@ const UserInfoPage = () => {
   const [showSignOut, setShowSignOut] = useState(false);
   const [message, setMessage] = useState("");
 
-//////////////////////////////
+  //////////////////////////////
   const handleSignOutClick = () => {
     setModal(true); // 회원탈퇴 버튼 클릭 시 모달 열기
-};
+  };
 
-const handleCloseSignOutModal = () => {
-  setModal(false); // 모달 닫기
-};
+  const handleCloseSignOutModal = () => {
+    setModal(false); // 모달 닫기
+  };
 
-///////////////////////////////////
+  ///////////////////////////////////
 
   const handleTogglePasswordInput = () => {
     setShowPasswordInput(!showPasswordInput);
@@ -57,13 +69,40 @@ const handleCloseSignOutModal = () => {
 
   const ToggleSignOut = () => {
     setShowSignOut(!showSignOut);
-  }
+  };
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+      if (!token) {
+        navigate("/login"); // 토큰이 없다면 로그인 페이지로 리다이렉트
+        return;
+      }
+
+      try {
+        const isBlacklisted = await BlackToken(token); // boolean value expected
+        if (isBlacklisted) {
+          // Adjusted check based on the expected boolean response
+          alert("접근이 거부 되었습니다.");
+          localStorage.removeItem("token"); // 토큰 삭제
+          navigate("/login"); // 로그인 페이지로 리다이렉트
+          setAuth(""); // 프로필 정보 초기화
+        }
+        // 토큰이 블랙리스트에 없는 경우, 추가적인 동작을 수행할 수 있음
+      } catch (error) {
+        console.error("토큰 검증 중 오류 발생:", error);
+        navigate("/login");
+      }
+    };
+
+    verifyToken();
+  }, [navigate]); // navigate 함수를 의존성 배열에 추가
 
   useEffect(() => {
     // 사용자 프로필 정보 불러오기
-
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+    if (!token) return false; // 토큰이 없다면 false 반환
     const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
       if (!token) {
         console.error("No token found");
         return;
@@ -150,7 +189,6 @@ const handleCloseSignOutModal = () => {
     return <div>Loading...</div>;
   }
 
-
   const fieldEdit = (field) => {
     setEdit((state) => ({
       ...state,
@@ -205,15 +243,13 @@ const handleCloseSignOutModal = () => {
   let barWidth = "0%";
   let barLeft = "50%";
 
-
-if (temperature <= 0 && temperature >= -50) {
-  barWidth = `${-temperature}%`;
-  barLeft = `${50 - (-temperature)}%`;
-} else if (temperature >= 0 && temperature <= 30) {
-  barWidth = `${temperature * 1.8}%`;
-  barLeft = "50%";
-}
-
+  if (temperature <= 0 && temperature >= -50) {
+    barWidth = `${-temperature}%`;
+    barLeft = `${50 - -temperature}%`;
+  } else if (temperature >= 0 && temperature <= 30) {
+    barWidth = `${temperature * 1.8}%`;
+    barLeft = "50%";
+  }
 
   console.log("온도는?" + profile.username);
 
@@ -248,7 +284,7 @@ if (temperature <= 0 && temperature >= -50) {
       setError(error);
     }
   };
-  console.log("정보수정 됬니?",profile);
+  console.log("정보수정 됬니?", profile);
 
   //프로필사진 업데이트
 
@@ -312,30 +348,27 @@ if (temperature <= 0 && temperature >= -50) {
     handleUpdate(field);
   };
 
-
-
-
   const back = () => {
     navigate(-1);
-  }
+  };
 
   const checkPartnerRole = () => {
     const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
-    
+
     if (!token) return false; // 토큰이 없다면 false 반환
-  
+
     try {
       const decoded = jwtDecode(token); // 토큰 디코딩
-      console.log(decoded)
+      console.log(decoded);
       const roles = decoded.auth ? decoded.auth.split(",") : [];
-      console.log(decoded)
+      console.log(decoded);
       return roles.includes("ROLE_PARTNER"); // ROLE_PARTNER 권한이 있는지 확인
     } catch (error) {
       console.error("토큰 디코딩 중 오류 발생:", error);
       return false;
     }
   };
-  
+
   // 함수 사용 예시
   if (checkPartnerRole()) {
     console.log("파트너 권한이 있습니다.");
@@ -356,49 +389,166 @@ if (temperature <= 0 && temperature >= -50) {
       <Row>
         <Col className="d-flex align-items-center">
           <Card style={{ width: "100%" }} className="mb-2">
-            <Card.Body className="align-items-start"><input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleImageChange}/>
-            {isPartner() && (<Link to={"/userpartnerpage"}><Button>매장 관리</Button></Link>)}              
-            <div className="d-flex align-items-center">
-                <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
+            <Card.Body className="align-items-start">
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleImageChange}
+              />
+              {isPartner() && (
+                <Link to={"/userpartnerpage"}>
+                  <Button>매장 관리</Button>
+                </Link>
+              )}
+              <div className="d-flex align-items-center">
+                <Image
+                  src={selectedImage || profile.profileImageUrl}
+                  alt="Profile"
+                  onClick={handleImageClick}
+                  style={{
+                    borderRadius: "50%",
+                    maxWidth: "250px",
+                    height: "250px",
+                    cursor: "pointer",
+                  }}
+                />
                 <div className="flex align-items-center ml-3">
-
-                  닉네임 : <Input type="text" value={profile.nickName} readOnly /><br/>
-                  내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
-                  {edit.bio && (<Button onClick={() => updateOk("bio")}>확인</Button>)}<br/>
-                  온도 : {temperature}<br/>
-
+                  닉네임 :{" "}
+                  <Input type="text" value={profile.nickName} readOnly />
+                  <br />내 소개 :{" "}
+                  {edit.bio ? (
+                    <Input
+                      type="text"
+                      value={profile.bio}
+                      onChange={(e) => changeValue(e, "bio")}
+                    />
+                  ) : (
+                    <span>{profile.bio}</span>
+                  )}
+                  <Button onClick={() => fieldEdit("bio")}>
+                    {edit.bio ? "취소" : "수정"}
+                  </Button>
+                  {edit.bio && (
+                    <Button onClick={() => updateOk("bio")}>확인</Button>
+                  )}
+                  <br />
+                  온도 : {temperature}
+                  <br />
                   <div>
-                    <div style={{backgroundColor: "gray", width: "100%", height: "20px", borderRadius: "10px"}}>
-                      <div className="temperature-bar" style={{backgroundColor: "gray", width: "100%", height: "20px", position: "relative", borderRadius: "10px", animation: "wave 2s infinite linear alternate"}}>
+                    <div
+                      style={{
+                        backgroundColor: "gray",
+                        width: "100%",
+                        height: "20px",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      <div
+                        className="temperature-bar"
+                        style={{
+                          backgroundColor: "gray",
+                          width: "100%",
+                          height: "20px",
+                          position: "relative",
+                          borderRadius: "10px",
+                          animation: "wave 2s infinite linear alternate",
+                        }}
+                      >
                         {/* 막대의 최대 너비를 100%로 설정 */}
                         {/* 온도 바 */}
-                        <div style={{ backgroundColor: color, width: barWidth, height: "100%", position: "absolute", borderRadius: "10px", left: barLeft /*animation: "wave 2s infinite"*/}}></div>
+                        <div
+                          style={{
+                            backgroundColor: color,
+                            width: barWidth,
+                            height: "100%",
+                            position: "absolute",
+                            borderRadius: "10px",
+                            left: barLeft /*animation: "wave 2s infinite"*/,
+                          }}
+                        ></div>
                         {/* barWidth와 barLeft를 사용하여 막대의 위치와 너비 설정 */}
                         {/* 온도가 0인 경우 가운데 아래에 0 표시 */}
-                        <span style={{position: "absolute", left: "100%", bottom: "-20px"}}>30</span>
-                        <span style={{position: "absolute", left: "82%", bottom: "-20px"}}>20</span>
-                        <span style={{position: "absolute", left: "65%", bottom: "-20px"}}>10</span>
-                        <span style={{position: "absolute", left: "50%", bottom: "-20px"}}>0</span>
-                        <span style={{position: "absolute", left: "25%", bottom: "-20px"}}>-25</span>
-                        <span style={{position: "absolute", left: "0%", bottom: "-20px"}}>-50</span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "100%",
+                            bottom: "-20px",
+                          }}
+                        >
+                          30
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "82%",
+                            bottom: "-20px",
+                          }}
+                        >
+                          20
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "65%",
+                            bottom: "-20px",
+                          }}
+                        >
+                          10
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "50%",
+                            bottom: "-20px",
+                          }}
+                        >
+                          0
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "25%",
+                            bottom: "-20px",
+                          }}
+                        >
+                          -25
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "0%",
+                            bottom: "-20px",
+                          }}
+                        >
+                          -50
+                        </span>
                       </div>
                     </div>
                   </div>
-
                   {/* <Button variant="primary" onClick={decreaseTemperature}>온도 감소</Button>
                   <Button variant="danger" onClick={increaseTemperature}>온도 증가</Button> */}
-                  <Button variant="primary" onClick={handleTogglePasswordInput}>비밀번호 변경</Button>
-                  <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
-
-                    {/* 회원탈퇴 모달 */}
-                    <Modal show={modal} onHide={handleCloseSignOutModal}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>회원탈퇴</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <SignDrop/><Button variant="secondary" onClick={handleCloseSignOutModal}>닫기</Button>
-                        </Modal.Body>
-                    </Modal>
+                  <Button variant="primary" onClick={handleTogglePasswordInput}>
+                    비밀번호 변경
+                  </Button>
+                  <Button variant="danger" onClick={handleSignOutClick}>
+                    회원탈퇴
+                  </Button>
+                  {/* 회원탈퇴 모달 */}
+                  <Modal show={modal} onHide={handleCloseSignOutModal}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>회원탈퇴</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <SignDrop />
+                      <Button
+                        variant="secondary"
+                        onClick={handleCloseSignOutModal}
+                      >
+                        닫기
+                      </Button>
+                    </Modal.Body>
+                  </Modal>
                 </div>
               </div>
               <div>
@@ -409,66 +559,129 @@ if (temperature <= 0 && temperature >= -50) {
                     </div>
                     <Form.Group>
                       <Form.Label>현재 비밀번호</Form.Label>
-                      <Form.Control type="password" name="oldPassword" required onChange={handleChange}/>
+                      <Form.Control
+                        type="password"
+                        name="oldPassword"
+                        required
+                        onChange={handleChange}
+                      />
                     </Form.Group>
                     <Form.Group>
                       <Form.Label>새 비밀번호</Form.Label>
-                      <Form.Control type="password" name="newPassword" required onChange={handleChange}/>
+                      <Form.Control
+                        type="password"
+                        name="newPassword"
+                        required
+                        onChange={handleChange}
+                      />
                     </Form.Group>
                     <Form.Group>
                       <Form.Label>새 비밀번호 확인</Form.Label>
-                      <Form.Control type="password" name="confirmPassword" required onChange={handleChange}/>
+                      <Form.Control
+                        type="password"
+                        name="confirmPassword"
+                        required
+                        onChange={handleChange}
+                      />
                     </Form.Group>
-                    <Button variant="primary" onClick={back}>취소</Button>
-                    <Button variant="primary" type="submit">변경하기</Button>
+                    <Button variant="primary" onClick={back}>
+                      취소
+                    </Button>
+                    <Button variant="primary" type="submit">
+                      변경하기
+                    </Button>
                     <p>{message}</p>
                   </Form>
                 ) : (
-                  <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
+                  <Tabs
+                    defaultActiveKey="profile"
+                    id="uncontrolled-tab-example"
+                  >
                     <Tab eventKey="profile" title="프로필">
                       <ListGroup variant="flush">
                         <ListGroup.Item>
-                          아이디 : <Input type="text" value={profile.username} readOnly/>
+                          아이디 :{" "}
+                          <Input
+                            type="text"
+                            value={profile.username}
+                            readOnly
+                          />
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          닉네임 : {edit.nickName ? (<Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, "nickName")}/>) : (<span>{profile.nickName}</span>)}<Button onClick={() => fieldEdit("nickName")}>{edit.nickName ? "취소" : "수정"}</Button>
-                          {edit.nickName && (<Button onClick={() => updateOk("nickName")}>확인</Button>)}
+                          닉네임 :{" "}
+                          {edit.nickName ? (
+                            <Input
+                              type="text"
+                              value={profile.nickName}
+                              onChange={(e) => changeValue(e, "nickName")}
+                            />
+                          ) : (
+                            <span>{profile.nickName}</span>
+                          )}
+                          <Button onClick={() => fieldEdit("nickName")}>
+                            {edit.nickName ? "취소" : "수정"}
+                          </Button>
+                          {edit.nickName && (
+                            <Button onClick={() => updateOk("nickName")}>
+                              확인
+                            </Button>
+                          )}
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          이름 : <Input type="text" value={profile.name} readOnly />
+                          이름 :{" "}
+                          <Input type="text" value={profile.name} readOnly />
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          연락처 : {edit.phone ? (<Input type="text" value={profile.phone} onChange={(e) => changeValue(e, "phone")}/>) : (<span>{profile.phone}</span>)}<Button onClick={() => fieldEdit("phone")}>{edit.phone ? "취소" : "수정"}</Button>
-                          {edit.phone && (<Button onClick={() => updateOk("phone")}>확인</Button>)}
+                          연락처 :{" "}
+                          {edit.phone ? (
+                            <Input
+                              type="text"
+                              value={profile.phone}
+                              onChange={(e) => changeValue(e, "phone")}
+                            />
+                          ) : (
+                            <span>{profile.phone}</span>
+                          )}
+                          <Button onClick={() => fieldEdit("phone")}>
+                            {edit.phone ? "취소" : "수정"}
+                          </Button>
+                          {edit.phone && (
+                            <Button onClick={() => updateOk("phone")}>
+                              확인
+                            </Button>
+                          )}
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          이메일 : <Input type="text" value={profile.email} readOnly />
+                          이메일 :{" "}
+                          <Input type="text" value={profile.email} readOnly />
                         </ListGroup.Item>
                         {/* <Button onClick={updateInfo}>수정</Button> */}
                         {/* <Button onClick={dropOK}>회원탈퇴</Button> */}
                       </ListGroup>
                     </Tab>
                     <Tab eventKey="reserve" title="예약 현황">
-
                       <ListGroup variant="flush">
                         <ListGroup.Item>예약 현황</ListGroup.Item>
                         <ListGroup.Item>
-                          <ListGroup.Item><UserReservationPage userId={profile.id}/></ListGroup.Item>
+                          <ListGroup.Item>
+                            <UserReservationPage userId={profile.id} />
+                          </ListGroup.Item>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          <ListGroup.Item><UserWaitingPage userId={profile.id}/></ListGroup.Item>
+                          <ListGroup.Item>
+                            <UserWaitingPage userId={profile.id} />
+                          </ListGroup.Item>
                         </ListGroup.Item>
                       </ListGroup>
                     </Tab>
                     <Tab eventKey="reserved" title="예약 했던곳">
-                      <ReservedPage userId={profile.id}/>                   
+                      <ReservedPage userId={profile.id} />
                     </Tab>
                     <Tab eventKey="review" title="내가 쓴 리뷰">
-                      {<ReviewPage/>}
+                      {<ReviewPage />}
                     </Tab>
                     <Tab eventKey="follow" title="팔로우">
                       {FollowPage}
-
                     </Tab>
                   </Tabs>
                 )}
@@ -485,12 +698,13 @@ if (temperature <= 0 && temperature >= -50) {
           비밀번호가 성공적으로 변경되었습니다. 다시 로그인 해주세요 .
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseModal}>확인</Button>
+          <Button variant="primary" onClick={handleCloseModal}>
+            확인
+          </Button>
         </Modal.Footer>
       </Modal>
     </Container>
   );
 };
-
 
 export default UserInfoPage;
