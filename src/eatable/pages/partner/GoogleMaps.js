@@ -13,6 +13,7 @@ const GoogleMaps = () => {
   const [locations, setLocations] = useState([]); // 서버로부터 받아온 위치 데이터를 저장할 상태
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 정보
   const [map,setMap] = useState(null);
+  const [inputValue, setInputValue] = useState("");
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
 
@@ -28,24 +29,27 @@ const GoogleMaps = () => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/partner/totallist"
-        );
-        if (response.status === 200) {
-          const data = await response.json();
-          setLocations(data); // 데이터를 상태 변수에 설정
-        } else {
-          console.error("Failed to fetch data");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+    fetchPosts();
+  }, [inputValue]);
 
-    fetchData();
-  }, []);
+  const fetchPosts = () => {
+    fetch(`http://localhost:8080/api/partner/google?keyword=${inputValue}`)
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return null;
+        }
+      })
+      .then((data) => {
+        if (data !== null) {
+          console.log(data);
+          setLocations(data);
+        }
+      })
+      .catch((error) => console.error("Error fetching search results:", error));
+  };
+
 
   const mapContainerStyle = {
     height: "500px",
@@ -160,16 +164,37 @@ const GoogleMaps = () => {
   //     map.setZoom(13);
   //   }
   // }, [map, selectedLocation]);
-  
+
+  const districts = [
+    "종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구",
+    "도봉구", "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구",
+    "영등포구", "동작구", "관악구", "서초구", "강남구", "송파구", "강동구"
+  ];
 
   return isLoaded ? (
+    <>
+   <div>
+    {districts.map((district, index) => (
+      <button key={index} onClick={() => setInputValue(district)}>{district}</button>
+    ))}
+  </div>
+
+    <div className="search-container mt-1 mb-3">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="매장찾기"
+        />
+      </div>
+      
     <GoogleMap
       id="google-map-test"
       mapContainerStyle={mapContainerStyle}
       center={center}
       options={{
         mapId: "81bc4809ac9f2bc7",
-        zoom: 12.4 // 여기에서 zoom 속성을 설정합니다.
+        zoom: 11 // 여기에서 zoom 속성을 설정합니다.
       }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
@@ -225,6 +250,7 @@ const GoogleMaps = () => {
         </InfoWindow>
       )}
     </GoogleMap>
+    </>
   ) : (
     <></>
   );
