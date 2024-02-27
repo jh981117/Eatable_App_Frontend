@@ -2,15 +2,13 @@ import { jwtDecode } from "jwt-decode";
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
+const getCurrentUserId = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
 
-  const getCurrentUserId = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return null;
-
-    const decoded = jwtDecode(token);
-    return decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 따라 조정 필요
-  };
-
+  const decoded = jwtDecode(token);
+  return decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 따라 조정 필요
+};
 
 const CommentsModal = ({
   show,
@@ -18,7 +16,8 @@ const CommentsModal = ({
   reviewId,
   comments,
   onSubmit,
-  fetchComments,
+  onUpdateComment,
+  onDeleteComment,
 }) => {
   const [commentText, setCommentText] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -32,50 +31,51 @@ const CommentsModal = ({
     setEditingText(comment.content);
   };
 
-
   const handleEditSubmit = async (commentId) => {
     try {
       // API 호출을 통해 서버에 댓글 수정 요청
-      await fetch(`http://localhost:8080/api/comments/${editingCommentId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: editingText }),
-      });
-      // 성공적으로 수정된 경우, UI 업데이트 로직
-      setEditMode(false);
-      setEditingCommentId(null);
-      fetchComments(); // 댓글 목록 새로고침
+      const response = await fetch(
+        `http://localhost:8080/api/comments/${editingCommentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content: editingText }),
+        }
+      );
+      const updatedComment = await response.json(); // 가정: API 응답으로 수정된 댓글 객체를 받는다
+      if (response.ok) {
+        onUpdateComment(updatedComment); // 수정된 댓글로 상태 업데이트
+        setEditMode(false);
+        setEditingCommentId(null);
+      } else {
+        throw new Error("댓글 수정 실패");
+      }
     } catch (error) {
       console.error("댓글 수정 실패:", error);
     }
   };
-const handleDelete = async (commentId) => {
-  const isConfirmed = window.confirm("댓글을 삭제하시겠습니까?");
-  if (isConfirmed) {
-    const newComments = comments.filter((comment) => comment.id !== commentId);
-    // 미리 UI 업데이트
-    try {
-      // 서버에 댓글 삭제 요청
-      const response = await fetch(`http://localhost:8080/api/comments/${commentId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete comment');
-        // 실패 시 롤백
+  const handleDelete = async (commentId) => {
+    const isConfirmed = window.confirm("댓글을 삭제하시겠습니까?");
+    if (isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/comments/${commentId}`,
+          {
+            method: "DELETE",
+          }
+        );
+        if (response.ok) {
+          onDeleteComment(commentId); // 삭제 성공 시 상위 컴포넌트의 상태 업데이트
+        } else {
+          throw new Error("댓글 삭제 실패");
+        }
+      } catch (error) {
+        console.error("댓글 삭제 실패:", error);
       }
-      // 성공적으로 삭제되면, 이미 UI는 업데이트된 상태임
-    } catch (error) {
-      console.error("댓글 삭제 실패:", error);
-      // 실패 시 UI 롤백 또는 사용자에게 알림
-      fetchComments();
     }
-  }
-};
-
-
-
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -133,20 +133,19 @@ const handleDelete = async (commentId) => {
                 <span>{comment.content}</span>
                 {currentUserId === comment.user.id && (
                   <>
-                    <Button
+                    <img
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708996796256-free-icon-comment-alt-edit-12356167.png"
                       variant="outline-secondary"
-                      size="sm"
+                      style={{ width: "30px", cursor: "pointer" }}
                       onClick={() => handleEdit(comment)}
-                    >
-                      수정
-                    </Button>{" "}
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
+                    />
+                    {/* 수정 */}
+                    <img
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708996945711-free-icon-close-6276642.png"
+                      style={{ width: "30px", cursor: "pointer" }}
                       onClick={() => handleDelete(comment.id)}
-                    >
-                      삭제
-                    </Button>
+                    />
+                    {/* 삭제 */}
                   </>
                 )}
               </div>
@@ -164,9 +163,14 @@ const handleDelete = async (commentId) => {
               style={{ marginBottom: "10px" }}
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            제출
-          </Button>
+          <Modal.Footer>
+            <Button variant="primary" type="submit" onClick={handleSubmit}>
+              작성
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+              닫기
+            </Button>
+          </Modal.Footer>
         </Form>
       </Modal.Body>
     </Modal>

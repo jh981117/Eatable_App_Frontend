@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination } from "swiper"
+import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 const PartnerDetail = () => {
   const token = localStorage.getItem("token");
@@ -55,7 +56,7 @@ const PartnerDetail = () => {
   
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/partner/detail/" + id)
+    fetchWithToken("http://localhost:8080/api/partner/detail/" + id)
       .then((response) => {
         if (response.status === 200) {
           return response.json();
