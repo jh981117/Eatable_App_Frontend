@@ -19,13 +19,8 @@ const NaverLogin = ({ setGetToken, setUserInfo }) => {
 
 	}
 
-    const saveTokenToLocalStorage = (accessToken) => {
-        // 로컬 스토리지에 토큰 저장 로직을 여기에 구현
-        localStorage.setItem("token", accessToken);
-        
-      };
-            const location = useLocation();  
 
+    const location = useLocation();  
           
     const getNaverToken = () => {
         if (!location.hash) return;
@@ -53,7 +48,9 @@ const NaverLogin = ({ setGetToken, setUserInfo }) => {
                 console.log(data);
                 console.log("네이버 로그인 성공", data);
                 alert("네이버 로그인 성공!");
-                saveTokenToLocalStorage(data.token); // JWT 저장            
+                localStorage.setItem("token", data.token);// JWT 저장      
+                localStorage.removeItem("com.naver.nid.access_token"); // 토큰 삭제
+                localStorage.removeItem("com.naver.nid.oauth.state_token"); // 토큰 삭제      
                 navigate("/");
                 document.documentElement.style.display = 'none';
                 window.location.reload();
