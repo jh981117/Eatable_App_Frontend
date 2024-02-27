@@ -27,12 +27,8 @@ import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
 import BlackToken from "../chenkBlackToken";
-import { isValid } from "date-fns";
 import useUserProfile from "./UserProfile";
 import fetchWithToken from "../../rolecomponents/FetchCustom";
-
-
-
 
 const UserInfoPage = () => {
   const [showSignOutModal, setShowSignOutModal] = useState(false); // 모달 열림/닫힘 상태 관리
@@ -103,14 +99,19 @@ const UserInfoPage = () => {
   }, [navigate]); // navigate 함수를 의존성 배열에 추가
 
   // useUserProfile 훅 사용
-  const { profile, error: profileError, fetchProfile,setProfile } = useUserProfile();
+  const {
+    profile,
+    error: profileError,
+    fetchProfile,
+    setProfile,
+  } = useUserProfile();
 
-  useEffect(() => {
-    if (profileError) {
-      toast.error("프로필 정보를 불러오는데 실패했습니다.");
-      navigate("/login");
-    }
-  }, [profileError, navigate]);
+  // useEffect(() => {
+  //   if (profileError) {
+  //     toast.error("프로필 정보를 불러오는데 실패했습니다.");
+  //     navigate("/login");
+  //   }
+  // }, [profileError, navigate]);
 
   useEffect(() => {
     if (!profile) {
@@ -137,10 +138,7 @@ const UserInfoPage = () => {
         "http://localhost:8080/api/user/change-password",
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+       
           body: JSON.stringify({
             username: profile.username, // 사용자명 동적 할당
             oldPassword: inputs.oldPassword,
@@ -234,10 +232,7 @@ const UserInfoPage = () => {
         "http://localhost:8080/api/user/update",
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
+    
           body: JSON.stringify({
             ...profile,
             [field.name]: auth.profile[field],

@@ -1,6 +1,7 @@
 // hooks/useUserProfile.js
 import { useState, useEffect } from "react";
-import fetchWithToken from "../rolecomponents/FetchCustom";
+import fetchWithToken from "../../rolecomponents/FetchCustom";
+
 
 const useUserProfile = () => {
   const [profile, setProfile] = useState(null);

@@ -13,6 +13,7 @@ import CommentForm from "./Item/CommentForm";
 import CommentsModal from "./Item/CommentsModal";
 import { jwtDecode } from "jwt-decode";
 import fetchWithToken from "../../rolecomponents/FetchCustom";
+import CommentLength from "./Item/CommentLength";
 
 const TimeLineReviewList = (toId1) => {
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ const TimeLineReviewList = (toId1) => {
   const handleShowComments = async (reviewId) => {
     // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
     try {
-      const response = await fetchWithToken(
+      const response = await fetch(
         `http://localhost:8080/api/comments/list/${reviewId}`
       );
       if (!response.ok) {
@@ -77,7 +78,7 @@ const removeComment = (commentId) => {
       const decoded = jwtDecode(token);
       const userId = decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 맞게 조정해야 할 수 있음
 
-      const response = await fetchWithToken(
+      const response = await fetch(
         "http://localhost:8080/api/comments/write",
         {
           method: "POST",
@@ -243,6 +244,10 @@ const removeComment = (commentId) => {
                         marginLeft: "5px",
                       }}
                     />
+                    <span>
+                      {" "}
+                      <CommentLength storeReviewId={review.id} />{" "}
+                    </span>
                   </span>
                 </span>
                 <span>

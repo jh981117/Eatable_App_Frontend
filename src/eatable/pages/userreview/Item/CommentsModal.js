@@ -38,9 +38,7 @@ const CommentsModal = ({
         `http://localhost:8080/api/comments/${editingCommentId}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+
           body: JSON.stringify({ content: editingText }),
         }
       );
