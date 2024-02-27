@@ -191,7 +191,9 @@ const GoogleMaps = () => {
       }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
-      <MarkerClusterer>
+    <MarkerClusterer
+  gridSize={40} // 클러스터 그리드 크기 조절
+>
         {(clusterer) =>
           locations.map((location) => (
             <Marker
