@@ -205,8 +205,8 @@ const GoogleMaps = () => {
             }}
             clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
             icon={{
-              url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-              scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
+              url: 'https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1709017055899-image.png',
+              scaledSize: new window.google.maps.Size(30 , 30), // 아이콘의 크기를 조정합니다.
             }}
           />
           ))
