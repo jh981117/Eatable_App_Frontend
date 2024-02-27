@@ -7,10 +7,12 @@ import { Form } from 'react-bootstrap';
 
 const PartnerWrite = () => {
   const navigate = useNavigate();
-
   ////////구분선//////////////
   const { userId } = useParams();
   ////////구분선//////////////
+  // userId에 해당하는 유저 정보 가져오기
+  
+
 
  const [userEmail,setUserEmail] =useState('')
  useEffect(() => {
@@ -500,7 +502,7 @@ const PartnerWrite = () => {
             <option value="user,partner">파트너</option>
           </select>
         </div>
-
+               
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">
 
