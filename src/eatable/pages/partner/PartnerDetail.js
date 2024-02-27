@@ -56,7 +56,7 @@ const PartnerDetail = () => {
   
 
   useEffect(() => {
-    fetchWithToken("http://localhost:8080/api/partner/detail/" + id)
+    fetch("http://localhost:8080/api/partner/detail/" + id)
       .then((response) => {
         if (response.status === 200) {
           return response.json();

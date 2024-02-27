@@ -13,7 +13,6 @@ import {
   Form,
 } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import ReservePage from "./ReservePage";
 import ReservedPage from "./ReservedPage";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@material-ui/core";
@@ -28,13 +27,12 @@ import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
 import BlackToken from "../chenkBlackToken";
-import { isValid } from "date-fns";
+import useUserProfile from "./UserProfile";
 import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 const UserInfoPage = () => {
   const [showSignOutModal, setShowSignOutModal] = useState(false); // 모달 열림/닫힘 상태 관리
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
   const [edit, setEdit] = useState(false);
   const [temperature, setTemperature] = useState("");
   const [error, setError] = useState(null);
@@ -42,6 +40,7 @@ const UserInfoPage = () => {
   const fileInputRef = useRef();
   const { auth, setAuth, updateProfile } = useAuth();
   const [modal, setModal] = useState(false);
+
   const [inputs, setInputs] = useState({
     oldPassword: "",
     newPassword: "",
@@ -72,8 +71,6 @@ const UserInfoPage = () => {
     setShowSignOut(!showSignOut);
   };
 
-  
-
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
@@ -101,49 +98,26 @@ const UserInfoPage = () => {
     verifyToken();
   }, [navigate]); // navigate 함수를 의존성 배열에 추가
 
+  // useUserProfile 훅 사용
+  const {
+    profile,
+    error: profileError,
+    fetchProfile,
+    setProfile,
+  } = useUserProfile();
+
+  // useEffect(() => {
+  //   if (profileError) {
+  //     toast.error("프로필 정보를 불러오는데 실패했습니다.");
+  //     navigate("/login");
+  //   }
+  // }, [profileError, navigate]);
+
   useEffect(() => {
-    
-
-    // 사용자 프로필 정보 불러오기
-    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
-    if (!token) return false; // 토큰이 없다면 false 반환
-    const fetchProfile = async () => {
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
-
-      try {
-        const response = await fetchWithToken(
-          "http://localhost:8080/api/user/profile",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          if (response.status === 401) {
-           
-            return;
-          }
-          throw new Error(`Error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setProfile(data);
-        setTemperature(data.temperature);
-      } catch (error) {
-        console.error("Error:", error);
-        setError(error.toString());
-      }
-    };
-
-    fetchProfile();
-  }, []);
+    if (!profile) {
+      fetchProfile(); // 프로필 정보를 다시 불러옵니다.
+    }
+  }, [profile, fetchProfile]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -164,10 +138,7 @@ const UserInfoPage = () => {
         "http://localhost:8080/api/user/change-password",
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+       
           body: JSON.stringify({
             username: profile.username, // 사용자명 동적 할당
             oldPassword: inputs.oldPassword,
@@ -215,17 +186,6 @@ const UserInfoPage = () => {
     });
   };
 
-  // 온도바 테스트용코드
-  // 온도 증가
-  // const increaseTemperature = () => {
-  //   setTemperature((prevTemperature) => prevTemperature + 1);
-  // };
-
-  // // 온도 감소
-  // const decreaseTemperature = () => {
-  //   setTemperature((prevTemperature) => prevTemperature - 1);
-  // };
-
   // 온도바
   const tempColor = (temperature) => {
     if (temperature >= 20) {
@@ -272,10 +232,7 @@ const UserInfoPage = () => {
         "http://localhost:8080/api/user/update",
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
+    
           body: JSON.stringify({
             ...profile,
             [field.name]: auth.profile[field],
@@ -392,9 +349,6 @@ const UserInfoPage = () => {
   }
 
   const isPartner = () => {
-    // 권한 확인 로직 구현, 예시로는 항상 true를 반환
-    // 실제 구현에서는 localStorage에 저장된 토큰을 확인하고
-    // 해당 토큰에서 권한을 디코드하여 확인하는 로직이 될 것입니다.
     return checkPartnerRole();
   };
 

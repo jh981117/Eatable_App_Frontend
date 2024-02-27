@@ -20,22 +20,23 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
- 
   const updateProfile = async () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetchWithToken("http://localhost:8080/api/user/profile", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetchWithToken(
+          "http://localhost:8080/api/user/profile",
+          {
+            method: "GET",
+            // headers: {
+            //   Authorization: `Bearer ${token}`,
+            //   "Content-Type": "application/json",
+            // },
+          }
+        );
 
         if (!response.ok) {
           if (response.status === 401) {
-        
             return;
           }
           throw new Error(`Error! status: ${response.status}`);

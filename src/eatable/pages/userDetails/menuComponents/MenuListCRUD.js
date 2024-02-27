@@ -263,17 +263,29 @@ const Menu = ({
   handleUpdatedMenuChange,
   updatedMenu,
   menu,
+  previewImage,
+  handleImageClick,
+  fileInputRef,
+  handleFileChange,
 }) => {
   return (
     <tr style={tableRowStyle}>
       <td style={tableCellStyle}>
         {isEditing ? (
-          <Form.Control
-            type="text"
-            name="menuImageUrl"
-            defaultValue={menuImageUrl}
-            onChange={handleUpdatedMenuChange}
-          />
+          <>
+            <img
+              src={menuImageUrl}
+              alt="Upload Preview"
+              onClick={handleImageClick}
+              style={{ cursor: "pointer", width: "100px" }}
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+          </>
         ) : (
           <img src={menuImageUrl} style={{ width: "100px" }} alt="menu" />
         )}
@@ -328,7 +340,6 @@ const tableRowStyle = {
 
 const tableCellStyle = {
   padding: "10px",
-  
 };
 
 export default MenuListCRUD;
