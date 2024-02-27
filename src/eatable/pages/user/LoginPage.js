@@ -11,7 +11,7 @@ const StyledInput = styled(Form.Control)`
   border-radius: 7px;
   border: 0px;
   background: rgba(255, 255, 255, 1);
-  color: white;
+  color: black;
   font-size: 18px;
   height: 64px;
   width: 460px;
