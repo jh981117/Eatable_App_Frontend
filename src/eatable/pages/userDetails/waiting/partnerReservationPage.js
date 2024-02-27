@@ -1,8 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
+
+// 초기 상태
+const initialState = {
+    reservations: [],
+};
+
+// 액션 타입
+const actionTypes = {
+    SET_RESERVATIONS: 'SET_RESERVATIONS',
+};
+
+// 리듀서
+const reducer = (state, action) => {
+    switch (action.type) {
+        case actionTypes.SET_RESERVATIONS:
+            return {
+                ...state,
+                reservations: action.payload,
+            };
+        default:
+            return state;
+    }
+};
 
 const PartnerReservationPage = ({ id }) => {
-    const [reservations, setReservations] = useState([]);
+    // useReducer 훅을 사용하여 리듀서와 상태를 설정
+    const [state, dispatch] = useReducer(reducer, initialState);
 
+    // 대기열 정보를 가져오는 함수
     const fetchReservations = async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/reservation/reservationList/${id}`);
@@ -12,7 +37,8 @@ const PartnerReservationPage = ({ id }) => {
             const data = await response.json();
             // 예약 시간이 빠른 순으로 정렬
             data.sort((a, b) => new Date(a.reservationRegDate) - new Date(b.reservationRegDate));
-            setReservations(data);
+            // 액션을 디스패치하여 상태를 업데이트
+            dispatch({ type: actionTypes.SET_RESERVATIONS, payload: data });
         } catch (error) {
             console.error('Error fetching reservations:', error);
         }
@@ -24,32 +50,34 @@ const PartnerReservationPage = ({ id }) => {
     }, [id]);
 
     useEffect(() => {
-        const webSocket = new WebSocket('ws://localhost:8080/ws');
-    
-        webSocket.onopen = () => {
+        const socket = new WebSocket('ws://localhost:8080/ws');
+
+        socket.onopen = () => {
             console.log('WebSocket 연결 성공');
         };
-    
-        webSocket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'reservationList') {
-                setReservations(data.reservationList);
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.topic === '/topic/reservationConfirmation') {
+                // 예약 확정 메시지를 받았을 때의 처리 로직
+                fetchReservations(); // 예약 목록 다시 가져오기
             }
         };
-    
-        webSocket.onerror = (error) => {
+
+        socket.onerror = (error) => {
             console.error('WebSocket 연결 에러:', error);
         };
-    
-        webSocket.onclose = () => {
+
+        socket.onclose = () => {
             console.log('WebSocket 연결 종료');
         };
-    
+
         return () => {
-            webSocket.close();
+            socket.close();
         };
     }, []);
-    
+
+    // 예약 상태를 업데이트하는 함수
     const handleReservationConfirmation = async (reservationId, newReservationState) => {
         try {
             const response = await fetch(`http://localhost:8080/api/reservation/updateReservationState/${id}/${reservationId}`, {
@@ -62,17 +90,17 @@ const PartnerReservationPage = ({ id }) => {
             if (!response.ok) {
                 throw new Error('Failed to update reservation state');
             }
-            // 대기열 상태 업데이트 후 다시 대기열을 불러옴
+            // 대기열 정보 다시 가져오기
             fetchReservations();
         } catch (error) {
             console.error('Error updating reservation state:', error);
         }
     };
-    
+
     return (
         <div>
-            <h1>현재 대기열 관리</h1>
-    
+            <h1>현재 예약 관리</h1>
+
             <table style={{ width: '100%', textAlign: 'center' }}>
                 <thead>
                     <tr>
@@ -85,7 +113,7 @@ const PartnerReservationPage = ({ id }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {reservations.map((reservation, index) => (
+                    {state.reservations.map((reservation, index) => (
                         <tr key={reservation.id}>
                             <td>{index + 1}</td>
                             <td>{reservation.user.name}</td>
@@ -109,7 +137,6 @@ const PartnerReservationPage = ({ id }) => {
             </table>
         </div>
     );
-    
 };
 
 export default PartnerReservationPage;
