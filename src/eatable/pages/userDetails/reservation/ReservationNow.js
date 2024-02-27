@@ -1,37 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import WaitingCount from '../item/WaitingCount';
+
+const initialState = {
+    showGreeting: false,
+    adultCount: 0,
+    userId: '',
+    reservationId: null,
+};
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'SET_SHOW_GREETING':
+            return { ...state, showGreeting: action.payload };
+        case 'SET_ADULT_COUNT':
+            return { ...state, adultCount: action.payload };
+        case 'SET_USER_ID':
+            return { ...state, userId: action.payload };
+        case 'SET_RESERVATION_ID':
+            return { ...state, reservationId: action.payload };
+        default:
+            return state;
+    }
+};
+
 // 실시간 예약 페이지
 const ReservationNow = () => {
     const navigate = useNavigate();
-    let { id } = useParams();
-
-    const [showGreeting, setShowGreeting] = useState(false);
-    const [adultCount, setAdultCount] = useState(0);
-    const [userId, setUserId] = useState("");
+    const { id } = useParams();
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
             const decoded = jwtDecode(token);
-            setUserId(decoded.userId);
+            dispatch({ type: 'SET_USER_ID', payload: decoded.userId });
         }
     }, []);
 
     const goReservationOk = () => {
-        setShowGreeting(true);
+        dispatch({ type: 'SET_SHOW_GREETING', payload: true });
     };
 
     const showReservationOk = () => {
+        const { adultCount, userId } = state;
         const reservationData = {
             partnerId: id,
             userId: userId,
             people: adultCount,
-            reservationRegDate: new Date().toISOString(), // 현재 시간으로 설정
+            reservationRegDate: new Date().toISOString(),
             reservationState: "True"
         };
-
+    
         fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
             method: 'POST',
             headers: {
@@ -41,24 +63,44 @@ const ReservationNow = () => {
         })
             .then(response => {
                 if (response.ok) {
-                    alert("예약 성공")
+                    return response.json();
                 } else {
                     throw new Error('Failed to save reservation');
                 }
+            })
+            .then(data => {
+                dispatch({ type: 'SET_RESERVATION_ID', payload: data.reservationId });
+                alert('예약이 확정되었습니다.');
+    
+                const webSocket = new WebSocket('ws://localhost:8080/ws');
+    
+                webSocket.onopen = () => {
+                    console.log('WebSocket 연결 성공');
+                    webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
+                };
+    
+                webSocket.onerror = (error) => {
+                    console.error('WebSocket 연결 에러:', error);
+                };
+    
+                webSocket.onclose = () => {
+                    console.log('WebSocket 연결 종료');
+                };
             })
             .catch(error => {
                 console.error('Error saving reservation:', error);
             });
     };
 
+    const { showGreeting, adultCount, reservationId } = state;
+
     return (
         <div>
             예약 인원 설정하기 <br />
 
-            {/* 성인수 조절 버튼 */}
-            <Button onClick={() => setAdultCount(adultCount > 0 ? adultCount - 1 : 0)}>-</Button>
+            <Button onClick={() => dispatch({ type: 'SET_ADULT_COUNT', payload: Math.max(adultCount - 1, 0) })}>-</Button>
             총원: {adultCount}
-            <Button onClick={() => setAdultCount(adultCount + 1)}>+</Button>
+            <Button onClick={() => dispatch({ type: 'SET_ADULT_COUNT', payload: adultCount + 1 })}>+</Button>
             <br />
 
             <hr />
@@ -77,6 +119,7 @@ const ReservationNow = () => {
                         >
                             예약확정
                         </Button>
+                        {reservationId && <WaitingCount partnerId={id} reservationId={reservationId} />}
                     </div>
                 </>
             )}
