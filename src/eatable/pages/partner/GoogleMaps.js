@@ -31,26 +31,24 @@ const GoogleMaps = () => {
   });
 
   useEffect(() => {
-    fetchPosts();
+      fetch(`http://localhost:8080/api/partner/google?inputValue=${inputValue}&keyword=${Keyword}`)
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return null;
+          }
+        })
+        .then((data) => {
+          if (data !== null) {
+            console.log(data);
+            setLocations(data);
+          }
+        })
+        .catch((error) => console.error("Error fetching search results:", error));
   }, [inputValue, Keyword]);
 
-  const fetchPosts = () => {
-    fetch(`http://localhost:8080/api/partner/google?keyword=${inputValue || Keyword}`)
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        } else {
-          return null;
-        }
-      })
-      .then((data) => {
-        if (data !== null) {
-          console.log(data);
-          setLocations(data);
-        }
-      })
-      .catch((error) => console.error("Error fetching search results:", error));
-  };
+  
 
 
   const mapContainerStyle = {
@@ -193,7 +191,9 @@ const GoogleMaps = () => {
       }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
-      <MarkerClusterer>
+    <MarkerClusterer
+  gridSize={40} // 클러스터 그리드 크기 조절
+>
         {(clusterer) =>
           locations.map((location) => (
             <Marker
@@ -207,8 +207,8 @@ const GoogleMaps = () => {
             }}
             clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
             icon={{
-              // url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-              scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
+              url: 'https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1709017055899-image.png',
+              scaledSize: new window.google.maps.Size(30 , 30), // 아이콘의 크기를 조정합니다.
             }}
           />
           ))
