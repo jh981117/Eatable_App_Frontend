@@ -2,8 +2,146 @@ import React, { useEffect, useState } from "react";
 import { Button, Container, Form, FormControl } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom/dist";
 import ProvisionPage from "./ProvisionPage";
+import { styled} from 'styled-components';
 
+const StyledInput = styled(Form.Control)`
+  padding: 16px;
+  border-radius: 7px;
+  border: 0px;
+  background: rgba(255, 255, 255, 1);
+  color: white;
+  font-size: 18px;
+  height: 64px;
+  width: 695px;
+  margin-right: 160px;
+  border: 2px solid #555555;
+  &::placeholder {
+    color: #e74c3c;
+    font-weight: bold;
+  }
 
+  
+  &:focus {
+    outline-color: rgba(0, 0, 0, 0);
+    background: rgba(255, 255, 255, 0.95);
+    color: #e74c3c;
+  }
+  @media screen and (max-width: 600px) {
+    font-size: 12px; 
+    height: 30px;
+    width: 100%;
+  }
+`;
+
+const StyledInputEmail = styled(Form.Control)`
+  padding: 16px;
+  border-radius: 7px;
+  border: 0px;
+  background: rgba(255, 255, 255, 1);
+  color: white;
+  font-size: 18px;
+  height: 64px;
+  width: 200px;
+  margin-right: 15px;
+  border: 2px solid #555555;
+  &::placeholder {
+    color: #e74c3c;
+    font-weight: bold;
+  }
+
+  
+  &:focus {
+    outline-color: rgba(0, 0, 0, 0);
+    background: rgba(255, 255, 255, 0.95);
+    color: #e74c3c;
+  }
+  @media screen and (max-width: 600px) {
+    font-size: 10px; 
+    height: 30px;
+    width: 100%;
+  }
+
+`;
+
+const StyledForm =styled(Form)`
+    margin-left: 150px; 
+    @media screen and (max-width: 600px) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+`;
+
+const StyledButton =styled(Button)`
+    margin-right: 20px;
+  &:hover {
+    background-color: #e74c3c;
+  }
+  
+  @media screen and (max-width: 600px) {
+    font-size: 12px; 
+    height: 30px;
+    width: 100px;
+  }
+
+`;
+
+const StyledButtonSignup =styled(Button)`
+    margin-left: 230px;
+  &:hover {
+    background-color: #e74c3c;
+  }
+  @media screen and (max-width: 600px) {
+    font-size: 12px; 
+    height: 30px;
+    width: 50px;
+    margin-top: -58px;
+  }
+`;
+
+const StyledContainer = styled(Container)`
+  margin-top: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+ 
+  @media screen and (max-width: 600px) {
+    margin-top: 130px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+`;
+
+const Styledh2 = styled.h2`
+  color: #e74c3c;
+    font-weight: bold;
+    font-size: 50px;
+    @media screen and (max-width: 600px) {
+    font-size: 20px; 
+    text-align: center;
+  }
+`;
+
+const StyleFormControl = styled(FormControl)`
+ width: 212px;
+ @media screen and (max-width: 600px) {
+    width: 130px;
+  }
+`
+
+const StyleSelect = styled(Form.Select)`
+  @media screen and (max-width: 600px) {
+    width: 130px;
+    font-size: 10px;
+  }
+`
+
+const StyledSpan = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const SignupPage = () => {
 
@@ -195,60 +333,52 @@ const SignupPage = () => {
 
 
     return (
-        <Container className="mt-3 flex justify-content-center">
+        <StyledContainer >
 
-             <h2>회원가입</h2>
+             <Styledh2>회원가입</Styledh2>
 
-            <Form onSubmit={submitUserinfo}>
-                <Form.Group className="mt-3" controlId="formBasicUsername">
-                    <Form.Label>아이디 : </Form.Label>
-                    <Form.Control type="text" name="username" placeholder="아이디를 입력해주세요." value={userinfo.username} onChange={changeValue}/>
+            <StyledForm onSubmit={submitUserinfo}>
+                <Form.Group className="mt-3" controlId="formBasicUsername">                   
+                    <StyledInput type="text" name="username" placeholder="아이디를 입력해주세요." value={userinfo.username} onChange={changeValue}/>
                     {error.usernameError && <div className="text-danger">{error.usernameError}</div>}
                 </Form.Group>
 
-                <Form.Group className="mt-3" controlId="formBasicPassword">
-                    <Form.Label>비밀번호 : </Form.Label>
-                    <Form.Control type="password" name="password" placeholder="비밀번호를 입력해주세요." value={userinfo.password} onChange={changeValue}/>
+               <Form.Group className="mt-3" controlId="formBasicPassword">                    
+                    <StyledInput type="password" name="password" placeholder="비밀번호를 입력해주세요." value={userinfo.password} onChange={changeValue}/>
                     {error.passwordError && <div className="text-danger">{error.passwordError}</div>}
                 </Form.Group>
 
-                <Form.Group className="mt-3" controlId="formBasicRepassword">
-                    <Form.Label>비밀번호 확인 : </Form.Label>
-                    <Form.Control type="password" name="repassword" placeholder="비밀번호 확인을 위해 입력해주세요." value={userinfo.repassword} onChange={changeValue}/>
+                <Form.Group className="mt-3" controlId="formBasicRepassword">                    
+                    <StyledInput type="password" name="repassword" placeholder="비밀번호 확인을 위해 입력해주세요." value={userinfo.repassword} onChange={changeValue}/>
                     {error.repasswordError && <div className="text-danger">{error.repasswordError}</div>}
                 </Form.Group>
 
-                <Form.Group className="mt-3" controlId="formBasicName">
-                    <Form.Label>이름 : </Form.Label>
-                    <Form.Control type="text" name="name" placeholder="이름을 입력해주세요." value={userinfo.name} onChange={changeValue}/>
+                <Form.Group className="mt-3" controlId="formBasicName">                   
+                    <StyledInput type="text" name="name" placeholder="이름을 입력해주세요." value={userinfo.name} onChange={changeValue}/>
                     {error.nameError && <div className="text-danger">{error.nameError}</div>}
                 </Form.Group>
 
-                <Form.Group className="mt-3" controlId="formBasicNickname">
-                    <Form.Label>별명 : </Form.Label>
-                    <Form.Control type="text" name="nickName" placeholder="별명을 입력해주세요." value={userinfo.nickName} onChange={changeValue}/>
+                <Form.Group className="mt-3" controlId="formBasicNickname">                    
+                    <StyledInput type="text" name="nickName" placeholder="별명을 입력해주세요." value={userinfo.nickName} onChange={changeValue}/>
                     {error.nickNameError && <div className="text-danger">{error.nickNameError}</div>}
                 </Form.Group>
 
-                <Form.Group className="mt-3" controlId="formBasicBirthdate">
-                    <Form.Label>주민번호 : </Form.Label>
-                    <Form.Control className="form-control col-3" type="text" name="birthdate" placeholder="주민번호를 입력해주세요." value={userinfo.birthdate} onChange={changeValue}/>
+                <Form.Group className="mt-3" controlId="formBasicBirthdate">                   
+                    <StyledInput className="form-control col-3" type="text" name="birthdate" placeholder="주민번호를 입력해주세요." value={userinfo.birthdate} onChange={changeValue}/>
                     {error.birthdateError && <div className="text-danger">{error.birthdateError}</div>}
                 </Form.Group>
 
-                <Form.Group className="mt-3" controlId="formBasicBirthdate">
-                    <Form.Label>연락처 : </Form.Label>
-                    <Form.Control className="form-control col-3" type="text" name="phone" placeholder="전화번호를 입력해주세요." value={userinfo.phone} onChange={changeValue}/>
+                <Form.Group className="mt-3" controlId="formBasicBirthdate">                    
+                    <StyledInput className="form-control col-3" type="text" name="phone" placeholder="전화번호를 입력해주세요." value={userinfo.phone} onChange={changeValue}/>
                     {error.phoneError && <div className="text-danger">{error.phoneError}</div>}
                 </Form.Group>
 
-                <Form.Group className="mt-3 col-3" controlId="formBasicEmail">
-                    <Form.Label>이메일 : </Form.Label>
+                <Form.Group className="mt-3 col-3" controlId="formBasicEmail">                   
                     <div className="d-flex">
-                        <Form.Control className="form-control col-3" type="text" name="email_id" value={userinfo.email_id} onChange={changeValue}/>
-                        <span className="mx-2"> @ </span>
-                        <FormControl className="form-control ms-2 col-3" type="text" name="email_domain" value={userinfo.email_domain} onChange={changeValue}/>
-                        <Form.Select className="form-control ms-4 col-3"
+                        <StyledInputEmail className="form-control col-3" type="text" name="email_id" placeholder="이메일을 입력해주세요." value={userinfo.email_id} onChange={changeValue}/>
+                        <StyledSpan> @ </StyledSpan>
+                        <StyleFormControl className="form-control ms-3 col-3" type="text" name="email_domain" value={userinfo.email_domain} onChange={changeValue}/>
+                        <StyleSelect className="form-control ms-4 col-3"
                             onChange={(e) => {
                                 changeValue(e);
                                 const value = e.target.value === "" ? "" : e.target.value;
@@ -266,7 +396,7 @@ const SignupPage = () => {
                             <option value="gmail.com">gmail.com</option>
                             <option value="hanmail.net">hanmail.net</option>
                             <option value="">직접입력</option>
-                        </Form.Select>
+                        </StyleSelect>
 
                     </div>
                     {error.emailError && <div className="text-danger">{error.emailError}</div>}
@@ -274,10 +404,10 @@ const SignupPage = () => {
 
                 {error.submitError && <div className="text-danger">{error.submitError}</div>}
 
-                <Button variant="primary" onClick={back}>이전으로</Button>
-                <Button variant="primary" type="submit" onClick={submitUserinfo}>회원가입</Button>
-            </Form>
-        </Container>
+                <StyledButton variant="primary" onClick={back}  style={{ width: '222px' }}>이전으로</StyledButton>
+                <StyledButtonSignup variant="primary" type="submit" onClick={submitUserinfo}  style={{ width: '222px' }}>회원가입</StyledButtonSignup>
+            </StyledForm>
+        </StyledContainer>
     );
 };
 

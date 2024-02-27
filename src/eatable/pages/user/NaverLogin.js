@@ -1,24 +1,61 @@
 import { SentimentDissatisfied, SmsOutlined } from '@material-ui/icons';
 import axios from 'axios';
-import { useEffect, useState } from 'react'
+import { useEffect, useState,useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
+import { styled } from 'styled-components';
 const NaverLogin = ({ setGetToken, setUserInfo }) => {
     const [accessToken,setAccessToken] = useState();  
     const navigate = useNavigate();
 	const { naver } = window
-
+    const naverRef = useRef()
 	const initializeNaverLogin = () => {
 		const naverLogin = new naver.LoginWithNaverId({
 			clientId: process.env.REACT_APP_NAVER_CLIENT_ID,
 			callbackUrl: process.env.REACT_APP_NAVER_CALLBACK_URL,                   
 			isPopup: false,        
-			loginButton: { color: 'green', type: 3, height: 40 },
+			loginButton: { color: 'green', type: 3, height: 40},
 			
 		})
 		naverLogin.init()
 
 	}
 
+
+// 기존 로그인 버튼이 아닌 커스텀을 진행한 로그인 버튼만 나타내기 위해 작성
+const NaverIdLogin = styled.div`
+	display: none;
+`
+
+const NaverLoginBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 460px; 
+  height: 56px;
+  background-color: #03c75a;
+  border-radius: 6px;
+  margin: auto; 
+  margin-top: 20px; 
+  transition: background-color 0.3s; 
+  &:hover {
+    background-color: #e74c3c;
+  }
+`;
+
+const NaverIcon = styled.span`
+  margin-right: 16px;
+  color: #fff;
+`;
+
+const NaverLoginTitle = styled.span`
+  flex: 1;
+  text-align: center;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  color: #fff;
+`;
 
     const location = useLocation();  
           
@@ -74,11 +111,17 @@ const NaverLogin = ({ setGetToken, setUserInfo }) => {
         }
     }, [accessToken]);
 
+    const handleNaverLogin = () => {
+		naverRef.current.children[0].click()
+	}  
+
 	return (
 		<>
-         {/* // 구현할 위치에 아래와 같이 코드를 입력해주어야 한다. 
-         // 태그에 id="naverIdLogin" 를 해주지 않으면 오류가 발생한다! */}
-			<div  id="naverIdLogin" />
+       <NaverIdLogin ref={naverRef} id="naverIdLogin" />
+        <NaverLoginBtn onClick={handleNaverLogin}>
+            <NaverIcon>N</NaverIcon>
+            <NaverLoginTitle>네이버로 로그인</NaverLoginTitle>
+        </NaverLoginBtn>
 		</>
 	)
 }
