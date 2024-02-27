@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Container } from 'react-bootstrap';
+import fetchWithToken from '../../rolecomponents/FetchCustom';
 
 const DetailHome = ({id}) => {
  const [detail, setDetails] = useState([]);
     useEffect(() => {
-      fetch(`http://localhost:8080/api/partner/base/detail/${id}`)
+      fetchWithToken(`http://localhost:8080/api/partner/base/detail/${id}`)
         .then((response) => {
           if (response.status === 200) {
             return response.json();

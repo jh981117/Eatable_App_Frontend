@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import CommentForm from "./Item/CommentForm";
 import CommentsModal from "./Item/CommentsModal";
 import { jwtDecode } from "jwt-decode";
+import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 const TimeLineReviewList = (toId1) => {
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ const TimeLineReviewList = (toId1) => {
   const handleShowComments = async (reviewId) => {
     // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `http://localhost:8080/api/comments/list/${reviewId}`
       );
       if (!response.ok) {
@@ -76,17 +77,20 @@ const removeComment = (commentId) => {
       const decoded = jwtDecode(token);
       const userId = decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 맞게 조정해야 할 수 있음
 
-      const response = await fetch("http://localhost:8080/api/comments/write", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: text, // CommentsModal에서 받은 댓글 내용
-          userId, // 사용자 ID
-          storeReviewId: reviewId, // 댓글이 달리는 리뷰의 ID
-        }),
-      });
+      const response = await fetchWithToken(
+        "http://localhost:8080/api/comments/write",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: text, // CommentsModal에서 받은 댓글 내용
+            userId, // 사용자 ID
+            storeReviewId: reviewId, // 댓글이 달리는 리뷰의 ID
+          }),
+        }
+      );
       const addedComment = await response.json();
       setComments((prevComments) => [...prevComments, addedComment]);
       // 나머지 로직...

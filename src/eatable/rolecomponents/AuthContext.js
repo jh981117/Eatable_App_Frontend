@@ -1,4 +1,6 @@
+import { jwtDecode } from "jwt-decode";
 import React, { createContext, useState, useContext, useEffect } from "react";
+import fetchWithToken from "./FetchCustom";
 
 const AuthContext = createContext(null);
 
@@ -18,11 +20,12 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+ 
   const updateProfile = async () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch("http://localhost:8080/api/user/profile", {
+        const response = await fetchWithToken("http://localhost:8080/api/user/profile", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -31,6 +34,10 @@ export const AuthProvider = ({ children }) => {
         });
 
         if (!response.ok) {
+          if (response.status === 401) {
+        
+            return;
+          }
           throw new Error(`Error! status: ${response.status}`);
         }
 
@@ -45,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-   // 로컬 스토리지의 토큰 변경을 감지하고 상태 업데이트
+  // 로컬 스토리지의 토큰 변경을 감지하고 상태 업데이트
   useEffect(() => {
     const handleStorageChange = () => {
       const newToken = localStorage.getItem("token");

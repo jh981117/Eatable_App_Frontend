@@ -29,6 +29,7 @@ import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
 import BlackToken from "../chenkBlackToken";
 import { isValid } from "date-fns";
+import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 const UserInfoPage = () => {
   const [showSignOutModal, setShowSignOutModal] = useState(false); // 모달 열림/닫힘 상태 관리
@@ -71,6 +72,8 @@ const UserInfoPage = () => {
     setShowSignOut(!showSignOut);
   };
 
+  
+
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
@@ -99,6 +102,8 @@ const UserInfoPage = () => {
   }, [navigate]); // navigate 함수를 의존성 배열에 추가
 
   useEffect(() => {
+    
+
     // 사용자 프로필 정보 불러오기
     const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
     if (!token) return false; // 토큰이 없다면 false 반환
@@ -109,15 +114,22 @@ const UserInfoPage = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:8080/api/user/profile", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetchWithToken(
+          "http://localhost:8080/api/user/profile",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
+          if (response.status === 401) {
+           
+            return;
+          }
           throw new Error(`Error! status: ${response.status}`);
         }
 
@@ -148,7 +160,7 @@ const UserInfoPage = () => {
     // API 요청: 비밀번호 변경
     try {
       const token = localStorage.getItem("token"); // 인증 토큰 사용
-      const response = await fetch(
+      const response = await fetchWithToken(
         "http://localhost:8080/api/user/change-password",
         {
           method: "POST",
@@ -256,17 +268,20 @@ const UserInfoPage = () => {
   // 사용자정보 수정
   const handleUpdate = async (field, value) => {
     try {
-      const response = await fetch("http://localhost:8080/api/user/update", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...profile,
-          [field.name]: auth.profile[field],
-        }),
-      });
+      const response = await fetchWithToken(
+        "http://localhost:8080/api/user/update",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...profile,
+            [field.name]: auth.profile[field],
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Error! status: ${response.status}`);
