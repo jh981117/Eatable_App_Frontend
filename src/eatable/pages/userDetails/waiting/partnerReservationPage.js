@@ -1,16 +1,16 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
+import { Client } from '@stomp/stompjs';
 
-// 초기 상태
 const initialState = {
     reservations: [],
+    stompClient: null, // 새로운 stompClient 상태 추가
 };
 
-// 액션 타입
 const actionTypes = {
     SET_RESERVATIONS: 'SET_RESERVATIONS',
+    SET_STOMP_CLIENT: 'SET_STOMP_CLIENT', // SET_STOMP_CLIENT 액션 타입 추가
 };
 
-// 리듀서
 const reducer = (state, action) => {
     switch (action.type) {
         case actionTypes.SET_RESERVATIONS:
@@ -18,14 +18,19 @@ const reducer = (state, action) => {
                 ...state,
                 reservations: action.payload,
             };
+        case actionTypes.SET_STOMP_CLIENT: // SET_STOMP_CLIENT 액션 처리 추가
+            return {
+                ...state,
+                stompClient: action.payload,
+            };
         default:
             return state;
     }
 };
 
 const PartnerReservationPage = ({ id }) => {
-    // useReducer 훅을 사용하여 리듀서와 상태를 설정
     const [state, dispatch] = useReducer(reducer, initialState);
+    const [waitings, setWaitings] = useState([]);
 
     // 대기열 정보를 가져오는 함수
     const fetchReservations = async () => {
@@ -50,31 +55,34 @@ const PartnerReservationPage = ({ id }) => {
     }, [id]);
 
     useEffect(() => {
-        const socket = new WebSocket('ws://localhost:8080/ws');
+        const client = new Client({
+            brokerURL: 'ws://localhost:8080/ws',
+            debug: function (str) {
+                console.log(str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
 
-        socket.onopen = () => {
+        client.onConnect = function () {
             console.log('WebSocket 연결 성공');
-        };
-
-        socket.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            if (message.topic === '/topic/reservationConfirmation') {
+            client.subscribe('/topic/reservationConfirmation', function (message) {
                 // 예약 확정 메시지를 받았을 때의 처리 로직
                 fetchReservations(); // 예약 목록 다시 가져오기
-            }
+                console.log('예약이 확정되었습니다:', message.body);
+            });
+            dispatch({ type: actionTypes.SET_STOMP_CLIENT, payload: client }); // stompClient 상태 업데이트
+            console.log('새로운 예약 목록:', client);
         };
 
-        socket.onerror = (error) => {
-            console.error('WebSocket 연결 에러:', error);
+        client.onStompError = function (frame) {
+            console.error('웹소켓 연결 실패:', frame);
         };
 
-        socket.onclose = () => {
-            console.log('WebSocket 연결 종료');
-        };
+        client.activate();
 
-        return () => {
-            socket.close();
-        };
+
     }, []);
 
     // 예약 상태를 업데이트하는 함수
@@ -99,7 +107,7 @@ const PartnerReservationPage = ({ id }) => {
 
     return (
         <div>
-            <h1>현재 예약 관리</h1>
+            <h1>현재 대기열 관리</h1>
 
             <table style={{ width: '100%', textAlign: 'center' }}>
                 <thead>
@@ -119,7 +127,11 @@ const PartnerReservationPage = ({ id }) => {
                             <td>{reservation.user.name}</td>
                             <td>{reservation.partner.storeName}</td>
                             <td>{reservation.reservationRegDate}</td>
-                            <td>{reservation.reservationState}</td>
+                            <td>
+                            {reservation.reservationState === 'WAITING' ? "입장대기" : 
+                            reservation.reservationState === 'TRUE' ?  "입장완료" : 
+                            reservation.reservationState === 'FALSE' ?  "입장안함" : ""}
+                            </td>
                             <td>
                                 <button onClick={() => handleReservationConfirmation(reservation.id, 'TRUE')}>
                                     입장 완료

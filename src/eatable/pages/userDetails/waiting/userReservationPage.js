@@ -52,7 +52,7 @@ const UserReservationPage = ({userId}) => {
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약 일시</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>주소</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약 상태</th>
-                        <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>작업</th>
+                        <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,7 +66,11 @@ const UserReservationPage = ({userId}) => {
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{reservation.people}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{new Date(reservation.reservationRegDate).toLocaleString()}</td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{reservation.partner.address.area}</td>
-                            <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{reservation.reservationState ? '확인됨' : '확인 대기 중'}</td>
+                            <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>
+                            {reservation.reservationState === 'WAITING' ? "입장대기" : 
+                            reservation.reservationState === 'TRUE' ?  "입장완료" : 
+                            reservation.reservationState === 'FALSE' ?  "입장안함" : ""}
+                            </td>
                             <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>
                                 <button onClick={() => handleDeleteReservation(reservation.partner.id, reservation.id)}>예약 삭제</button>
                             </td>

@@ -1,6 +1,4 @@
-// PartnerWaitingPage.js
-
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 
 const initialState = {
@@ -21,6 +19,7 @@ const reducer = (state, action) => {
 
 const PartnerWaitingPage = ({ id }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
+    const [waitings, setWaitings] = useState([]);
 
     // 웹소켓 연결과 대기열 정보 불러오기
     useEffect(() => {
@@ -41,13 +40,10 @@ const PartnerWaitingPage = ({ id }) => {
                 dispatch({ type: 'SET_WAITINGS', payload: receivedWaitings });
                 console.log('대기열이 업데이트되었습니다:', receivedWaitings);
             });
-            client.subscribe('/topic/waitingConfirmation', function (message) {
-                const confirmedWaiting = JSON.parse(message.body);
-                // 여기서 confirmedWaiting을 상태에 추가하거나, 기존 대기열에서 해당 웨이팅을 찾아 업데이트하는 등의 작업을 수행합니다.
-                // 예를 들어, confirmedWaiting을 상태에 추가하는 경우:
-                const updatedWaitings = [...state.waitings, confirmedWaiting];
-                dispatch({ type: 'SET_WAITINGS', payload: updatedWaitings });
-                console.log('웨이팅이 확정되었습니다:', confirmedWaiting);
+            client.subscribe('/topic/updateWaitingList', function (message) {
+                // 예약 확정 후에도 대기열 정보를 업데이트
+                fetchWaitings();
+                console.log('웨이팅이 확정되었습니다:', message.body);
             });
             dispatch({ type: 'SET_STOMP_CLIENT', payload: client });
             console.log('새로운 예약 목록:', client);
@@ -59,20 +55,102 @@ const PartnerWaitingPage = ({ id }) => {
 
         client.activate();
 
-        return () => {
-            client.deactivate();
-            console.log('웹소켓 연결 해제');
-        };
+  
+    }, []);
+
+    // fetchWaitings 함수 정의
+    const fetchWaitings = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/waiting/waitingList/${id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch waitings');
+            }
+            let data = await response.json();
+            // 예약 시간이 빠른 순으로 정렬
+            data.sort((a, b) => new Date(a.waitingRegDate) - new Date(b.waitingRegDate));
+            setWaitings(data);
+            console.log('대기열이 업데이트되었습니다:', data);
+        } catch (error) {
+            console.error('Error fetching waitings:', error);
+        }
+    };
+
+    useEffect(() => {
+        // useEffect 내에서 fetchWaitings 호출
+        fetchWaitings();
     }, [id]);
 
-    // 대기 상태를 업데이트하는 함수
     const updateWaitingState = async (waitingId, newWaitingState) => {
-        // 코드 생략...
+        // WaitingDto를 사용하여 waitingState를 문자열로 전송
+        const waitingDto = {
+            waitingState: newWaitingState
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/waiting/updateWaitingState/${id}/${waitingId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(waitingDto) // WaitingDto를 JSON 문자열로 변환하여 전송
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update waiting state');
+            }
+            // 대기열 상태 업데이트 후 웹소켓을 통해 실시간으로 대기열을 다시 불러옴
+            fetchWaitings();
+
+            // 대기열 상태 업데이트 성공 시 로그 출력
+            console.log('Waiting state updated successfully.');
+
+        } catch (error) {
+            console.error('Error updating waiting state:', error);
+        }
     };
+
 
     return (
         <div>
-            {/* 대기열 표시 및 대기 상태 변경 버튼 등의 UI 코드 */}
+            <h1>예약 리스트</h1>
+            <table style={{ width: '100%', textAlign: 'center' }}>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>예약자</th>
+                        <th>매장</th>
+                        <th>예약 시간</th>
+                        <th>대기 상태</th>
+                        <th>대기 상태 변경</th> {/* 변경 버튼을 추가 */}
+                    </tr>
+                </thead>
+                <tbody>
+                    {waitings.map((waiting, index) => (
+                        <tr key={waiting.id}>
+                            <td>{index + 1}</td>
+                            <td>{waiting.user.name}</td>
+                            <td>{waiting.partner.storeName}</td>
+                            <td>{waiting.waitingRegDate}</td>
+                            <td>
+                            {waiting.waitingState === 'WAITING' ? "예약승인" : 
+                            waiting.waitingState === 'TRUE' ?  "완료" : 
+                            waiting.waitingState === 'FALSE' ?  "예약취소" : ""}
+                            </td>
+                            <td>
+                                {/* 버튼 클릭 시 대기 상태를 변경 */}
+                                <button onClick={() => updateWaitingState(waiting.id, 'TRUE')}>
+                                    완료
+                                </button>
+                                <button onClick={() => updateWaitingState(waiting.id, 'FALSE')}>
+                                    예약취소
+                                </button>
+                                <button onClick={() => updateWaitingState(waiting.id, 'WAITING')}>
+                                    예약승인
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };

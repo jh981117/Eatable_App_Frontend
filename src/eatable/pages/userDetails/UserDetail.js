@@ -278,7 +278,7 @@ const UserDetail = () => {
                 <Reservation />
               </Modal.Body>
               <Modal.Footer>
-                <Button onClick={handleCloseModal}>닫기</Button>
+                <Button onClick={() => handleCloseModal("reservation")}>닫기</Button>
               </Modal.Footer>
             </Modal>
 
@@ -294,9 +294,9 @@ const UserDetail = () => {
                 <ReservationNow />
               </Modal.Body>
               <Modal.Footer>
-                <Button onClick={handleCloseModal}>닫기</Button>
+                <Button onClick={() => handleCloseModal("waiting")}>닫기</Button>
               </Modal.Footer>
-            </Modal>
+            </Modal>  
           </div>
         </Col>
       </Row>
