@@ -9,6 +9,7 @@ const initialState = {
     adultCount: 0,
     userId: '',
     reservationId: null,
+    webSocket: null // 웹소켓 상태 추가
 };
 
 const reducer = (state, action) => {
@@ -21,6 +22,8 @@ const reducer = (state, action) => {
             return { ...state, userId: action.payload };
         case 'SET_RESERVATION_ID':
             return { ...state, reservationId: action.payload };
+        case 'SET_WEBSOCKET':
+            return { ...state, webSocket: action.payload }; // 웹소켓 설정 액션 추가
         default:
             return state;
     }
@@ -31,6 +34,7 @@ const ReservationNow = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [state, dispatch] = useReducer(reducer, initialState);
+    const [modalOpen, setModalOpen] = useState(false); // 모달 열림 상태 변수
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -40,18 +44,44 @@ const ReservationNow = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (modalOpen) {
+            // 모달이 열릴 때 웹소켓 연결 시작
+            const webSocket = new WebSocket('ws://localhost:8080/ws');
+
+            webSocket.onopen = () => {
+                console.log('WebSocket 연결 성공');
+                webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
+            };
+
+            webSocket.onerror = (error) => {
+                console.error('WebSocket 연결 에러:', error);
+            };
+
+            webSocket.onclose = () => {
+                console.log('WebSocket 연결 종료');
+            };
+
+            dispatch({ type: 'SET_WEBSOCKET', payload: webSocket }); // 웹소켓 설정 액션 디스패치
+        }
+    }, [modalOpen]); // modalOpen이 변경될 때마다 실행
+
     const goReservationOk = () => {
         dispatch({ type: 'SET_SHOW_GREETING', payload: true });
     };
 
+    const handleCloseModal = () => {
+        setModalOpen(false);
+    };
+
     const showReservationOk = () => {
-        const { adultCount, userId } = state;
+        const { adultCount, userId, webSocket } = state;
         const reservationData = {
             partnerId: id,
             userId: userId,
             people: adultCount,
             reservationRegDate: new Date().toISOString(),
-            reservationState: "True"
+            reservationState: "False"
         };
     
         fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
@@ -72,20 +102,10 @@ const ReservationNow = () => {
                 dispatch({ type: 'SET_RESERVATION_ID', payload: data.reservationId });
                 alert('예약이 확정되었습니다.');
     
-                const webSocket = new WebSocket('ws://localhost:8080/ws');
-    
-                webSocket.onopen = () => {
-                    console.log('WebSocket 연결 성공');
+                if (webSocket) {
+                    // 웹소켓이 연결되어 있다면 메시지 전송
                     webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
-                };
-    
-                webSocket.onerror = (error) => {
-                    console.error('WebSocket 연결 에러:', error);
-                };
-    
-                webSocket.onclose = () => {
-                    console.log('WebSocket 연결 종료');
-                };
+                }
             })
             .catch(error => {
                 console.error('Error saving reservation:', error);
