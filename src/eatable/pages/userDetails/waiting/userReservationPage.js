@@ -52,7 +52,7 @@ const UserReservationPage = ({userId}) => {
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약 일시</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>주소</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약 상태</th>
-                        <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>작업</th>
+                        <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}></th>
                     </tr>
                 </thead>
                 <tbody>
