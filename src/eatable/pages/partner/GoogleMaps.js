@@ -31,26 +31,24 @@ const GoogleMaps = () => {
   });
 
   useEffect(() => {
-    fetchPosts();
+      fetch(`http://localhost:8080/api/partner/google?inputValue=${inputValue}&keyword=${Keyword}`)
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return null;
+          }
+        })
+        .then((data) => {
+          if (data !== null) {
+            console.log(data);
+            setLocations(data);
+          }
+        })
+        .catch((error) => console.error("Error fetching search results:", error));
   }, [inputValue, Keyword]);
 
-  const fetchPosts = () => {
-    fetch(`http://localhost:8080/api/partner/google?keyword=${inputValue || Keyword}`)
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        } else {
-          return null;
-        }
-      })
-      .then((data) => {
-        if (data !== null) {
-          console.log(data);
-          setLocations(data);
-        }
-      })
-      .catch((error) => console.error("Error fetching search results:", error));
-  };
+  
 
 
   const mapContainerStyle = {
@@ -207,7 +205,7 @@ const GoogleMaps = () => {
             }}
             clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
             icon={{
-              // url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+              url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
               scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
             }}
           />
