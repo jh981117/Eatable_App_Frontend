@@ -13,6 +13,7 @@ import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
+import ReservedPage from "./ReservedPage";
 
 
 // const ResponsiveTabs = styled(Tabs)`
@@ -380,10 +381,10 @@ if (temperature <= 0 && temperature >= -50) {
               {isPartner() && (<div className="d-flex justify-content-end mb-2"><Link to={"/userpartnerpage"}><Button style={{textAlign: "right"}}>매장 관리</Button></Link></div>)}              
               
               <div className="d-flex align-items-center" style={{ display: "flex", justifyContent: "center" }}>
-              <span style={{ width: "100%", flex: 1, marginRight: "20px"}}>
+              <span style={{ width: "100%", flex: 1, marginRight: "10px"}}>
                   <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
               </span>
-              <span style={{width: "100%",  flex: 1, marginRight: "20px"}}>
+              <span style={{width: "100%",  flex: 1, marginRight: "10px"}}>
                 <div className={`flex align-items-center ml-3 ${edit.bio ? 'input-active' : ''}`}>
                   <span style={{ border: "none", backgroundColor: "transparent", borderBottom: "none" }}>닉네임 : {profile.nickName}</span><br/><br/>
                   내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
@@ -410,7 +411,7 @@ if (temperature <= 0 && temperature >= -50) {
                 </div>
               </span>
 
-              <span style={{width: "100%",  flex: 1, marginLeft: "20px"}}>
+              <span style={{width: "100%",  flex: 1, marginLeft: "30px"}}>
                 <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "80px"}}/>
                 {auth.profile ? auth.profile.temperature : ""}
               </span>
@@ -428,7 +429,7 @@ if (temperature <= 0 && temperature >= -50) {
                       <Modal.Title>회원탈퇴</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                      <SignDrop/><Button variant="secondary" onClick={handleCloseSignOutModal}>닫기</Button>
+                      <SignDrop/><Button variant="secondary" style={{marginLeft: "27%", width: "30vh"}} onClick={handleCloseSignOutModal}>닫기</Button>
                   </Modal.Body>
               </Modal>
                 
@@ -460,15 +461,15 @@ if (temperature <= 0 && temperature >= -50) {
                             <div>아이디 : {profile.username}</div>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          닉네임 : {edit.nickName ? (<Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, "nickName")}/>) : (<span>{profile.nickName}</span>)}<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("nickName")}>{edit.nickName ? "취소" : "수정"}</Button>
-                          {edit.nickName && (<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("nickName")}>확인</Button>)}
+                          닉네임 : {edit.nickName ? (<Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, "nickName")}/>) : (<span>{profile.nickName}</span>)}<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("nickName")}>{edit.nickName ? "취소" : "수정"}</Button>
+                          {edit.nickName && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("nickName")}>확인</Button>)}
                         </ListGroup.Item>
                         <ListGroup.Item>
                           <div>이름 : {profile.name}</div>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          연락처 : {edit.phone ? (<Input type="text" value={profile.phone} onChange={(e) => changeValue(e, "phone")}/>) : (<span>{profile.phone}</span>)}<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("phone")}>{edit.phone ? "취소" : "수정"}</Button>
-                          {edit.phone && (<Button style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("phone")}>확인</Button>)}
+                          연락처 : {edit.phone ? (<Input type="text" value={profile.phone} onChange={(e) => changeValue(e, "phone")}/>) : (<span>{profile.phone}</span>)}<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("phone")}>{edit.phone ? "취소" : "수정"}</Button>
+                          {edit.phone && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("phone")}>확인</Button>)}
                         </ListGroup.Item>
                         <ListGroup.Item>
                         <div>이메일 : {profile.email}</div>
@@ -477,12 +478,11 @@ if (temperature <= 0 && temperature >= -50) {
                         {/* <Button onClick={dropOK}>회원탈퇴</Button> */}
                       </ListGroup>
                     </Tab>
-<<<<<<< HEAD
-                    <Tab eventKey="reserve" title="예약 현황"><UserWaitingPage userId={profile.id}/></Tab>
+                    {/* <Tab eventKey="reserve" title="예약 현황"><UserWaitingPage userId={profile.id}/></Tab>
                     <Tab eventKey="reserved" title="예약 했던곳"><ReservePage/></Tab>
                     <Tab eventKey="review" title="내가 쓴 리뷰"><ReviewPage/></Tab>
-                    <Tab eventKey="follow" title="팔로우"><FollowPage/></Tab>
-=======
+                    <Tab eventKey="follow" title="팔로우"><FollowPage/></Tab> */}
+
                     <Tab eventKey="reserve" title="예약 현황">
 
                       <ListGroup variant="flush">
@@ -499,13 +499,13 @@ if (temperature <= 0 && temperature >= -50) {
                       <ReservedPage userId={profile.id}/>                   
                     </Tab>
                     <Tab eventKey="review" title="내가 쓴 리뷰">
-                      {<ReviewPage/>}
+                      <ReviewPage/>
                     </Tab>
                     <Tab eventKey="follow" title="팔로우">
                       {FollowPage}
 
                     </Tab>
->>>>>>> a5041c690188c00cf1f01160167752da3e3ed70e
+
                   </Tabs>
                 )}
               </div>
