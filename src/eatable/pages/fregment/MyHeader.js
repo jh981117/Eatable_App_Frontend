@@ -8,45 +8,9 @@ import fetchWithToken from "../../rolecomponents/FetchCustom";
 const MyHeader = () => {
   const navigate = useNavigate();
   const { auth, setAuth, updateProfile } = useAuth();
-  const [isTokenExpired, setIsTokenExpired] = useState(false);
-  const [refreshingToken, setRefreshingToken] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+ 
 
-const refreshToken = async () => {
-  const storedToken = localStorage.getItem("token"); // 로컬 스토리지에서 토큰을 가져옵니다.
-  if (!storedToken) {
-    handleLogout();
-    return;
-  }
 
-  try {
-    const response = await fetchWithToken(
-      "http://localhost:8080/api/refresh-token",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token: storedToken }), // 서버에 현재 토큰을 보냅니다.
-      }
-    );
-
-    if (response.ok) {
-      const data = await response.json(); // 응답 데이터를 JSON 형태로 파싱합니다.
-      const newToken = data.token; // 새로운 토큰을 추출합니다.
-      localStorage.setItem("token", newToken); // 로컬 스토리지에 새 토큰을 저장합니다.
-      console.log(newToken)
-      setToken(newToken); // 컴포넌트 상태를 업데이트합니다.
-      setAuth((prevAuth) => ({ ...prevAuth, isLoggedIn: true })); // 사용자 인증 상태를 업데이트합니다.
-      updateProfile(); // 필요한 추가 작업을 수행합니다.
-    } else {
-      handleLogout(); // 응답이 실패했다면 로그아웃 처리를 합니다.
-    }
-  } catch (error) {
-    console.error("Error refreshing token:", error);
-    handleLogout();
-  }
-};
 
 
   const tempColor = (temperature) => {

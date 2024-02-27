@@ -1,55 +1,55 @@
-// API.js
-async function fetchWithToken(endpoint, options = {}) {
-  const token = localStorage.getItem("token"); // 액세스 토큰 가져오기
+import { jwtDecode } from "jwt-decode";
 
-  // 토큰 디코드 시도
-  try {
-  } catch (error) {
-    console.error("Token decode failed:", error);
-    // 토큰 디코드 실패 처리 로직 (예: 로그아웃)
-  }
+export const fetchWithToken = async (url, options = {}) => {
+  let token = localStorage.getItem("token");
 
-  const response = await fetch(endpoint, {
+  // 기본 요청 옵션에 Authorization 헤더 추가
+  const fetchOptions = {
     ...options,
     headers: {
       ...options.headers,
       Authorization: `Bearer ${token}`,
     },
-  });
+  };
 
-  // 액세스 토큰이 만료된 경우
+  let response = await fetch(url, fetchOptions);
+
+  // 만약 응답이 401 Unauthorized라면 토큰 재발급을 시도합니다.
   if (response.status === 401) {
-    const refreshResponse = await fetch(
-      "http://localhost:8080/api/refresh-token",
+    // 여기에서 토큰 재발급 로직을 구현합니다.
+    const reissueResponse = await fetch(
+      `http://localhost:8080/api/refresh-token`,
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json;charset=utf-8",
-          Authorization: `Bearer ${token}`, // AccessToken을 Bearer 토큰으로 추가
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
+        // 유저네임을 이용한 재발급 요청이 아닌 다른 인증 정보가 필요한 경우 수정 필요
       }
     );
 
-    if (refreshResponse.ok) {
-      const token = await refreshResponse.json();
-      localStorage.setItem("token", token); // 새로운 토큰 저장
-      console.log(token , "123123123");
-      // 요청을 재시도
-      return fetch(endpoint, {
-        ...options,
+    if (reissueResponse.ok) {
+      const reissueData = await reissueResponse.json();
+      localStorage.setItem("token", reissueData.accessToken);
+      token = reissueData.accessToken;
+
+      // 재발급 받은 토큰을 사용하여 요청을 재시도합니다.
+      response = await fetch(url, {
+        ...fetchOptions,
         headers: {
-          ...options.headers,
+          ...fetchOptions.headers,
           Authorization: `Bearer ${token}`,
         },
       });
     } else {
-      // 새 토큰을 받아오지 못한 경우, 로그아웃 처리 등의 로직을 추가할 수 있습니다.
-      console.error("Unable to refresh token");
-      // 로그아웃 처리
+      // 재발급 실패 시 처리 (예: 사용자 로그아웃 처리)
+      console.error("Token reissue failed. Please login again.");
+      // 로그아웃 처리 로직 추가
+      return null;
     }
   }
 
   return response;
-}
-
+};
 export default fetchWithToken;
