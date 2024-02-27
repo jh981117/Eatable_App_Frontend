@@ -70,7 +70,7 @@ const refreshToken = async () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("token");
-
+     
       // 토큰 정보를 서버로 전송하여 로그아웃 처리
       await fetchWithToken("http://localhost:8080/api/logout", {
         method: "POST",
@@ -82,6 +82,8 @@ const refreshToken = async () => {
 
       setAuth({ isLoggedIn: false, user: null });
       localStorage.removeItem("token"); // 토큰 삭제
+      localStorage.removeItem("com.naver.nid.access_token"); // 토큰 삭제
+      localStorage.removeItem("com.naver.nid.oauth.state_token"); // 토큰 삭제
       navigate("/home");
     } catch (error) {
       console.error("Error logging out:", error);

@@ -13,15 +13,19 @@ const TabMenu = ({ setInputValue }) => {
         "족발.보쌈", "돈까스", "고기.구이", "피자", "찜.탕.찌개", "양식", "중식", "아시안", "치킨", "한식", "버거", "분식"
     ];
 
+
     const handleTabChange = (tab) => {
         setSelectedTab(tab);
+        setInputValue("");
+        document.getElementById("districts-select").value = "";
+        document.getElementById("favorite-select").value = "";
     };
 
     return (
         <>
             <div>
                 <ul className="nav nav-tabs" role="tablist">
-                    <li className="nav-item">
+                    <li className="nav-item" >
                         <a
                             className={`nav-link ${selectedTab === "districts" ? "active" : ""}`}
                             id="districts-tab"
@@ -35,7 +39,7 @@ const TabMenu = ({ setInputValue }) => {
                             지역
                         </a>
                     </li>
-                    <li className="nav-item">
+                    <li className="nav-item" >
                         <a
                             className={`nav-link ${selectedTab === "products" ? "active" : ""}`}
                             id="products-tab"
@@ -57,8 +61,8 @@ const TabMenu = ({ setInputValue }) => {
                         role="tabpanel"
                         aria-labelledby="districts-tab"
                     >
-                        <select onChange={(e) => setInputValue(e.target.value)}>
-                            <option value="">지역을 선택하세요</option>
+                        <select onChange={(e) => setInputValue(e.target.value)} id="districts-select">
+                            <option value="" >지역을 선택하세요</option>
                             {districts.map((district, index) => (
                                 <option key={index} value={district}>{district}</option>
                             ))}
@@ -70,7 +74,7 @@ const TabMenu = ({ setInputValue }) => {
                         role="tabpanel"
                         aria-labelledby="products-tab"
                     >
-                        <select onChange={(e) => setInputValue(e.target.value)}>
+                        <select onChange={(e) => setInputValue(e.target.value)} id="favorite-select">
                             <option value="">업종을 선택하세요</option>
                             {products.map((product, index) => (
                                 <option key={index} value={product}>{product}</option>

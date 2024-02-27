@@ -1,10 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../rolecomponents/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import NaverLogin from "./NaverLogin";
+import { styled} from 'styled-components';
 
+const StyledInput = styled(Form.Control)`
+  padding: 16px;
+  border-radius: 7px;
+  border: 0px;
+  background: rgba(255, 255, 255, 1);
+  color: black;
+  font-size: 18px;
+  height: 64px;
+  width: 460px;
+  margin-right: 160px;
+  border: 2px solid #555555;
+  &::placeholder {
+    color: #e74c3c;
+    font-weight: bold;
+  }
+
+  
+  &:focus {
+    outline-color: rgba(0, 0, 0, 0);
+    background: rgba(255, 255, 255, 0.95);
+    color: #e74c3c;
+  }
+`;
+
+
+
+const StyledButton =styled(Button)`
+  &:hover {
+    background-color: #e74c3c;
+  }
+`;
+
+const StyledContainer = styled(Container)`
+  margin-top: 130px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+
+  @media screen and (max-width: 600px){
+    margin-left: 35px;
+    
+  }
+`;
+
+
+const Styledh2 = styled.h2`
+  color: #e74c3c;
+    font-weight: bold;
+    font-size: 50px;
+`;
 
 const LoginPage = () => {
 
@@ -20,6 +72,9 @@ const LoginPage = () => {
     submitError: "",
   });
 
+
+
+  
   const changeValue = (e) => {
     setUser({
       ...user,
@@ -147,13 +202,13 @@ const LoginPage = () => {
   };
 
   return (
-    
-    <Container className="mt-3 col-6 flex justify-content-center">
-      <h2>로그인 페이지</h2>      
-      <Form onSubmit={submitUser}>
-        <Form.Group className="mt-3" controlId="formBasicUsername">
-          <Form.Label>아이디 : </Form.Label>
-          <Form.Control
+ 
+    <StyledContainer >
+    <Styledh2 style={{ textAlign: "center" }}><span class="entypo-login"><i class="fa fa-sign-in"></i></span>로그인</Styledh2>
+    <Form onSubmit={submitUser}>
+      <Form.Group className="mt-3 row" controlId="formBasicUsername">
+        <div className="col-sm-9 mx-auto">
+          <StyledInput
             type="text"
             name="username"
             placeholder="아이디를 입력해주세요."
@@ -163,25 +218,37 @@ const LoginPage = () => {
           {user.usernameError && (
             <div className="text-danger">{user.usernameError}</div>
           )}
-        </Form.Group>
+        </div>
+      </Form.Group>
 
-        <Form.Group className="mt-3" controlId="formBasicPassword">
-          <Form.Label>비밀번호 : </Form.Label>
-          <Form.Control type="password" name="password" placeholder="비밀번호를 입력해주세요." value={user.password} onChange={changeValue}/>
-          {user.passwordError && (<div className="text-danger">{user.passwordError}</div>)}
-        </Form.Group>
+      <Form.Group className="mt-3 row" controlId="formBasicPassword">
+        <div className="col-sm-9 mx-auto">
+          <StyledInput
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력해주세요."
+            value={user.password}
+            onChange={changeValue}
+          />
+          {user.passwordError && (
+            <div className="text-danger">{user.passwordError}</div>
+          )}
+        </div>
+      </Form.Group>
 
+      {user.submitError && (
+        <div className="text-danger">{user.submitError}</div>
+      )}
 
-      
-          
-
-        {user.submitError && (<div className="text-danger">{user.submitError}</div>)}
-        <Button variant="primary" type="submit">로그인</Button>
-        <Button className="m-2" variant="primary" type="button" onClick={provision}>회원가입</Button>
-        <NaverLogin/>
-      </Form>
-    </Container>
-  );
+      <div style={{marginTop:'20px'}}className="d-flex justify-content-center">
+        <StyledButton className="m-2" variant="primary" type="submit" style={{ width: '222px' }}>로그인</StyledButton>
+        <StyledButton className="m-2" variant="primary" type="button" onClick={provision} style={{ width: '222px' }}>회원가입</StyledButton>
+      </div>
+      <NaverLogin />
+    </Form>
+  </StyledContainer>
+  
+);
 };
 
 export default LoginPage;

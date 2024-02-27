@@ -44,11 +44,11 @@ const UserWaitingPage = ({ userId }) => {
         const getEntranceStatusText = (waitingState) => {
             switch (waitingState) {
                 case 'TRUE':
-                    return '입장 완료';
+                    return '완료';
                 case 'WAITING':
-                    return '입장 대기';
+                    return '예약취소';
                 case 'FALSE':
-                    return '입장 안함';
+                    return '예약승인';
                 default:
                     return '';
             }
@@ -68,7 +68,7 @@ const UserWaitingPage = ({ userId }) => {
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약 일시</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>주소</th>
                         <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>예약 상태</th>
-                        <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>작업</th>
+                        <th style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}></th>
                     </tr>
                 </thead>
                 <tbody>
