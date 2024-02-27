@@ -134,7 +134,7 @@ const SearchPage = () => {
         className="d-flex justify-content-center"
         style={{ minHeight: "100vh" }}
       >
-        <div style={{width: "100%"}} >
+        <div style={{ width: "100%" }} >
           <h3 className="text-center mb-3">Eatable 검색 결과</h3>
           <hr />
 
@@ -408,7 +408,11 @@ const SearchPage = () => {
             </div>
           )}
           {!loading && (
-            <h2 style={{ textAlign: "center", marginTop: "20px" }}>END</h2>
+            <>
+              <hr />
+              <h2 style={{ textAlign: "center", marginTop: "20px" }}>END</h2>
+              <hr />
+            </>
           )}
         </div>
       </Container>
