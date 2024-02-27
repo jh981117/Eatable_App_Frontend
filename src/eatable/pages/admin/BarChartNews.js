@@ -107,7 +107,7 @@ const AnimatedTable = styled(Table)`
 
   storeLists.forEach(store => {
     const createdAt = new Date(store.createdAt); // 사용자의 가입일
-
+    console.log(createdAt)
     const dateString = createdAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }); // 가입일을 문자열로 변환하여 해당하는 날짜 텍스트 생성
    
 

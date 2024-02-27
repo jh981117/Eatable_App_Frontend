@@ -6,6 +6,11 @@ import { useNavigate } from 'react-router-dom';
 
 const ReviewPage = () => {
 
+  const token = localStorage.getItem("token")
+  const decode = jwtDecode(token);
+
+  console.log(decode, "누구냐 넌!!!!")
+  
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,28 +19,53 @@ const ReviewPage = () => {
   const [editContent, setEditContent] = useState(""); // 내용수정
   const [updateImage, setUpdateImage] = useState({ imgList: [] });  // 이미지수정
   const [newImage, setNewImage] = useState(null); // 이미지 추가
+  const [user , setUser] = useState();
 
   
   useEffect(() => {
-   
-    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+    const token = localStorage.getItem('token');
     const decoded = jwtDecode(token); // 토큰 디코딩
-    // console.log(decoded)
 
     setLoading(true);
-    setError();
-    
-    fetch(`http://localhost:8080/api/store/user/${decoded.userId}`)
+    setError(null);
+
+    // 프로필 가져오기
+    fetch("http://localhost:8080/api/user/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     .then((response) => {
       if (!response.ok) {
-        throw new Error("리뷰 가져오기 실패")
+        throw new Error('Failed to fetch user profile');
       }
-      return response.json()
+      return response.json();
+    })
+    .then((data) => {
+      setUser(data);
+      setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
+    })
+    .catch((error) => {
+      setError(error.message);
+      setLoading(false);
+    });
+
+    // 사용자 리뷰 가져오기
+    fetch(`http://localhost:8080/api/store/user/${decoded.id}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch user reviews');
+      }
+      return response.json();
     })
     .then((data) => {
       setReviews(data);
-      setLoading(false); // 데이터가 가져 와지면 로딩 상태 설정 해제
+      setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
     })
+    .catch((error) => {
+      setError(error.message);
+      setLoading(false);
+    });
   }, []);
 
   if (loading) {
@@ -152,7 +182,8 @@ console.log(reviews, "re");
   return (
     <div>
       <h5>나의 리뷰 목록</h5>
-      {reviews.map((review) => (
+     
+      {reviews?.map((review) => (
       <Card key={review.id}>
         <Card.Body>
           <div style={{display: "flex", justifyContent: "space-between", marginTop: "-5px"}}>
@@ -187,6 +218,9 @@ console.log(reviews, "re");
 
       </Card>
       ))}
+
+
+      
     </div>
   );
 };
