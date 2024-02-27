@@ -49,9 +49,11 @@ const History = () => {
     };
 
     const filteredLists = selectedDate
-        ? historyLists.filter((historyList) => new Date(historyList.createdAt).toLocaleDateString() === selectedDate.toLocaleDateString())
-        : historyLists;
-
+    ? historyLists
+          .filter((historyList) => new Date(historyList.createdAt).toLocaleDateString() === selectedDate.toLocaleDateString())
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    : historyLists;
+    
     return (
         <Container>
             <Row>
