@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn: !!localStorage.getItem("token"), // 토큰 유무에 따른 로그인 상태 초기화
     user: null,
     profile: null,
+    token: localStorage.getItem("token"), // 토큰을 상태로 관리
   });
 
   useEffect(() => {
@@ -44,6 +45,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+   // 로컬 스토리지의 토큰 변경을 감지하고 상태 업데이트
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newToken = localStorage.getItem("token");
+      setAuth((prevAuth) => ({
+        ...prevAuth,
+        isLoggedIn: !!newToken,
+        token: newToken,
+      }));
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
   return (
     <AuthContext.Provider value={{ auth, setAuth, updateProfile }}>
       {children}
