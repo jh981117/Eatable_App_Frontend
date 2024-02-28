@@ -19,14 +19,26 @@ const GoogleMaps = () => {
   const [Keyword,setKeyword] = useState("");
   const [showModal, setShowModal] = useState(false);
   
-  const [initialZoom, setInitialZoom] = useState(13);
+  const [initialZoom, setInitialZoom] = useState(11);
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
 
-  const { isLoaded } = useJsApiLoader({
+  const { isLoaded  } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_KEY,
   });
+
+  const mapOptions = {
+    mapId: "81bc4809ac9f2bc7",
+    zoom: initialZoom,
+    gestureHandling: "cooperative",
+    zoomControl: false,
+    mapTypeControl: false,
+  scaleControl: false,
+  streetViewControl: false,
+  rotateControl: false,
+  fullscreenControl: false
+  };
 
   useEffect(() => {
       fetch(`http://localhost:8080/api/partner/google?inputValue=${inputValue}&keyword=${Keyword}`)
@@ -61,13 +73,13 @@ const GoogleMaps = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedLocation(null);
+    setInitialZoom(11);
   };
 
   const clickedPolygonRef = useRef(null);
   const hoveredPolygonRef = useRef(null);
 
-  const onMapLoad = useCallback(
-    (map) => {
+  const onLoad = (map) => {
       GeoJson.features.forEach((feature) => {
         const coordinates = feature.geometry.coordinates[0];
 
@@ -79,6 +91,8 @@ const GoogleMaps = () => {
           fillColor: "#64CD3C",
           fillOpacity: 0.35,
         });
+
+        polygon.setMap(map,true);
         
         // 클릭 이벤트 핸들러
         window.google.maps.event.addListener(polygon, "click", function (event) {
@@ -90,12 +104,12 @@ const GoogleMaps = () => {
           // 클릭한 폴리곤이 이미 클릭되었는지 확인
           if (clickedPolygonRef.current === polygon) {
             // 이미 클릭된 폴리곤을 다시 클릭한 경우
-            map.setZoom(11); // 지도의 줌을 초기 확대 수준으로 되돌림
+            map.setZoom(11,true); // 지도의 줌을 초기 확대 수준으로 되돌림
             clickedPolygonRef.current = null; // 클릭된 폴리곤을 null로 설정하여 다음 클릭을 대비
           } else {
             // 새로운 폴리곤을 클릭한 경우
             map.setCenter(event.latLng);
-            map.setZoom(13);
+            map.setZoom(13,true);
             polygon.setOptions({ fillColor: "#FF0000" });
             clickedPolygonRef.current = polygon; // 클릭된 폴리곤을 저장
           }
@@ -116,9 +130,6 @@ const GoogleMaps = () => {
             hoveredPolygonRef.current = null;
           }
         });
-
-        polygon.setMap(map);
-        setInitialZoom(11);
 
         // 각 구의 중심점을 계산하여 구 이름을 표시합니다.
         const bounds = new window.google.maps.LatLngBounds();
@@ -149,7 +160,6 @@ const GoogleMaps = () => {
           labelCenterY -= 0.01; // 라벨을 왼쪽으로 이동시킵니다.
         }
         
-        setMap(map);
         const textLabel = new window.google.maps.Marker({
           position: { lng: labelCenterX , lat: labelCenterY }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
           label: {
@@ -163,15 +173,9 @@ const GoogleMaps = () => {
           map: map,
         });
       });
-    },
-    []
-  );
-
-  // useEffect(() => {
-  //   if (map !== null && selectedLocation !== null) {
-  //     map.setZoom(13);
-  //   }
-  // }, [map, selectedLocation]);
+    };
+    
+ 
 
   return isLoaded ? (
     <>
@@ -183,20 +187,17 @@ const GoogleMaps = () => {
         <input
           type="text"
           value={inputValue}
+          heading={90}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="매장찾기"
         />
       </div>
-      
     <GoogleMap
       id="google-map-test"
       mapContainerStyle={mapContainerStyle}
       center={center}
-      options={{
-        mapId: "81bc4809ac9f2bc7",
-        zoom: initialZoom 
-      }}
-      onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
+      options={mapOptions}
+      onLoad={onLoad}
     >
     <MarkerClusterer
   gridSize={40} // 클러스터 그리드 크기 조절
@@ -220,30 +221,31 @@ const GoogleMaps = () => {
         }
       </MarkerClusterer>
 
-      {/* <Modal show={showModal} onHide={handleCloseModal} style={{ margin: "auto"}}>
+      <Modal show={showModal} onHide={handleCloseModal} style={{ margin: "auto" ,  width: "100%", maxWidth: "600px", marginTop:"80px"}}>
         <Modal.Header closeButton>
-          <Modal.Title>{selectedLocation?.storeName}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="d-flex">
-          <p>{selectedLocation?.id}</p>
           <Link to={"/userdetail/" + selectedLocation?.id} style={{ textDecoration: "none" }}>
+          <div className="d-flex">
+          <Modal.Title>{selectedLocation?.storeName}</Modal.Title>
           <img 
                   src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
-                  style={{ width: "px", marginLeft: "14px"}}
+                  style={{ width: "30px", marginLeft: "14px"}}
                 />
-          </Link>
           </div>
-          <img src={selectedLocation?.fileList[0]?.imageUrl} style={{ width: "100%" }} alt="store" />
+          </Link>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{selectedLocation?.id}</p>
+         
+          <img src={selectedLocation?.fileList[0]?.imageUrl} style={{ width: "100%", height: "400px" ,borderRadius: "15px"}} alt="store" />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             닫기
           </Button>
         </Modal.Footer>
-      </Modal> */}
+      </Modal>
       
-      {selectedLocation && ( 
+      {/* {selectedLocation && ( 
         <InfoWindow 
           position={{
             lat: selectedLocation.address.lat,
@@ -273,7 +275,7 @@ const GoogleMaps = () => {
             ></img>
           </div>
         </InfoWindow>
-      )}
+      )} */}
       
     </GoogleMap>
     </>
