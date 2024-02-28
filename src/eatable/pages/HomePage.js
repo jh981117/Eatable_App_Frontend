@@ -139,7 +139,7 @@ const HomePage = () => {
                   src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392859189-free-icon-food-12711337.png"
                   className="Icon"
                 />
-                <span className="keyword">돈까스</span>
+                <span className="keyword">일식</span>
               </div>
               <div
                 className="image-container"

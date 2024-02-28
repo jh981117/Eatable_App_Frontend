@@ -134,7 +134,7 @@ const SearchPage = () => {
         className="d-flex justify-content-center"
         style={{ minHeight: "100vh" }}
       >
-        <div style={{ width: "100%" }} >
+        <div >
           <h3 className="text-center mb-3">Eatable 검색 결과</h3>
           <hr />
 
@@ -162,7 +162,7 @@ const SearchPage = () => {
                 src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708392859189-free-icon-food-12711337.png"
                 className="Icon"
               />
-              <span className="keyword">돈까스</span>
+              <span className="keyword">일식</span>
             </div>
             <div
               className="image-container"
