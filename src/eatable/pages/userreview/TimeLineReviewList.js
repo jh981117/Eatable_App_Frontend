@@ -31,6 +31,12 @@ const TimeLineReviewList = (toId1) => {
   const [comments, setComments] = useState([]); // 댓글 데이터 상태
   // 댓글 폼 표시 상태를 토글하는 함수
   const handleShowComments = async (reviewId) => {
+
+    const token = localStorage.getItem("token")
+    if(!token){
+      alert("로그인이 필요합니다.")
+      navigate("/login")
+    }
     // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
     try {
       const response = await fetch(

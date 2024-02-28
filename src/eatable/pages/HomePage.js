@@ -115,7 +115,7 @@ const HomePage = () => {
           minHeight: "100vh",
         }}
       >
-         <div >
+        <div>
           <hr />
           <TopCategoty />
           <hr />
@@ -383,14 +383,14 @@ const HomePage = () => {
           </div>
         </div>
       </Container>
-      <hr />
-      {isLoading && (
-        <div className="d-flex justify-content-center">
-          <Spinner animation="border" />
-        </div>
-      )}
-      {!isLoading && !hasMore && <p style={{ textAlign: "center" }}>END</p>}
-      <hr />
+        <hr />
+        {isLoading && (
+          <div className="d-flex justify-content-center">
+            <Spinner animation="border" />
+          </div>
+        )}
+        {!isLoading && !hasMore && <p style={{ textAlign: "center" }}>END</p>}
+        <hr />
     </>
   );
 };
