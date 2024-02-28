@@ -16,7 +16,7 @@ const StyledInput = styled(Form.Control)`
   margin-right: 160px;
   border: 2px solid #555555;
   &::placeholder {
-    color: #e74c3c;
+    color: gray;
     font-weight: bold;
   }
 
@@ -24,7 +24,7 @@ const StyledInput = styled(Form.Control)`
   &:focus {
     outline-color: rgba(0, 0, 0, 0);
     background: rgba(255, 255, 255, 0.95);
-    color: #e74c3c;
+    color: gray;
   }
   @media screen and (max-width: 600px) {
     font-size: 12px; 
@@ -45,7 +45,7 @@ const StyledInputEmail = styled(Form.Control)`
   margin-right: 15px;
   border: 2px solid #555555;
   &::placeholder {
-    color: #e74c3c;
+    color: gray;
     font-weight: bold;
   }
 
@@ -53,7 +53,7 @@ const StyledInputEmail = styled(Form.Control)`
   &:focus {
     outline-color: rgba(0, 0, 0, 0);
     background: rgba(255, 255, 255, 0.95);
-    color: #e74c3c;
+    color: gray;
   }
   @media screen and (max-width: 600px) {
     font-size: 10px; 
@@ -74,7 +74,7 @@ const StyledForm =styled(Form)`
 const StyledButton =styled(Button)`
     margin-right: 20px;
   &:hover {
-    background-color: #e74c3c;
+    background-color: gray;
   }
   
   @media screen and (max-width: 600px) {
@@ -88,7 +88,7 @@ const StyledButton =styled(Button)`
 const StyledButtonSignup =styled(Button)`
     margin-left: 230px;
   &:hover {
-    background-color: #e74c3c;
+    background-color: gray;
   }
   @media screen and (max-width: 600px) {
     font-size: 12px; 
@@ -114,7 +114,7 @@ const StyledContainer = styled(Container)`
 `;
 
 const Styledh2 = styled.h2`
-  color: #e74c3c;
+  color: black;
     font-weight: bold;
     font-size: 50px;
     @media screen and (max-width: 600px) {
