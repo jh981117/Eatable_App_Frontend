@@ -1,6 +1,7 @@
-import { jwtDecode } from 'jwt-decode';
 import React, { useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { Button, Card, Form } from 'react-bootstrap';
+
 import { useNavigate } from 'react-router-dom';
 
 
@@ -17,41 +18,48 @@ const ReviewPage = () => {
   const [error, setError] = useState();
   const [editReview, setEditReview] = useState(null);  // 리뷰수정상태인지 아닌지 수정중:리뷰객체담음, 수정X : null
   const [editContent, setEditContent] = useState(""); // 내용수정
-  const [updateImage, setUpdateImage] = useState({ imgList: [] });  // 이미지수정
-  const [newImage, setNewImage] = useState(null); // 이미지 추가
-  const [user , setUser] = useState();
 
-  
+//   const [updateImage, setUpdateImage] = useState({ imgList: [] });  // 이미지수정
+//   const [newImage, setNewImage] = useState(null); // 이미지 추가
+//   const [user , setUser] = useState();
+
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const decoded = jwtDecode(token); // 토큰 디코딩
 
     setLoading(true);
-    setError(null);
+    setError();
+    fetch(`http://localhost:8080/api/store/user/${decoded.userId}`)
 
-    // 프로필 가져오기
-    fetch("http://localhost:8080/api/user/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch user profile');
-      }
-      return response.json();
-    })
-    .then((data) => {
-      setUser(data);
-      setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
-    })
-    .catch((error) => {
-      setError(error.message);
-      setLoading(false);
-    });
 
-    // 사용자 리뷰 가져오기
-    fetch(`http://localhost:8080/api/store/user/${decoded.id}`)
+//     setLoading(true);
+//     setError(null);
+
+//     // 프로필 가져오기
+//     fetch("http://localhost:8080/api/user/profile", {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     })
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error('Failed to fetch user profile');
+//       }
+//       return response.json();
+//     })
+//     .then((data) => {
+//       setUser(data);
+//       setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
+//     })
+//     .catch((error) => {
+//       setError(error.message);
+//       setLoading(false);
+//     });
+
+//     // 사용자 리뷰 가져오기
+//     fetch(`http://localhost:8080/api/store/user/${decoded.id}`)
+
     .then((response) => {
       if (!response.ok) {
         throw new Error('Failed to fetch user reviews');
@@ -68,20 +76,15 @@ const ReviewPage = () => {
     });
   }, []);
 
-  if (loading) {
-    return <div>로딩중...</div>
-  }
-  if (error) {
-    return <div>에러 : {error}</div>
-  }
-  
+  if (loading) { return <div>로딩중...</div> }
+  if (error) { return <div>에러 : {error}</div> }
   const updateReview = (review) => {
     setEditReview(review);
     setEditContent(review.content);
   }
   
+  // 리뷰 수정
   const handleUpdate =  (review) => {
-    // 서버로 수정된 리뷰 보내야됨
     fetch(`http://localhost:8080/api/store/reviews/update`, {
       method: "PUT",
       headers: {"Content-Type": "application/json",},
@@ -102,16 +105,14 @@ const ReviewPage = () => {
       alert("리뷰글이 수정되었습니다.");
       setReviews(updatedReviews);
       // 이미지 수정
-      editReviewImages(review.id);
       setEditReview(null); // 수정완료후 editReview를 null로 설정 편집모드종료
   })
   .catch((error) => {
     setError(error.message);
   });
 };
-
+// 리뷰삭제
   const deleteReview = (review) => {
-
     fetch(`http://localhost:8080/api/store/reviews/delete/${review.id}`, {
     method: "DELETE",
   })
@@ -126,58 +127,21 @@ const ReviewPage = () => {
       if (response.status === 200) {
         setReviews(updatedReviews);
         navigate("/usermypage");
-    } else if (response.status !== 200) {
-        navigate(-1);
+      } else if (response.status !== 200) {
+          navigate(-1);
+      }
     }
-    }
-    
-    
   })
   .catch((error) => {
     setError(error.message);
   });
 };
 
-const editReviewImages = async (reviewId) => {
-  const formData = new FormData();
-  updateImage.imgList.forEach((file) => {
-    formData.append("files", file); // 이미지 파일 추가
-    setNewImage(file);
-    console.log("파일?",setNewImage);
-  });
-
-  try {
-    // 이미지 파일 전송
-    const imageResponse = await fetch(
-      `http://localhost:8080/api/store/reviews/update/attachments + ${reviewId}` ,
-      {
-        method: "PUT",
-        body: formData, // Content-Type을 설정하지 않음. 브라우저가 자동으로 처리
-      }
-    );
-    console.log("응답" , imageResponse);
-
-      if (!imageResponse.ok) {
-        throw new Error("이미지 URL 수정 실패");
-      } else {
-        console.log("이미지 URL 수정 성공");
-        setNewImage(imageResponse.file);
-        console.log("파일 : ", imageResponse.file);
-      }
-    } catch (error) {
-    console.error(error);
-  }
-};
-  
-const addNewImage = (e) => {
-  const file = e.target.files[0];
-  setUpdateImage({ ...updateImage, imgList: [...updateImage.imgList, file] }); // 새 이미지를 기존 이미지 배열에 추가
-  console.log("사진" ,file);
-};
 const cancelUpdate = () => {
   setEditReview(null); // 수정 취소 시 수정 중인 리뷰 상태 초기화
 };
 console.log(reviews, "re");
+
 
   return (
     <div>
@@ -202,17 +166,16 @@ console.log(reviews, "re");
           {editReview === review ? (
               <>
                 <Form.Control as="textarea" rows={3} value={editContent} onChange={(e) => setEditContent(e.target.value)}/>
-                <input type="file" onChange={addNewImage}/>
                 <Button onClick={() => deleteReview(review)}>삭제</Button>
                 <Button onClick={cancelUpdate}>취소</Button> {/* 수정 취소 버튼 */}
                 <Button onClick={() => handleUpdate(review)}>완료</Button>
               </>
             ) : (
               <span>{review.content}</span>
-            )}<br/><br/>
+            )}<br/>
             
-          <span>{"댓글"} {"❤️ 13"}</span><hr/>
-          <span>{"댓글목록"}</span>
+          {/* <span>{"댓글"}</span><hr/>
+          <span>{"댓글목록"}</span> */}
 
         </Card.Body>
 
