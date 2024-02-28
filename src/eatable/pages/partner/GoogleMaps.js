@@ -19,7 +19,7 @@ const GoogleMaps = () => {
   const [Keyword,setKeyword] = useState("");
   const [showModal, setShowModal] = useState(false);
   
-  const [initialZoom, setInitialZoom] = useState(13);
+  const [initialZoom, setInitialZoom] = useState(11);
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
 
@@ -79,6 +79,8 @@ const GoogleMaps = () => {
           fillColor: "#64CD3C",
           fillOpacity: 0.35,
         });
+
+        polygon.setMap(map);
         
         // 클릭 이벤트 핸들러
         window.google.maps.event.addListener(polygon, "click", function (event) {
@@ -117,9 +119,7 @@ const GoogleMaps = () => {
           }
         });
 
-        polygon.setMap(map);
-        setInitialZoom(11);
-
+     
         // 각 구의 중심점을 계산하여 구 이름을 표시합니다.
         const bounds = new window.google.maps.LatLngBounds();
         coordinates.forEach((coord) =>
