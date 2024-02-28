@@ -134,7 +134,7 @@ const SearchPage = () => {
         className="d-flex justify-content-center"
         style={{ minHeight: "100vh" }}
       >
-        <div style={{ width: "100%" }} >
+        <div >
           <h3 className="text-center mb-3">Eatable 검색 결과</h3>
           <hr />
 
