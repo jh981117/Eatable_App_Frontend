@@ -225,6 +225,7 @@ const EatableApp = () => {
         </Container>
         <Footer />
       </AuthProvider>
+       <Footer/>
     </div>
   );
 };
