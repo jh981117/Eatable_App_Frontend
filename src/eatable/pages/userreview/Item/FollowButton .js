@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { getUserIdFromToken } from "./getUserIdFromToken";
 
+
 function FollowButton({ toId, toId1 }) {
   const [isFollowing, setIsFollowing] = useState(false);
 

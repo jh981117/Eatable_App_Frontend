@@ -40,23 +40,20 @@ const UserDetail = () => {
   };
 
   useEffect(() => {
-
     fetch(`http://localhost:8080/api/reservation/reservationCount/${id}`) // 대기열 수를 가져오는 새로운 엔드포인트 호출
-        .then((response) => {
-            if (response.status === 200) {
-                return response.json();
-            } else {
-                return null;
-            }
-        })
-        .then((data) => {
-            if (data !== null) {
-                setWaitingCount(data); // 가져온 웨이팅 수를 상태 변수에 저장
-            }
-        });
-}, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
-
-
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return null;
+        }
+      })
+      .then((data) => {
+        if (data !== null) {
+          setWaitingCount(data); // 가져온 웨이팅 수를 상태 변수에 저장
+        }
+      });
+  }, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/partner/base/detail/${id}`)
@@ -76,12 +73,7 @@ const UserDetail = () => {
       });
   }, [id]); // 두 번째 인자로 의존성 배열을 추가하여 id가 변경될 때만 useEffect 실행
 
-
-
-
-
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-
 
   console.log(waitingCount + "몇명일까요?");
   return (
@@ -216,19 +208,22 @@ const UserDetail = () => {
               </Card.Body>
             </Card>
             <br />
-            <div>
-              <div>매장예약현황</div>
-              <div style={{ whiteSpace: "pre-line" }}>
-                {""}{" "}
-                <div>
-                  매장 웨이팅{" "}
+            <Card
+              style={{
+                width: "100%",
+                maxWidth: "700px",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              <Card.Body>
+                <div style={{ textAlign: "center" }}>
+                  <div>웨이팅 현황</div>
                   {waitingCount > 0
-                    ? `${waitingCount} 팀이 있습니다.`
-                    : "없음"}
-                </div>{" "}
-                {""}
-              </div>
-            </div>
+                    ? `${waitingCount} 팀 기다리는중 ..`
+                    : "바로 입장가능!"}
+                </div>
+              </Card.Body>
+            </Card>
 
             <DetailTab id={detail.id} />
             <br />
@@ -278,7 +273,9 @@ const UserDetail = () => {
                 <Reservation />
               </Modal.Body>
               <Modal.Footer>
-                <Button onClick={() => handleCloseModal("reservation")}>닫기</Button>
+                <Button onClick={() => handleCloseModal("reservation")}>
+                  닫기
+                </Button>
               </Modal.Footer>
             </Modal>
 
@@ -294,9 +291,11 @@ const UserDetail = () => {
                 <ReservationNow />
               </Modal.Body>
               <Modal.Footer>
-                <Button onClick={() => handleCloseModal("waiting")}>닫기</Button>
+                <Button onClick={() => handleCloseModal("waiting")}>
+                  닫기
+                </Button>
               </Modal.Footer>
-            </Modal>  
+            </Modal>
           </div>
         </Col>
       </Row>

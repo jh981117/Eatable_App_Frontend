@@ -1,14 +1,8 @@
 import { jwtDecode } from "jwt-decode";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
-const getCurrentUserId = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
 
-  const decoded = jwtDecode(token);
-  return decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 따라 조정 필요
-};
 
 const CommentsModal = ({
   show,
@@ -23,8 +17,21 @@ const CommentsModal = ({
   const [editMode, setEditMode] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState("");
-  const currentUserId = getCurrentUserId(); // 현재 로그인한 사용자의 ID 가져오기
+  
+  const [currentUserId, setCurrentUserId] = useState(getCurrentUserId());
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCurrentUserId(getCurrentUserId());
+    };
 
+    // 로컬 스토리지 이벤트 리스너 등록
+    window.addEventListener("storage", handleStorageChange);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
   const handleEdit = (comment) => {
     setEditMode(true);
     setEditingCommentId(comment.id);
@@ -74,7 +81,12 @@ const CommentsModal = ({
       }
     }
   };
-
+function getCurrentUserId() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  const decoded = jwtDecode(token);
+  return decoded.userId;
+}
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({ reviewId, text: commentText });

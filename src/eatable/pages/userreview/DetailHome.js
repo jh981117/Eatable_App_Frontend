@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Container } from 'react-bootstrap';
-import fetchWithToken from '../../rolecomponents/FetchCustom';
 
 const DetailHome = ({id}) => {
  const [detail, setDetails] = useState([]);
     useEffect(() => {
-      fetchWithToken(`http://localhost:8080/api/partner/base/detail/${id}`)
+      const token = localStorage.getItem("token")
+      fetch(`http://localhost:8080/api/partner/base/detail/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => {
           if (response.status === 200) {
             return response.json();

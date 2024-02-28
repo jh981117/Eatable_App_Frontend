@@ -1,17 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import { jwtDecode } from "jwt-decode";
-import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 const MyHeader = () => {
   const navigate = useNavigate();
   const { auth, setAuth, updateProfile } = useAuth();
- 
-
-
-
 
   const tempColor = (temperature) => {
     if (temperature >= 20) {
@@ -34,9 +28,9 @@ const MyHeader = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("token");
-     
+
       // 토큰 정보를 서버로 전송하여 로그아웃 처리
-      await fetchWithToken("http://localhost:8080/api/logout", {
+      await fetch("http://localhost:8080/api/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,8 +48,6 @@ const MyHeader = () => {
       // 로그아웃 중 에러가 발생할 경우 적절한 에러 처리를 수행합니다.
     }
   };
-
-
 
   // 로그아웃 버튼의 스타일을 설정합니다.
   const logoutButtonStyle = {

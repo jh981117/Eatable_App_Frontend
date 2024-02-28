@@ -242,6 +242,10 @@ const UserPartnerPage = () => {
           ))}
         </Card>
       </Container>
+      <br />
+      <br />
+      <br />
+      <br />
     </div>
   );
 };

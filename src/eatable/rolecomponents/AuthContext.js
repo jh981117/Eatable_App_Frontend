@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn: !!localStorage.getItem("token"), // 토큰 유무에 따른 로그인 상태 초기화
     user: null,
     profile: null,
-    token: localStorage.getItem("token"), // 토큰을 상태로 관리
+    token: "", // 토큰을 상태로 관리
   });
 
   useEffect(() => {
@@ -24,16 +24,12 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetchWithToken(
-          "http://localhost:8080/api/user/profile",
-          {
-            method: "GET",
-            // headers: {
-            //   Authorization: `Bearer ${token}`,
-            //   "Content-Type": "application/json",
-            // },
-          }
-        );
+        const response = await fetch("http://localhost:8080/api/user/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           if (response.status === 401) {
@@ -52,11 +48,20 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
-
+  const updateToken = (newToken) => {
+    localStorage.setItem("token", newToken); // 로컬 스토리지에 토큰 저장
+    setAuth((prevAuth) => ({
+      ...prevAuth,
+      token: newToken,
+      isLoggedIn: !!newToken,
+    }));
+    updateProfile();
+  };
   // 로컬 스토리지의 토큰 변경을 감지하고 상태 업데이트
   useEffect(() => {
     const handleStorageChange = () => {
       const newToken = localStorage.getItem("token");
+      console.log(newToken);
       setAuth((prevAuth) => ({
         ...prevAuth,
         isLoggedIn: !!newToken,
@@ -68,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
   return (
-    <AuthContext.Provider value={{ auth, setAuth, updateProfile }}>
+    <AuthContext.Provider value={{ auth, setAuth, updateProfile, updateToken }}>
       {children}
     </AuthContext.Provider>
   );

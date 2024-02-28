@@ -24,6 +24,11 @@ const FollorReviewList = (toId1) => {
   const [currentReviewId, setCurrentReviewId] = useState(null);
 
   const handleShowComments = async (reviewId) => {
+       const token = localStorage.getItem("token");
+       if (!token) {
+         alert("로그인이 필요합니다.");
+         navigate("/login");
+       }
     // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
     try {
       const response = await fetch(
