@@ -55,6 +55,12 @@ const PartnerWaitingPage = ({ id }) => {
 
         client.activate();
 
+            // cleanup 함수 정의
+    return () => {
+        console.log('WebSocket 연결 해제');
+        client.deactivate(); // 웹소켓 연결 해제
+    };
+
   
     }, []);
 
@@ -76,12 +82,10 @@ const PartnerWaitingPage = ({ id }) => {
     };
 
     useEffect(() => {
-        // useEffect 내에서 fetchWaitings 호출
         fetchWaitings();
     }, [id]);
 
     const updateWaitingState = async (waitingId, newWaitingState) => {
-        // WaitingDto를 사용하여 waitingState를 문자열로 전송
         const waitingDto = {
             waitingState: newWaitingState
         };

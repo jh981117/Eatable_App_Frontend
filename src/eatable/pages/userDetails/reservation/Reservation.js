@@ -82,7 +82,7 @@ const Reservation = () => {
 
         client.activate();
 
-        // 컴포넌트가 언마운트될 때 웹소켓 연결 해제
+        
  
     }, []);
 
@@ -135,7 +135,7 @@ const Reservation = () => {
             if (stompClient) {
                 // 대기열 정보 요청
                 stompClient.publish({
-                    destination: '/app/updateWaitingList',
+                    destination: '/topic/updateWaitingList',
                     body: JSON.stringify({ partnerId: id }),
                 });
             }
@@ -187,7 +187,6 @@ const Reservation = () => {
                     </div>
                 </>
             )}
-            <div>현재 대기열 수: {waitingCount}</div>
         </div>
     );
 };

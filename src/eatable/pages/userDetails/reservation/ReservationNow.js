@@ -3,13 +3,15 @@ import { Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import WaitingCount from '../item/WaitingCount';
+import { Client } from '@stomp/stompjs';
 
 const initialState = {
     showGreeting: false,
     adultCount: 0,
     userId: '',
     reservationId: null,
-    webSocket: null // 웹소켓 상태 추가
+    webSocket: null, // 웹소켓 상태 추가
+    stompClient: null
 };
 
 const reducer = (state, action) => {
@@ -22,8 +24,8 @@ const reducer = (state, action) => {
             return { ...state, userId: action.payload };
         case 'SET_RESERVATION_ID':
             return { ...state, reservationId: action.payload };
-        case 'SET_WEBSOCKET':
-            return { ...state, webSocket: action.payload }; // 웹소켓 설정 액션 추가
+        case 'SET_STOMP_CLIENT':
+            return { ...state, stompClient: action.payload };
         default:
             return state;
     }
@@ -45,26 +47,48 @@ const ReservationNow = () => {
     }, []);
 
     useEffect(() => {
-        if (modalOpen) {
-            // 모달이 열릴 때 웹소켓 연결 시작
-            const webSocket = new WebSocket('ws://localhost:8080/ws');
+        const client = new Client({
+            brokerURL: 'ws://localhost:8080/ws',
+            debug: function (str) {
+                console.log(str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
 
-            webSocket.onopen = () => {
-                console.log('WebSocket 연결 성공');
-                webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
-            };
+        client.onConnect = function () {
+            console.log('WebSocket 연결 성공');
+            client.subscribe('/topic/reservationConfirmation', function (message) {
+                // 웨이팅 확정 메시지 수신 시, 대기열 정보 업데이트
+                fetchReservations();
+            });
+            dispatch({ type: 'SET_STOMP_CLIENT', payload: client });
+        };
 
-            webSocket.onerror = (error) => {
-                console.error('WebSocket 연결 에러:', error);
-            };
+        client.onStompError = function (frame) {
+            console.error('WebSocket 연결 실패:', frame);
+        };
 
-            webSocket.onclose = () => {
-                console.log('WebSocket 연결 종료');
-            };
+        client.activate();
 
-            dispatch({ type: 'SET_WEBSOCKET', payload: webSocket }); // 웹소켓 설정 액션 디스패치
+        
+ 
+    }, []);
+
+    const fetchReservations = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/reservation/reservationList/${id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch reservations');
+            }
+            const data = await response.json();
+            dispatch({ type: 'SET_RESERVATIONS', payload: data });
+        } catch (error) {
+            console.error('Error fetching reservations:', error);
         }
-    }, [modalOpen]); // modalOpen이 변경될 때마다 실행
+    };
+
 
     const goReservationOk = () => {
         dispatch({ type: 'SET_SHOW_GREETING', payload: true });
@@ -74,8 +98,8 @@ const ReservationNow = () => {
         setModalOpen(false);
     };
 
-    const showReservationOk = () => {
-        const { adultCount, userId, webSocket } = state;
+    const showReservationOk = async () => {
+        const { adultCount, userId, stompClient } = state;
         const reservationData = {
             partnerId: id,
             userId: userId,
@@ -84,32 +108,33 @@ const ReservationNow = () => {
             reservationState: "False"
         };
     
-        fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(reservationData),
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to save reservation');
-                }
-            })
-            .then(data => {
-                dispatch({ type: 'SET_RESERVATION_ID', payload: data.reservationId });
-                alert('예약이 확정되었습니다.');
-    
-                if (webSocket) {
-                    // 웹소켓이 연결되어 있다면 메시지 전송
-                    webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
-                }
-            })
-            .catch(error => {
-                console.error('Error saving reservation:', error);
+        try {
+            const response = await fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reservationData),
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to save reservation');
+            }
+
+            const data = await response.json();
+            dispatch({ type: 'SET_RESERVATION_ID', payload: data.reservationId });
+            alert('예약이 확정되었습니다.');
+
+            if (stompClient) {
+                // 대기열 정보 요청
+                stompClient.publish({
+                    destination: '/topic/updateReservationList',
+                    body: JSON.stringify({ partnerId: id }),
+                });
+            }
+        } catch (error) {
+            console.error('Error saving reservation:', error);
+        }
     };
 
     const { showGreeting, adultCount, reservationId } = state;

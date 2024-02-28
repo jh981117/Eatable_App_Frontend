@@ -30,7 +30,9 @@ import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
 
 import ReservedPage from "./ReservedPage";
-
+import BlackToken from "../chenkBlackToken";
+import useUserProfile from "./UserProfile";
+import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 // const ResponsiveTabs = styled(Tabs)`
 //     @media screen and (max-width: 600px) {
@@ -48,9 +50,7 @@ const StyledContainer = styled(Container)`
 
 
 
-// import BlackToken from "../chenkBlackToken";
-// import useUserProfile from "./UserProfile";
-// import fetchWithToken from "../../rolecomponents/FetchCustom";
+
 
 
 const UserInfoPage = () => {
@@ -433,166 +433,7 @@ const UserInfoPage = () => {
                     </span>
                   </div>
 
-//             <Card.Body className="align-items-start">
-//               <input
-//                 type="file"
-//                 ref={fileInputRef}
-//                 style={{ display: "none" }}
-//                 onChange={handleImageChange}
-//               />
-//               {isPartner() && (
-//                 <Link to={"/userpartnerpage"}>
-//                   <Button>매장 관리</Button>
-//                 </Link>
-//               )}
-//               <div className="d-flex align-items-center">
-//                 <Image
-//                   src={selectedImage || profile.profileImageUrl}
-//                   alt="Profile"
-//                   onClick={handleImageClick}
-//                   style={{
-//                     borderRadius: "50%",
-//                     maxWidth: "250px",
-//                     height: "250px",
-//                     cursor: "pointer",
-//                   }}
-//                 />
-//                 <div className="flex align-items-center ml-3">
-//                   닉네임 :{" "}
-//                   <Input type="text" value={profile.nickName} readOnly />
-//                   <br />내 소개 :{" "}
-//                   {edit.bio ? (
-//                     <Input
-//                       type="text"
-//                       value={profile.bio}
-//                       onChange={(e) => changeValue(e, "bio")}
-//                     />
-//                   ) : (
-//                     <span>{profile.bio}</span>
-//                   )}
-//                   <Button onClick={() => fieldEdit("bio")}>
-//                     {edit.bio ? "취소" : "수정"}
-//                   </Button>
-//                   {edit.bio && (
-//                     <Button onClick={() => updateOk("bio")}>확인</Button>
-//                   )}
-//                   <br />
-//                   온도 : {temperature}
-//                   <br />
-//                   <div>
-//                     <div
-//                       style={{
-//                         backgroundColor: "gray",
-//                         width: "100%",
-//                         height: "20px",
-//                         borderRadius: "10px",
-//                       }}
-//                     >
-//                       <div
-//                         className="temperature-bar"
-//                         style={{
-//                           backgroundColor: "gray",
-//                           width: "100%",
-//                           height: "20px",
-//                           position: "relative",
-//                           borderRadius: "10px",
-//                           animation: "wave 2s infinite linear alternate",
-//                         }}
-//                       >
-//                         {/* 막대의 최대 너비를 100%로 설정 */}
-//                         {/* 온도 바 */}
-//                         <div
-//                           style={{
-//                             backgroundColor: color,
-//                             width: barWidth,
-//                             height: "100%",
-//                             position: "absolute",
-//                             borderRadius: "10px",
-//                             left: barLeft /*animation: "wave 2s infinite"*/,
-//                           }}
-//                         ></div>
-//                         {/* barWidth와 barLeft를 사용하여 막대의 위치와 너비 설정 */}
-//                         {/* 온도가 0인 경우 가운데 아래에 0 표시 */}
-//                         <span
-//                           style={{
-//                             position: "absolute",
-//                             left: "100%",
-//                             bottom: "-20px",
-//                           }}
-//                         >
-//                           30
-//                         </span>
-//                         <span
-//                           style={{
-//                             position: "absolute",
-//                             left: "82%",
-//                             bottom: "-20px",
-//                           }}
-//                         >
-//                           20
-//                         </span>
-//                         <span
-//                           style={{
-//                             position: "absolute",
-//                             left: "65%",
-//                             bottom: "-20px",
-//                           }}
-//                         >
-//                           10
-//                         </span>
-//                         <span
-//                           style={{
-//                             position: "absolute",
-//                             left: "50%",
-//                             bottom: "-20px",
-//                           }}
-//                         >
-//                           0
-//                         </span>
-//                         <span
-//                           style={{
-//                             position: "absolute",
-//                             left: "25%",
-//                             bottom: "-20px",
-//                           }}
-//                         >
-//                           -25
-//                         </span>
-//                         <span
-//                           style={{
-//                             position: "absolute",
-//                             left: "0%",
-//                             bottom: "-20px",
-//                           }}
-//                         >
-//                           -50
-//                         </span>
-//                       </div>
-//                     </div>
-//                   </div>
-//                   {/* <Button variant="primary" onClick={decreaseTemperature}>온도 감소</Button>
-//                   <Button variant="danger" onClick={increaseTemperature}>온도 증가</Button> */}
-//                   <Button variant="primary" onClick={handleTogglePasswordInput}>
-//                     비밀번호 변경
-//                   </Button>
-//                   <Button variant="danger" onClick={handleSignOutClick}>
-//                     회원탈퇴
-//                   </Button>
-//                   {/* 회원탈퇴 모달 */}
-//                   <Modal show={modal} onHide={handleCloseSignOutModal}>
-//                     <Modal.Header closeButton>
-//                       <Modal.Title>회원탈퇴</Modal.Title>
-//                     </Modal.Header>
-//                     <Modal.Body>
-//                       <SignDrop />
-//                       <Button
-//                         variant="secondary"
-//                         onClick={handleCloseSignOutModal}
-//                       >
-//                         닫기
-//                       </Button>
-//                     </Modal.Body>
-//                   </Modal>
+
 
                 </div>
               </span>
@@ -683,61 +524,7 @@ const UserInfoPage = () => {
                         <ListGroup.Item>
                         <div>이메일 : {profile.email}</div>
 
-//                         <ListGroup.Item>
-//                           아이디 :{" "}
-//                           <Input
-//                             type="text"
-//                             value={profile.username}
-//                             readOnly
-//                           />
-//                         </ListGroup.Item>
-//                         <ListGroup.Item>
-//                           닉네임 :{" "}
-//                           {edit.nickName ? (
-//                             <Input
-//                               type="text"
-//                               value={profile.nickName}
-//                               onChange={(e) => changeValue(e, "nickName")}
-//                             />
-//                           ) : (
-//                             <span>{profile.nickName}</span>
-//                           )}
-//                           <Button onClick={() => fieldEdit("nickName")}>
-//                             {edit.nickName ? "취소" : "수정"}
-//                           </Button>
-//                           {edit.nickName && (
-//                             <Button onClick={() => updateOk("nickName")}>
-//                               확인
-//                             </Button>
-//                           )}
-//                         </ListGroup.Item>
-//                         <ListGroup.Item>
-//                           이름 :{" "}
-//                           <Input type="text" value={profile.name} readOnly />
-//                         </ListGroup.Item>
-//                         <ListGroup.Item>
-//                           연락처 :{" "}
-//                           {edit.phone ? (
-//                             <Input
-//                               type="text"
-//                               value={profile.phone}
-//                               onChange={(e) => changeValue(e, "phone")}
-//                             />
-//                           ) : (
-//                             <span>{profile.phone}</span>
-//                           )}
-//                           <Button onClick={() => fieldEdit("phone")}>
-//                             {edit.phone ? "취소" : "수정"}
-//                           </Button>
-//                           {edit.phone && (
-//                             <Button onClick={() => updateOk("phone")}>
-//                               확인
-//                             </Button>
-//                           )}
-//                         </ListGroup.Item>
-//                         <ListGroup.Item>
-//                           이메일 :{" "}
-//                           <Input type="text" value={profile.email} readOnly />
+
 
                         </ListGroup.Item>
                         {/* <Button onClick={updateInfo}>수정</Button> */}
