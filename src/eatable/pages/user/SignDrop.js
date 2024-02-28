@@ -68,7 +68,7 @@ const SignDrop = ( ) => {
         />
         { <p style={{ color: 'red' }}></p>}
         {/* <Button variant="danger" onClose={closeModal}>취소</Button> */}
-        <Button variant="primary" onClick={handleSubmit}>회원 탈퇴</Button>
+        <Button variant="primary" style={{marginLeft: "27%", width: "30vh"}} onClick={handleSubmit}>회원 탈퇴</Button>
       </div>
     );
   };
