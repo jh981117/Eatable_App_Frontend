@@ -1,40 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import WaitingCount from '../item/WaitingCount';
 
+const initialState = {
+    showGreeting: false,
+    adultCount: 0,
+    userId: '',
+    reservationId: null,
+    webSocket: null // 웹소켓 상태 추가
+};
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'SET_SHOW_GREETING':
+            return { ...state, showGreeting: action.payload };
+        case 'SET_ADULT_COUNT':
+            return { ...state, adultCount: action.payload };
+        case 'SET_USER_ID':
+            return { ...state, userId: action.payload };
+        case 'SET_RESERVATION_ID':
+            return { ...state, reservationId: action.payload };
+        case 'SET_WEBSOCKET':
+            return { ...state, webSocket: action.payload }; // 웹소켓 설정 액션 추가
+        default:
+            return state;
+    }
+};
+
 // 실시간 예약 페이지
 const ReservationNow = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-
-    const [showGreeting, setShowGreeting] = useState(false);
-    const [adultCount, setAdultCount] = useState(0);
-    const [userId, setUserId] = useState("");
-    const [reservationId, setReservationId] = useState(null);
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const [modalOpen, setModalOpen] = useState(false); // 모달 열림 상태 변수
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
             const decoded = jwtDecode(token);
-            setUserId(decoded.userId);
+            dispatch({ type: 'SET_USER_ID', payload: decoded.userId });
         }
     }, []);
 
+    useEffect(() => {
+        if (modalOpen) {
+            // 모달이 열릴 때 웹소켓 연결 시작
+            const webSocket = new WebSocket('ws://localhost:8080/ws');
+
+            webSocket.onopen = () => {
+                console.log('WebSocket 연결 성공');
+                webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
+            };
+
+            webSocket.onerror = (error) => {
+                console.error('WebSocket 연결 에러:', error);
+            };
+
+            webSocket.onclose = () => {
+                console.log('WebSocket 연결 종료');
+            };
+
+            dispatch({ type: 'SET_WEBSOCKET', payload: webSocket }); // 웹소켓 설정 액션 디스패치
+        }
+    }, [modalOpen]); // modalOpen이 변경될 때마다 실행
+
     const goReservationOk = () => {
-        setShowGreeting(true);
+        dispatch({ type: 'SET_SHOW_GREETING', payload: true });
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
     };
 
     const showReservationOk = () => {
+        const { adultCount, userId, webSocket } = state;
         const reservationData = {
             partnerId: id,
             userId: userId,
             people: adultCount,
             reservationRegDate: new Date().toISOString(),
-            reservationState: "True"
+            reservationState: "False"
         };
-
+    
         fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
             method: 'POST',
             headers: {
@@ -50,21 +99,28 @@ const ReservationNow = () => {
                 }
             })
             .then(data => {
-                setReservationId(data.reservationId);
+                dispatch({ type: 'SET_RESERVATION_ID', payload: data.reservationId });
                 alert('예약이 확정되었습니다.');
+    
+                if (webSocket) {
+                    // 웹소켓이 연결되어 있다면 메시지 전송
+                    webSocket.send(JSON.stringify({ action: 'updateWaitingCount', partnerId: id }));
+                }
             })
             .catch(error => {
                 console.error('Error saving reservation:', error);
             });
     };
 
+    const { showGreeting, adultCount, reservationId } = state;
+
     return (
         <div>
             예약 인원 설정하기 <br />
 
-            <Button onClick={() => setAdultCount(adultCount > 0 ? adultCount - 1 : 0)}>-</Button>
+            <Button onClick={() => dispatch({ type: 'SET_ADULT_COUNT', payload: Math.max(adultCount - 1, 0) })}>-</Button>
             총원: {adultCount}
-            <Button onClick={() => setAdultCount(adultCount + 1)}>+</Button>
+            <Button onClick={() => dispatch({ type: 'SET_ADULT_COUNT', payload: adultCount + 1 })}>+</Button>
             <br />
 
             <hr />

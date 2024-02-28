@@ -12,6 +12,8 @@ import { jwtDecode } from "jwt-decode";
 import { Link } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import TopCategoty from "../fregment/TopCategoty";
+import CommentsModal from "./Item/CommentsModal";
+import CommentLength from "./Item/CommentLength";
 const RandomReviewList = (toId1) => {
   const [reviewList, setReviews] = useState([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -20,10 +22,80 @@ const RandomReviewList = (toId1) => {
   const [hasMore, setHasMore] = useState(true);
   const [followingList, setFollowingList] = useState([]);
   const navigate = useNavigate();
-
+  const [comments, setComments] = useState([]); // 댓글 데이터 상태
+    const [modalShow, setModalShow] = useState(false);
+    const [currentReviewId, setCurrentReviewId] = useState(null);
   function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
   }
+
+  const handleShowComments = async (reviewId) => {
+    // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/comments/list/${reviewId}`
+      );
+      if (!response.ok) {
+        throw new Error("댓글을 불러오는 데 실패했습니다.");
+      }
+      const data = await response.json();
+      setComments(data); // 댓글 데이터 상태를 업데이트합니다.
+      setCurrentReviewId(reviewId); // 현재 리뷰 ID 상태를 업데이트합니다.
+      setModalShow(true); // 모달을 표시합니다.
+    } catch (error) {
+      console.error(error);
+      // 여기에 에러 처리 로직을 추가할 수 있습니다. 예: 사용자에게 오류 메시지 표시
+    }
+  };
+
+  const updateCommentsAfterEdit = (updatedComment) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.id === updatedComment.id ? updatedComment : comment
+      )
+    );
+  };
+
+  const removeComment = (commentId) => {
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment.id !== commentId)
+    );
+  };
+  useEffect(() => {
+    console.log(comments, "댓글 데이터 업데이트 후");
+  }, [comments]);
+
+  // 댓글 제출 핸들러
+  const handleSubmitComment = async ({ reviewId, text }) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Authentication token is not found.");
+      }
+
+      // 토큰 디코딩하여 사용자 ID 얻기
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 맞게 조정해야 할 수 있음
+
+      const response = await fetch("http://localhost:8080/api/comments/write", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: text, // CommentsModal에서 받은 댓글 내용
+          userId, // 사용자 ID
+          storeReviewId: reviewId, // 댓글이 달리는 리뷰의 ID
+        }),
+      });
+      const addedComment = await response.json();
+      setComments((prevComments) => [...prevComments, addedComment]);
+      // 나머지 로직...
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+    }
+  };
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -141,7 +213,6 @@ const RandomReviewList = (toId1) => {
   `}
       </style>
 
-      
       <Container className="grid-container">
         {reviewList.length > 0 ? (
           reviewList.map((review, index) => (
@@ -207,6 +278,10 @@ const RandomReviewList = (toId1) => {
                         marginLeft: "5px",
                       }}
                     />
+                    <span>
+                      {" "}
+                      <CommentLength storeReviewId={review.id} />{" "}
+                    </span>
                   </span>
                 </span>
                 <span>
@@ -296,12 +371,28 @@ const RandomReviewList = (toId1) => {
 
                 <hr />
                 <div>
-                  <span>
-                    <img
-                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708776197389-free-icon-chat-9256384.png"
-                      style={{ width: "30px" }}
-                    />
-                  </span>
+                  {/* 리뷰 리스트 렌더링 로직 */}
+                  <img
+                    src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708776197389-free-icon-chat-9256384.png"
+                    style={{ width: "30px", cursor: "pointer" }} // cursor 속성을 추가하여 클릭 가능함을 시각적으로 나타냄
+                    onClick={() => handleShowComments(review.id)}
+                    alt="댓글 보기"
+                  />
+
+                  <CommentsModal
+                    show={modalShow}
+                    handleClose={() => setModalShow(false)}
+                    reviewId={currentReviewId}
+                    comments={comments}
+                    onSubmit={(commentData) =>
+                      handleSubmitComment({
+                        ...commentData,
+                        reviewId: currentReviewId,
+                      })
+                    }
+                    onUpdateComment={updateCommentsAfterEdit} // 수정 로직을 처리하는 함수 전달
+                    onDeleteComment={removeComment} // 삭제 로직을 처리하는 함수 전달
+                  />
                 </div>
               </div>
             </div>

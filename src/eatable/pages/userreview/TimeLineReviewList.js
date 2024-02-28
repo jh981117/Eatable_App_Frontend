@@ -11,6 +11,9 @@ import FollowButton from "./Item/FollowButton ";
 import { useNavigate } from "react-router-dom";
 import CommentForm from "./Item/CommentForm";
 import CommentsModal from "./Item/CommentsModal";
+import { jwtDecode } from "jwt-decode";
+import fetchWithToken from "../../rolecomponents/FetchCustom";
+import CommentLength from "./Item/CommentLength";
 
 const TimeLineReviewList = (toId1) => {
   const [loading, setLoading] = useState(false);
@@ -31,7 +34,7 @@ const TimeLineReviewList = (toId1) => {
     // 모달을 표시하기 전에 댓글 데이터를 로딩합니다.
     try {
       const response = await fetch(
-        `http://localhost:8080/api/comments?reviewId=${reviewId}`
+        `http://localhost:8080/api/comments/list/${reviewId}`
       );
       if (!response.ok) {
         throw new Error("댓글을 불러오는 데 실패했습니다.");
@@ -46,27 +49,53 @@ const TimeLineReviewList = (toId1) => {
     }
   };
 
-  // 댓글 제출 핸들러
-  const handleSubmitComment = async (commentData) => {
-    try {
-      const response = await fetch("http://localhost:8080/api/comments/write", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(commentData),
-      });
+const updateCommentsAfterEdit = (updatedComment) => {
+  setComments((prevComments) =>
+    prevComments.map((comment) =>
+      comment.id === updatedComment.id ? updatedComment : comment
+    )
+  );
+};
 
-      if (!response.ok) {
-        throw new Error("Failed to submit comment");
+const removeComment = (commentId) => {
+  setComments((prevComments) =>
+    prevComments.filter((comment) => comment.id !== commentId)
+  );
+};
+  useEffect(() => {
+    console.log(comments, "댓글 데이터 업데이트 후");
+  }, [comments]);
+
+  // 댓글 제출 핸들러
+  const handleSubmitComment = async ({ reviewId, text }) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Authentication token is not found.");
       }
 
-      const addedComment = await response.json();
-      console.log("Comment added:", addedComment);
+      // 토큰 디코딩하여 사용자 ID 얻기
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 맞게 조정해야 할 수 있음
 
-      // 댓글 추가 후 댓글 목록 업데이트
+      const response = await fetch(
+        "http://localhost:8080/api/comments/write",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: text, // CommentsModal에서 받은 댓글 내용
+            userId, // 사용자 ID
+            storeReviewId: reviewId, // 댓글이 달리는 리뷰의 ID
+          }),
+        }
+      );
+      const addedComment = await response.json();
       setComments((prevComments) => [...prevComments, addedComment]);
-      // 모달을 닫거나, 필요한 경우 추가 UI 업데이트 처리
+      // 나머지 로직...
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
@@ -117,6 +146,7 @@ const TimeLineReviewList = (toId1) => {
   const handleClick = (partnerId) => {
     navigate(`/userdetail/${partnerId}`);
   };
+
   return (
     <div>
       <style>
@@ -214,6 +244,10 @@ const TimeLineReviewList = (toId1) => {
                         marginLeft: "5px",
                       }}
                     />
+                    <span>
+                      {" "}
+                      <CommentLength storeReviewId={review.id} />{" "}
+                    </span>
                   </span>
                 </span>
                 <span>
@@ -313,15 +347,26 @@ const TimeLineReviewList = (toId1) => {
                 <hr />
                 <div>
                   {/* 리뷰 리스트 렌더링 로직 */}
-                  <Button onClick={() => handleShowComments(review.id)}>
-                    댓글 보기
-                  </Button>
+                  <img
+                    src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708776197389-free-icon-chat-9256384.png"
+                    style={{ width: "30px", cursor: "pointer" }} // cursor 속성을 추가하여 클릭 가능함을 시각적으로 나타냄
+                    onClick={() => handleShowComments(review.id)}
+                    alt="댓글 보기"
+                  />
+
                   <CommentsModal
                     show={modalShow}
                     handleClose={() => setModalShow(false)}
                     reviewId={currentReviewId}
                     comments={comments}
-                    onSubmit={handleSubmitComment} // 추가
+                    onSubmit={(commentData) =>
+                      handleSubmitComment({
+                        ...commentData,
+                        reviewId: currentReviewId,
+                      })
+                    }
+                    onUpdateComment={updateCommentsAfterEdit} // 수정 로직을 처리하는 함수 전달
+                    onDeleteComment={removeComment} // 삭제 로직을 처리하는 함수 전달
                   />
                 </div>
               </div>

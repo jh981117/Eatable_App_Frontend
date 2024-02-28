@@ -53,7 +53,7 @@ const HomePage = () => {
         } finally {
           setIsLoading(false);
         }
-      }, 500); // 1초 지연 후 데이터 로딩
+      }, 0); // 1초 지연 후 데이터 로딩
     };
 
     loadPartners();
@@ -115,7 +115,7 @@ const HomePage = () => {
           minHeight: "100vh",
         }}
       >
-        <div>
+         <div >
           <hr />
           <TopCategoty />
           <hr />

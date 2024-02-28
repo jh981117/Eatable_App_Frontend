@@ -7,10 +7,30 @@ import { Form } from 'react-bootstrap';
 
 const PartnerWrite = () => {
   const navigate = useNavigate();
-
   ////////구분선//////////////
   const { userId } = useParams();
   ////////구분선//////////////
+  // userId에 해당하는 유저 정보 가져오기
+  
+
+
+ const [userEmail,setUserEmail] =useState('')
+ useEffect(() => {
+  fetch(`http://localhost:8080/api/user/list/${userId}`, {
+    method: "GET", 
+  })
+  .then((response) => {
+    if (response.status === 200) {
+      return response.json();
+    }
+    return null;
+  })
+  .then((data) => {
+    setUserEmail(data.email);
+  });
+}, []);
+
+
 
   const [post, setPost] = useState({
     userId: "",
@@ -109,7 +129,9 @@ const PartnerWrite = () => {
       });
   };
 
-  // email js
+
+  //email js//
+
   const form = useRef();
 
   const sendEmail = e => {
@@ -480,11 +502,13 @@ const PartnerWrite = () => {
             <option value="user,partner">파트너</option>
           </select>
         </div>
-
+               
         {/* 하단 버튼 */}
         <div className="d-flex justify-content-end my-3">
+
           <Form ref={form}>
             <Form.Control type="hidden" name="user_name" value="Eatable" />
+
             <Form.Control
               type="hidden"
               name="user_email"
@@ -493,7 +517,7 @@ const PartnerWrite = () => {
             <Form.Control
               type="hidden"
               name="to_email"
-              value="imsen4@naver.com"
+              value={userEmail}
             />
             <Form.Control
               as="textarea"
@@ -501,6 +525,7 @@ const PartnerWrite = () => {
               name="message"
               value="입점신청 승인이 완료되었습니다."
             />
+
             <button type="submit" className="button-link" onClick={(e) => { handleSubmit(e); sendEmail(e); }}>
               작성완료
             </button>

@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { useAuth } from "../../rolecomponents/AuthContext";
-import "../partner/components/AutoComplete.css";
+import { jwtDecode } from "jwt-decode";
+import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 const MyHeader = () => {
   const navigate = useNavigate();
   const { auth, setAuth, updateProfile } = useAuth();
+ 
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setAuth((prevAuth) => ({ ...prevAuth, isLoggedIn: false }));
 
-      return;
-    }
-    updateProfile();
-  }, []);
+
 
   const tempColor = (temperature) => {
     if (temperature >= 20) {
@@ -35,13 +30,13 @@ const MyHeader = () => {
       return "Gray"; // 기본값은 회색
     }
   };
-  console.log(auth);
+
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("token");
-
+     
       // 토큰 정보를 서버로 전송하여 로그아웃 처리
-      await fetch("http://localhost:8080/api/logout", {
+      await fetchWithToken("http://localhost:8080/api/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,8 +44,10 @@ const MyHeader = () => {
         },
       });
 
-      setAuth(""); // 프로필 정보 초기화
+      setAuth({ isLoggedIn: false, user: null });
       localStorage.removeItem("token"); // 토큰 삭제
+      localStorage.removeItem("com.naver.nid.access_token"); // 토큰 삭제
+      localStorage.removeItem("com.naver.nid.oauth.state_token"); // 토큰 삭제
       navigate("/home");
     } catch (error) {
       console.error("Error logging out:", error);
@@ -58,14 +55,7 @@ const MyHeader = () => {
     }
   };
 
-  // 네비바의 스타일을 설정합니다.
-  const navbarStyle = {
-    height: "60px", // 원하는 높이로 조정하세요
-    display: "flex",
-    alignItems: "center", // 세로 가운데 정렬
-    // justifyContent: "space-between", // 요소 간 간격 조절
-    padding: "0 20px", // 좌우 여백 추가
-  };
+
 
   // 로그아웃 버튼의 스타일을 설정합니다.
   const logoutButtonStyle = {
@@ -74,7 +64,6 @@ const MyHeader = () => {
     marginRight: "5px",
   };
   console.log(auth);
-
   return (
     <>
       <style>
@@ -112,7 +101,15 @@ const MyHeader = () => {
             {auth.isLoggedIn ? (
               <>
                 {/* 로그인 했을 때 보여줄 링크들 */}
-                <Link to="/searchPage" style={{ marginRight: "10px" ,marginTop:"10px",textDecoration:"none" ,color:"gray"}}>
+                <Link
+                  to="/searchPage"
+                  style={{
+                    marginRight: "10px",
+                    marginTop: "10px",
+                    textDecoration: "none",
+                    color: "gray",
+                  }}
+                >
                   <span
                     className="d-flex align-items-center"
                     style={{ width: "60px" }}

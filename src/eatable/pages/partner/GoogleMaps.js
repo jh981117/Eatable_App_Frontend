@@ -8,49 +8,59 @@ import {
 } from "@react-google-maps/api";
 import { Link } from "react-router-dom";
 import { GeoJson } from "./components/GeoJson"; // GeoJson.js 파일에서 GeoJson 데이터 import
+import TabMenu from "./TabMenu";
+import { Button, Modal } from "react-bootstrap";
 
 const GoogleMaps = () => {
   const [locations, setLocations] = useState([]); // 서버로부터 받아온 위치 데이터를 저장할 상태
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 정보
   const [map,setMap] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [Keyword,setKeyword] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  
+  const [initialZoom, setInitialZoom] = useState(13);
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
-
-  const options = { 
-    zoom: 11,
-    mapId: "81bc4809ac9f2bc7"
-  };
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_KEY,
-   
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/partner/totallist"
-        );
-        if (response.status === 200) {
-          const data = await response.json();
-          setLocations(data); // 데이터를 상태 변수에 설정
-        } else {
-          console.error("Failed to fetch data");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+      fetch(`http://localhost:8080/api/partner/google?inputValue=${inputValue}&keyword=${Keyword}`)
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return null;
+          }
+        })
+        .then((data) => {
+          if (data !== null) {
+            console.log(data);
+            setLocations(data);
+          }
+        })
+        .catch((error) => console.error("Error fetching search results:", error));
+  }, [inputValue, Keyword]);
 
   const mapContainerStyle = {
     height: "500px",
     width: "100%",
     borderRadius: "20px",
+  };
+
+  const handleMarkerClick = (location) => {
+    setSelectedLocation(location);
+    setShowModal(true);
+    setInitialZoom(13);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedLocation(null);
   };
 
   const clickedPolygonRef = useRef(null);
@@ -70,22 +80,6 @@ const GoogleMaps = () => {
           fillOpacity: 0.35,
         });
         
-
-    //     const nonPolygonArea = new window.google.maps.Rectangle({
-    //       bounds: {
-    //         north: 100.5,
-    // south: 5.5,
-    // east: 140.5,
-    // west: 60.5,
-    //       },
-    //       fillColor: "#FFFFFF", // 하얀색으로 설정
-    //       fillOpacity: 1, // Opacity 설정
-    //       strokeWeight: 0, // 테두리 없음
-    //       map: map,
-    //     });
-
-    //     nonPolygonArea.setMap(map);
-
         // 클릭 이벤트 핸들러
         window.google.maps.event.addListener(polygon, "click", function (event) {
           if (clickedPolygonRef.current !== null) {
@@ -124,6 +118,7 @@ const GoogleMaps = () => {
         });
 
         polygon.setMap(map);
+        setInitialZoom(11);
 
         // 각 구의 중심점을 계산하여 구 이름을 표시합니다.
         const bounds = new window.google.maps.LatLngBounds();
@@ -134,12 +129,29 @@ const GoogleMaps = () => {
 
         // 종로구인 경우에만 라벨의 중심점을 왼쪽으로 이동시킵니다.
         let labelCenterX = center.lng(); // 중심점의 x 좌표를 설정합니다.
+        let labelCenterY = center.lat();
         if (feature.properties.SIG_KOR_NM === "종로구") {
           labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
         }
+        if (feature.properties.SIG_KOR_NM === "서초구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강남구") {
+          labelCenterX -= 0.02; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강북구") {
+          labelCenterX -= 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "강남구") {
+          labelCenterX += 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        if (feature.properties.SIG_KOR_NM === "양천구") {
+          labelCenterY -= 0.01; // 라벨을 왼쪽으로 이동시킵니다.
+        }
+        
         setMap(map);
         const textLabel = new window.google.maps.Marker({
-          position: { lat: center.lat(), lng: labelCenterX }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
+          position: { lng: labelCenterX , lat: labelCenterY }, // x 좌표를 수정하여 라벨의 위치를 조정합니다.
           label: {
             text: feature.properties.SIG_KOR_NM, // 구 이름을 표시합니다.
             color: "#000000",
@@ -160,20 +172,35 @@ const GoogleMaps = () => {
   //     map.setZoom(13);
   //   }
   // }, [map, selectedLocation]);
-  
 
   return isLoaded ? (
+    <>
+   <div>
+    <TabMenu setInputValue={setKeyword} />
+  </div>
+
+    <div className="search-container mt-1 mb-3">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="매장찾기"
+        />
+      </div>
+      
     <GoogleMap
       id="google-map-test"
       mapContainerStyle={mapContainerStyle}
       center={center}
       options={{
         mapId: "81bc4809ac9f2bc7",
-        zoom: 12.4 // 여기에서 zoom 속성을 설정합니다.
+        zoom: initialZoom 
       }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
-      <MarkerClusterer>
+    <MarkerClusterer
+  gridSize={40} // 클러스터 그리드 크기 조절
+>
         {(clusterer) =>
           locations.map((location) => (
             <Marker
@@ -182,18 +209,40 @@ const GoogleMaps = () => {
               lat: location.address.lat,
               lng: location.address.lng,
             }}
-            onClick={(event) => {
-              setSelectedLocation(location);
-            }}
+            onClick={(event) => handleMarkerClick(location)}
             clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
             icon={{
-              url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-              scaledSize: new window.google.maps.Size(20 , 20), // 아이콘의 크기를 조정합니다.
+              url: 'https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1709017055899-image.png',
+              scaledSize: new window.google.maps.Size(30 , 30), // 아이콘의 크기를 조정합니다.
             }}
           />
           ))
         }
       </MarkerClusterer>
+
+      {/* <Modal show={showModal} onHide={handleCloseModal} style={{ margin: "auto"}}>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedLocation?.storeName}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex">
+          <p>{selectedLocation?.id}</p>
+          <Link to={"/userdetail/" + selectedLocation?.id} style={{ textDecoration: "none" }}>
+          <img 
+                  src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
+                  style={{ width: "px", marginLeft: "14px"}}
+                />
+          </Link>
+          </div>
+          <img src={selectedLocation?.fileList[0]?.imageUrl} style={{ width: "100%" }} alt="store" />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            닫기
+          </Button>
+        </Modal.Footer>
+      </Modal> */}
+      
       {selectedLocation && ( 
         <InfoWindow 
           position={{
@@ -210,21 +259,22 @@ const GoogleMaps = () => {
             >
               <h2>
                 {selectedLocation.storeName}
-
-                <img
+                <img 
                   src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
-                  style={{ width: "15px" }}
+                  style={{ width: "15px", marginLeft: "14px"}}
                 />
               </h2>
             </Link>
             <img
               src={selectedLocation.fileList[0].imageUrl}
-              style={{ width: "100%" }}
+              style={{ height: "200px",width: "100%" }}
             ></img>
           </div>
         </InfoWindow>
       )}
+      
     </GoogleMap>
+    </>
   ) : (
     <></>
   );

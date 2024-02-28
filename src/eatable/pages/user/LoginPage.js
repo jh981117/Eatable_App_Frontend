@@ -1,10 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../rolecomponents/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import NaverLogin from "./NaverLogin";
+import { styled} from 'styled-components';
 
+const StyledInput = styled(Form.Control)`
+  padding: 16px;
+  border-radius: 7px;
+  border: 0px;
+  background: rgba(255, 255, 255, 1);
+  color: black;
+  font-size: 18px;
+  height: 64px;
+  width: 460px;
+  margin-right: 160px;
+  border: 2px solid #555555;
+  &::placeholder {
+    color: #e74c3c;
+    font-weight: bold;
+  }
+
+  
+  &:focus {
+    outline-color: rgba(0, 0, 0, 0);
+    background: rgba(255, 255, 255, 0.95);
+    color: #e74c3c;
+  }
+`;
+
+
+
+const StyledButton =styled(Button)`
+  &:hover {
+    background-color: #e74c3c;
+  }
+`;
+
+const StyledContainer = styled(Container)`
+  margin-top: 130px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+
+  @media screen and (max-width: 600px){
+    margin-left: 35px;
+    
+  }
+`;
+
+
+const Styledh2 = styled.h2`
+  color: #e74c3c;
+    font-weight: bold;
+    font-size: 50px;
+`;
 
 const LoginPage = () => {
 
@@ -20,6 +72,9 @@ const LoginPage = () => {
     submitError: "",
   });
 
+
+
+  
   const changeValue = (e) => {
     setUser({
       ...user,
@@ -47,9 +102,11 @@ const LoginPage = () => {
 
 
 
+
     const saveTokensToLocalStorage = (token) => {
       localStorage.setItem("token", token);
       // localStorage.setItem("refreshToken", refreshToken);
+
     };
 
     if (!usernameError && !passwordError) {
@@ -69,36 +126,44 @@ const LoginPage = () => {
           const data = await response.json();
           console.log("로그인 성공", data);
           alert("로그인 성공!");
+
           saveTokensToLocalStorage(data.token); // 액세스 토큰과 리프레시 토큰 저장
+
 
           // JWT에서 사용자 정보 추출 (예: 닉네임)
 
-      const profileResponse = await fetch('http://localhost:8080/api/user/profile', {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${data.token}`,
-              'Content-Type': 'application/json',
-            },
-          });
+          const profileResponse = await fetch(
+            "http://localhost:8080/api/user/profile",
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${data.token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
           if (!profileResponse.ok) {
-            throw new Error('Failed to fetch profile');
+            throw new Error("Failed to fetch profile");
           }
 
           const profileData = await profileResponse.json();
 
           // 로그인 상태와 프로필 정보를 함께 업데이트
-          setAuth({ isLoggedIn: true, user: profileData, profile: profileData });
+          setAuth({
+            isLoggedIn: true,
+            user: profileData,
+            profile: profileData,
+          });
 
-              const attemptedUrl = sessionStorage.getItem("attemptedUrl");
-      if (attemptedUrl) {
-        navigate("/home");
-        sessionStorage.removeItem("attemptedUrl"); // 더 이상 필요 없으므로 삭제
-      } else {
-        // 기본 페이지로 리디렉션
-        navigate("/");
-      }
-
+          const attemptedUrl = sessionStorage.getItem("attemptedUrl");
+          if (attemptedUrl) {
+            navigate("/home");
+            sessionStorage.removeItem("attemptedUrl"); // 더 이상 필요 없으므로 삭제
+          } else {
+            // 기본 페이지로 리디렉션
+            navigate("/");
+          }
         } else {
           console.error("로그인 실패:", response.status);
           if (response.status === 401) {
@@ -106,7 +171,7 @@ const LoginPage = () => {
           } else if (response.status === 403) {
             window.confirm("탈퇴한 회원입니다."); // 탈퇴한 회원일 경우의 처리
           } else {
-            window.confirm("아이디가 존재하지 않습니다.");  // 404
+            window.confirm("아이디가 존재하지 않습니다."); // 404
           }
         }
       }
@@ -140,12 +205,14 @@ const LoginPage = () => {
   };
 
   return (
+
     
     <Container className="mt-3 col-6 flex justify-content-center" style={{backgroundColor: "white", marginTop: "250px", borderRadius: "10px"}}>
       <Form onSubmit={submitUser}>
         <Form.Group className="mt-3" controlId="formBasicUsername">
           <Form.Label>아이디</Form.Label>
           <Form.Control
+
             type="text"
             name="username"
             placeholder="아이디를 입력해주세요."
@@ -155,6 +222,7 @@ const LoginPage = () => {
           {user.usernameError && (
             <div className="text-danger">{user.usernameError}</div>
           )}
+
         </Form.Group>
 
         <Form.Group className="mt-3" controlId="formBasicPassword">
@@ -170,6 +238,7 @@ const LoginPage = () => {
       </Form>
     </Container>
   );
+
 };
 
 export default LoginPage;
