@@ -245,7 +245,7 @@ const LoginPage = () => {
         <StyledButton className="m-2" variant="primary" type="button" onClick={provision} style={{ width: '222px' }}>회원가입</StyledButton>
       </div>
       <NaverLogin />
-    </Form>
+    </Form><br/>
   </StyledContainer>
   
 );
