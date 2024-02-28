@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useReducer } from 'react';
 import { Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -29,10 +30,12 @@ const reducer = (state, action) => {
         default:
             return state;
     }
+
 };
 
 // 실시간 예약 페이지
 const ReservationNow = () => {
+
     const navigate = useNavigate();
     const { id } = useParams();
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -90,13 +93,15 @@ const ReservationNow = () => {
     };
 
 
-    const goReservationOk = () => {
-        dispatch({ type: 'SET_SHOW_GREETING', payload: true });
-    };
 
-    const handleCloseModal = () => {
-        setModalOpen(false);
-    };
+      webSocket.onerror = (error) => {
+        console.error("WebSocket 연결 에러:", error);
+      };
+
+      webSocket.onclose = () => {
+        console.log("WebSocket 연결 종료");
+      };
+
 
     const showReservationOk = async () => {
         const { adultCount, userId, stompClient } = state;
@@ -135,41 +140,86 @@ const ReservationNow = () => {
         } catch (error) {
             console.error('Error saving reservation:', error);
         }
+
     };
 
-    const { showGreeting, adultCount, reservationId } = state;
+    fetch(`http://localhost:8080/api/reservation/addReservation/` + id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(reservationData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to save reservation");
+        }
+      })
+      .then((data) => {
+        dispatch({ type: "SET_RESERVATION_ID", payload: data.reservationId });
+        alert("예약이 확정되었습니다.");
 
-    return (
-        <div>
-            예약 인원 설정하기 <br />
+        if (webSocket) {
+          // 웹소켓이 연결되어 있다면 메시지 전송
+          webSocket.send(
+            JSON.stringify({ action: "updateWaitingCount", partnerId: id })
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error saving reservation:", error);
+      });
+  };
 
-            <Button onClick={() => dispatch({ type: 'SET_ADULT_COUNT', payload: Math.max(adultCount - 1, 0) })}>-</Button>
-            총원: {adultCount}
-            <Button onClick={() => dispatch({ type: 'SET_ADULT_COUNT', payload: adultCount + 1 })}>+</Button>
-            <br />
+  const { showGreeting, adultCount, reservationId } = state;
 
-            <hr />
-
-            <Button onClick={goReservationOk}>다음</Button> <br />
-            {showGreeting && (
-                <>
-                    <div className='text-center'>
-                        <Button
-                            style={{
-                                fontSize: '1.5rem',
-                                marginTop: '1rem',
-                                width: '25rem',
-                            }}
-                            onClick={showReservationOk}
-                        >
-                            예약확정
-                        </Button>
-                        {reservationId && <WaitingCount partnerId={id} reservationId={reservationId} />}
-                    </div>
-                </>
+  return (
+    <div>
+      예약 인원 설정하기 <br />
+      <Button
+        onClick={() =>
+          dispatch({
+            type: "SET_ADULT_COUNT",
+            payload: Math.max(adultCount - 1, 0),
+          })
+        }
+      >
+        -
+      </Button>
+      총원: {adultCount}
+      <Button
+        onClick={() =>
+          dispatch({ type: "SET_ADULT_COUNT", payload: adultCount + 1 })
+        }
+      >
+        +
+      </Button>
+      <br />
+      <hr />
+      <Button onClick={goReservationOk}>다음</Button> <br />
+      {showGreeting && (
+        <>
+          <div className="text-center">
+            <Button
+              style={{
+                fontSize: "1.5rem",
+                marginTop: "1rem",
+                width: "25rem",
+              }}
+              onClick={showReservationOk}
+            >
+              예약확정
+            </Button>
+            {reservationId && (
+              <WaitingCount partnerId={id} reservationId={reservationId} />
             )}
-        </div>
-    );
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default ReservationNow;

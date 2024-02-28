@@ -45,7 +45,7 @@ import Timeline from "./pages/userreview/Timeline";
 import TimeLineTab from "./pages/userreview/TimeLineTab";
 import TabMenu from "./pages/partner/TabMenu";
 import Footer from "./pages/fregment/Footer";
-
+import PartnerRoute from "./rolecomponents/PartnerRoute";
 
 const EatableApp = () => {
   return (
@@ -83,7 +83,7 @@ const EatableApp = () => {
                 // </AdminRoute>
               }
             ></Route>
-                <Route
+            <Route
               path="/tabMenu"
               element={
                 // <AdminRoute>
@@ -113,33 +113,33 @@ const EatableApp = () => {
             <Route
               path="/partnerwrite/:userId"
               element={
-                // <AdminRoute>
-                <PartnerWrite />
-                // </AdminRoute>
+                <AdminRoute>
+                  <PartnerWrite />
+                </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerlist"
               element={
-                // <AdminRoute>
-                <PartnerList />
-                // </AdminRoute>
+                <AdminRoute>
+                  <PartnerList />
+                </AdminRoute>
               }
             ></Route>
             <Route
               path="/partnerupdate/:id"
               element={
-                // <AdminRoute>
-                <PartnerUpdate />
-                // </AdminRoute>
+                <PartnerRoute>
+                  <PartnerUpdate />
+                </PartnerRoute>
               }
             ></Route>
             <Route
               path="/partnerdetail/:id"
               element={
-                // <AdminRoute>
+                <PartnerRoute>
                 <PartnerDetail />
-                // </AdminRoute>
+                </PartnerRoute>
               }
             ></Route>
 
@@ -194,11 +194,7 @@ const EatableApp = () => {
             {/* 유저디테일   스토어디테일  유저권한 */}
             <Route
               path="/userDetail/:id"
-              element={
-                <MemberRoute>
-                  <UserDetail />
-                </MemberRoute>
-              }
+              Component={UserDetail}
             ></Route>
 
             {/* 예약 페이지 유저권한  */}
@@ -227,8 +223,9 @@ const EatableApp = () => {
             <Route path="/stoermenu/:id" Component={StoreReviewList} />
           </Routes>
         </Container>
-       <Footer/>
+        <Footer />
       </AuthProvider>
+       <Footer/>
     </div>
   );
 };

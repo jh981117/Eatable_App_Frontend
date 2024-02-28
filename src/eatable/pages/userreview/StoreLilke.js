@@ -2,53 +2,64 @@ import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode"; // 올바른 import 구문 사용
 import { useHistory, useNavigate } from "react-router-dom";
 import { Button, Modal } from "react-bootstrap";
+import { useAuth } from "../../rolecomponents/AuthContext";
 
 const StoreLike = ({ partnerId }) => {
   const [isFavorited, setIsFavorited] = useState(false);
   // 즐겨찾기 상태에 따라 이미지 URL을 결정하는 로직
   const [showLoginModal, setShowLoginModal] = useState(false); // 모달 상태
- const navigate = useNavigate();
-  
- useEffect(() => {
-   const token = localStorage.getItem("token");
-   if (!token) {
-     setIsFavorited(false); // 로그아웃 상태에서는 디폴트 이미지로 설정
-   } else {
-     fetchFavoriteStatus(); // 로그인 상태면 즐겨찾기 상태 확인
-   }
- }, [partnerId]);
+  const navigate = useNavigate();
+  const { auth } = useAuth();
 
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsFavorited(false);
+        setShowLoginModal(false);
+      } else {
+        fetchFavoriteStatus();
+      }
+    };
 
- const fetchFavoriteStatus = async () => {
-   const token = localStorage.getItem("token");
-   if (token) {
-     const decoded = jwtDecode(token);
-     const userId = decoded.userId;
-     try {
-       const response = await fetch(
-         `http://localhost:8080/api/storeLike/state`,
-         {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/json",
-             Authorization: `Bearer ${token}`,
-           },
-           body: JSON.stringify({ userId, partnerId }),
-         }
-       );
-       if (response.ok) {
-         const { favorited } = await response.json();
-         setIsFavorited(favorited);
-       } else {
-         throw new Error("즐겨찾기 상태를 가져오는 데 실패했습니다.");
-       }
-     } catch (error) {
-       console.error(error.message);
-     }
-   }
- };
+    window.addEventListener("storage", checkAuthStatus);
 
- 
+    checkAuthStatus(); // 초기 마운트 시에도 상태 확인
+
+    return () => {
+      window.removeEventListener("storage", checkAuthStatus);
+    };
+  }, [partnerId, auth.isLoggedIn]); // auth.isLoggedIn 의존성 추가
+
+  const fetchFavoriteStatus = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      console.log(decoded)
+      const userId = decoded.userId;
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/storeLike/state`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ userId , partnerId }),
+          }
+        );
+        if (response.ok) {
+          const { favorited } = await response.json();
+          setIsFavorited(favorited);
+        } else {
+          throw new Error("즐겨찾기 상태를 가져오는 데 실패했습니다.");
+        }
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
+  };
 
   const toggleFavorite = async () => {
     // 토큰에서 userId 추출
@@ -65,7 +76,7 @@ const StoreLike = ({ partnerId }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // JWT 토큰 포함
+          Authorization: `Bearer ${token}`, // JWT 토큰 포함
         },
         body: JSON.stringify({ userId, partnerId }),
       });
@@ -81,7 +92,6 @@ const StoreLike = ({ partnerId }) => {
       console.error(error.message);
     }
   };
-
 
   const redirectToLogin = () => {
     navigate("/login"); // 로그인 페이지로 이동

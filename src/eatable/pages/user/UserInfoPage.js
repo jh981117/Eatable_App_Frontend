@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   Card,
   Col,
@@ -17,19 +17,19 @@ import { useAuth } from "../../rolecomponents/AuthContext";
 // import ReservedPage from "./ReservedPage";
 
 import { Link, useNavigate } from "react-router-dom";
-import { Input} from "@material-ui/core";
-import styled from 'styled-components';
+import { Input } from "@material-ui/core";
+import styled from "styled-components";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserWaitingPage from "../userDetails/waiting/userWaitingPage"; // userWaitingPage import 추가
-import SignDrop from "./SignDrop";
-import ReservePage from "./ReservePage";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
 
+import SignDrop from "./SignDrop";
 import ReservedPage from "./ReservedPage";
+
 import BlackToken from "../chenkBlackToken";
 import useUserProfile from "./UserProfile";
 import fetchWithToken from "../../rolecomponents/FetchCustom";
@@ -41,11 +41,12 @@ import fetchWithToken from "../../rolecomponents/FetchCustom";
 //     }
 // `;
 
+
 const StyledContainer = styled(Container)`
-    @media screen and (max-width: 600px) {
-    font-size: 0.8rem; /* 카드 내부 요소의 글자 크기를 줄임 */ 
+  @media screen and (max-width: 600px) {
+    font-size: 0.8rem; /* 카드 내부 요소의 글자 크기를 줄임 */
     padding: 10px; /* 카드의 패딩을 조정하여 요소들 사이의 간격을 조절함 */
-    }
+  }
 `;
 
 
@@ -53,17 +54,18 @@ const StyledContainer = styled(Container)`
 
 
 
-const UserInfoPage = () => {
 
+
+const UserInfoPage = () => {
   const navigate = useNavigate();
   const [edit, setEdit] = useState(false);
   const [temperature, setTemperature] = useState("");
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const fileInputRef = useRef();
-  const { auth, setAuth, updateProfile } = useAuth();
+  const { auth, setAuth, updateProfile, updateToken } = useAuth();
   const [modal, setModal] = useState(false);
-
+  const [profile, setProfile] = useState(null);
   const [inputs, setInputs] = useState({
     oldPassword: "",
     newPassword: "",
@@ -121,26 +123,41 @@ const UserInfoPage = () => {
     verifyToken();
   }, [navigate]); // navigate 함수를 의존성 배열에 추가
 
-  // useUserProfile 훅 사용
-  const {
-    profile,
-    error: profileError,
-    fetchProfile,
-    setProfile,
-  } = useUserProfile();
-
-  // useEffect(() => {
-  //   if (profileError) {
-  //     toast.error("프로필 정보를 불러오는데 실패했습니다.");
-  //     navigate("/login");
-  //   }
-  // }, [profileError, navigate]);
-
   useEffect(() => {
-    if (!profile) {
-      fetchProfile(); // 프로필 정보를 다시 불러옵니다.
-    }
-  }, [profile, fetchProfile]);
+    // 사용자 프로필 정보 불러오기
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+    if (!token) return false; // 토큰이 없다면 false 반환
+    const fetchProfile = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      try {
+        const response = await fetchWithToken("http://localhost:8080/api/user/profile", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            return;
+          }
+          throw new Error(`Error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProfile(data);
+        setTemperature(data.temperature);
+      } catch (error) {
+        console.error("Error:", error);
+        setError(error.toString());
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -157,11 +174,15 @@ const UserInfoPage = () => {
     // API 요청: 비밀번호 변경
     try {
       const token = localStorage.getItem("token"); // 인증 토큰 사용
-      const response = await fetchWithToken(
+      const response = await fetch(
         "http://localhost:8080/api/user/change-password",
         {
-          method: "POST",
-       
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+
           body: JSON.stringify({
             username: profile.username, // 사용자명 동적 할당
             oldPassword: inputs.oldPassword,
@@ -227,7 +248,6 @@ const UserInfoPage = () => {
     }
   };
 
-
   // 온도바
   const tempColor = (temperature) => {
     if (temperature >= 20) {
@@ -270,17 +290,14 @@ const UserInfoPage = () => {
   // 사용자정보 수정
   const handleUpdate = async (field, value) => {
     try {
-      const response = await fetchWithToken(
-        "http://localhost:8080/api/user/update",
-        {
-          method: "PUT",
-    
-          body: JSON.stringify({
-            ...profile,
-            [field.name]: auth.profile[field],
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:8080/api/user/update", {
+        method: "PUT",
+
+        body: JSON.stringify({
+          ...profile,
+          [field.name]: auth.profile[field],
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`Error! status: ${response.status}`);
@@ -395,43 +412,195 @@ const UserInfoPage = () => {
   };
 
   return (
-    <Container style={{width: "100%", maxWidth: "700px"}}>
+    <Container style={{ width: "100%", maxWidth: "700px" }}>
       <ToastContainer position="top-center" />
       <Row>
         <Col className="d-flex align-items-center">
           <Card style={{ width: "100%" }} className="mb-2">
+            <Card.Body className="align-items-start">
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleImageChange}
+              />
+              {isPartner() && (
+                <div className="d-flex justify-content-end mb-2">
+                  <Link to={"/userpartnerpage"}>
+                    <Button style={{ textAlign: "right" }}>매장 관리</Button>
+                  </Link>
+                </div>
+              )}
 
-            <Card.Body className="align-items-start"><input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleImageChange}/>
-              {isPartner() && (<div className="d-flex justify-content-end mb-2"><Link to={"/userpartnerpage"}><Button style={{textAlign: "right"}}>매장 관리</Button></Link></div>)}              
-              
-              <div className="d-flex align-items-center" style={{ display: "flex", justifyContent: "center" }}>
-              <span style={{ width: "100%", flex: 1, marginRight: "10px"}}>
-                  <Image src={selectedImage || profile.profileImageUrl} alt="Profile" onClick={handleImageClick} style={{ borderRadius: "50%", maxWidth: "250px", height: "250px", cursor: "pointer"}}/>
-              </span>
-              <span style={{width: "100%",  flex: 1, marginRight: "10px"}}>
-                <div className={`flex align-items-center ml-3 ${edit.bio ? 'input-active' : ''}`}>
-                  <span style={{ border: "none", backgroundColor: "transparent", borderBottom: "none" }}>닉네임 : {profile.nickName}</span><br/><br/>
-                  내 소개 : {edit.bio ? (<Input type="text" value={profile.bio} onChange={(e) => changeValue(e, "bio")}/>) : (<span>{profile.bio}</span>)}<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("bio")}>{edit.bio ? "취소" : "수정"}</Button>
-                  {edit.bio && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("bio")}>확인</Button>)}<br/><br/>
-                  온도 : <span className="responsive-span" style={{ marginRight: "5px" }}></span><br/>
-                
-                  <div>
-                    <span style={{backgroundColor: "white", width: "300px", height: "20px", borderRadius: "10px"}}>
-                      <span className="temperature-bar" style={{display: "flex", alignItems: "center", justifyContent: "space-between", backgroundColor: "white", border: "1px solid gray", width: "100%", height: "20px", position: "relative", borderRadius: "10px"}}>
-                        {/* 막대의 최대 너비를 100%로 설정 */}
-                        {/* 온도 바 */}
-                        <span style={{ backgroundColor: color, width: barWidth, height: "100%", position: "absolute", borderRadius: "10px", left: barLeft}}></span>
-                        {/* barWidth와 barLeft를 사용하여 막대의 위치와 너비 설정 */}
-                        {/* 온도가 0인 경우 가운데 아래에 0 표시 */}
-                        <span style={{position: "absolute", left: "100%", bottom: "-20px"}}>30</span>
-                        <span style={{position: "absolute", left: "82%", bottom: "-20px"}}>20</span>
-                        <span style={{position: "absolute", left: "65%", bottom: "-20px"}}>10</span>
-                        <span style={{position: "absolute", left: "50%", bottom: "-20px"}}>0</span>
-                        <span style={{position: "absolute", left: "25%", bottom: "-20px"}}>-25</span>
-                        <span style={{position: "absolute", left: "0%", bottom: "-20px"}}>-50</span>
-                      </span>
+              <div
+                className="d-flex align-items-center"
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <span style={{ width: "100%", flex: 1, marginRight: "10px" }}>
+                  <Image
+                    src={selectedImage || profile.profileImageUrl}
+                    alt="Profile"
+                    onClick={handleImageClick}
+                    style={{
+                      borderRadius: "50%",
+                      maxWidth: "250px",
+                      height: "250px",
+                      cursor: "pointer",
+                    }}
+                  />
+                </span>
+                <span style={{ width: "100%", flex: 1, marginRight: "10px" }}>
+                  <div
+                    className={`flex align-items-center ml-3 ${
+                      edit.bio ? "input-active" : ""
+                    }`}
+                  >
+                    <span
+                      style={{
+                        border: "none",
+                        backgroundColor: "transparent",
+                        borderBottom: "none",
+                      }}
+                    >
+                      닉네임 : {profile.nickName}
                     </span>
+                    <br />
+                    <br />내 소개 :{" "}
+                    {edit.bio ? (
+                      <Input
+                        type="text"
+                        value={profile.bio}
+                        onChange={(e) => changeValue(e, "bio")}
+                      />
+                    ) : (
+                      <span>{profile.bio}</span>
+                    )}
+                    <Button
+                      variant="light"
+                      style={{
+                        margin: "-5px 0px 0px 10px",
+                        padding: "0px 5px",
+                      }}
+                      onClick={() => fieldEdit("bio")}
+                    >
+                      {edit.bio ? "취소" : "수정"}
+                    </Button>
+                    {edit.bio && (
+                      <Button
+                        variant="light"
+                        style={{
+                          margin: "-5px 0px 0px 10px",
+                          padding: "0px 5px",
+                        }}
+                        onClick={() => updateOk("bio")}
+                      >
+                        확인
+                      </Button>
+                    )}
+                    <br />
+                    <br />
+                    온도 :{" "}
+                    <span
+                      className="responsive-span"
+                      style={{ marginRight: "5px" }}
+                    ></span>
+                    <br />
+                    <div>
+                      <span
+                        style={{
+                          backgroundColor: "white",
+                          width: "300px",
+                          height: "20px",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        <span
+                          className="temperature-bar"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            backgroundColor: "white",
+                            border: "1px solid gray",
+                            width: "100%",
+                            height: "20px",
+                            position: "relative",
+                            borderRadius: "10px",
+                          }}
+                        >
+                          {/* 막대의 최대 너비를 100%로 설정 */}
+                          {/* 온도 바 */}
+                          <span
+                            style={{
+                              backgroundColor: color,
+                              width: barWidth,
+                              height: "100%",
+                              position: "absolute",
+                              borderRadius: "10px",
+                              left: barLeft,
+                            }}
+                          ></span>
+                          {/* barWidth와 barLeft를 사용하여 막대의 위치와 너비 설정 */}
+                          {/* 온도가 0인 경우 가운데 아래에 0 표시 */}
+                          <span
+                            style={{
+                              position: "absolute",
+                              left: "100%",
+                              bottom: "-20px",
+                            }}
+                          >
+                            30
+                          </span>
+                          <span
+                            style={{
+                              position: "absolute",
+                              left: "82%",
+                              bottom: "-20px",
+                            }}
+                          >
+                            20
+                          </span>
+                          <span
+                            style={{
+                              position: "absolute",
+                              left: "65%",
+                              bottom: "-20px",
+                            }}
+                          >
+                            10
+                          </span>
+                          <span
+                            style={{
+                              position: "absolute",
+                              left: "50%",
+                              bottom: "-20px",
+                            }}
+                          >
+                            0
+                          </span>
+                          <span
+                            style={{
+                              position: "absolute",
+                              left: "25%",
+                              bottom: "-20px",
+                            }}
+                          >
+                            -25
+                          </span>
+                          <span
+                            style={{
+                              position: "absolute",
+                              left: "0%",
+                              bottom: "-20px",
+                            }}
+                          >
+                            -50
+                          </span>
+                        </span>
+                      </span>
+                    </div>
                   </div>
+
 
 
 
@@ -442,28 +611,48 @@ const UserInfoPage = () => {
                 <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "80px"}}/>
                 {auth.profile ? auth.profile.temperature : ""}
               </span>
+
               </div>
 
-              <div className="d-flex justify-content-end mb-2" style={{marginTop: "-50px"}}>
-                <Button variant="primary" onClick={handleTogglePasswordInput} style={{marginRight: "5px"}}>비밀번호 변경</Button>
-                <Button variant="danger" onClick={handleSignOutClick}>회원탈퇴</Button>
+              <div
+                className="d-flex justify-content-end mb-2"
+                style={{ marginTop: "-50px" }}
+              >
+                <Button
+                  variant="primary"
+                  onClick={handleTogglePasswordInput}
+                  style={{ marginRight: "5px" }}
+                >
+                  비밀번호 변경
+                </Button>
+                <Button variant="danger" onClick={handleSignOutClick}>
+                  회원탈퇴
+                </Button>
               </div>
 
-              
               {/* 회원탈퇴 모달 */}
               <Modal show={modal} onHide={handleCloseSignOutModal}>
-                  <Modal.Header closeButton>
-                      <Modal.Title>회원탈퇴</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                      <SignDrop/><Button variant="secondary" style={{marginLeft: "27%", width: "30vh"}} onClick={handleCloseSignOutModal}>닫기</Button>
-                  </Modal.Body>
+                <Modal.Header closeButton>
+                  <Modal.Title>회원탈퇴</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <SignDrop />
+                  <Button
+                    variant="secondary"
+                    style={{ marginLeft: "27%", width: "30vh" }}
+                    onClick={handleCloseSignOutModal}
+                  >
+                    닫기
+                  </Button>
+                </Modal.Body>
               </Modal>
-                
+
               <div>
                 {showPasswordInput ? (
                   <Form onSubmit={handleSubmit}>
-                    <div style={{ textAlign: "center", marginBottom: "20px" }}><h2>비밀번호 변경</h2></div>
+                    <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                      <h2>비밀번호 변경</h2>
+                    </div>
                     <Form.Group>
                       <Form.Label>현재 비밀번호</Form.Label>
                       <Form.Control
@@ -506,23 +695,84 @@ const UserInfoPage = () => {
                   >
                     <Tab eventKey="profile" title="프로필">
                       <ListGroup variant="flush">
-
-                        <ListGroup.Item style={{ border: 'none' }}>
-                            <div>아이디 : {profile.username}</div>
+                        <ListGroup.Item style={{ border: "none" }}>
+                          <div>아이디 : {profile.username}</div>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          닉네임 : {edit.nickName ? (<Input type="text" value={profile.nickName} onChange={(e) => changeValue(e, "nickName")}/>) : (<span>{profile.nickName}</span>)}<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("nickName")}>{edit.nickName ? "취소" : "수정"}</Button>
-                          {edit.nickName && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("nickName")}>확인</Button>)}
+                          닉네임 :{" "}
+                          {edit.nickName ? (
+                            <Input
+                              type="text"
+                              value={profile.nickName}
+                              onChange={(e) => changeValue(e, "nickName")}
+                            />
+                          ) : (
+                            <span>{profile.nickName}</span>
+                          )}
+                          <Button
+                            variant="light"
+                            style={{
+                              margin: "-5px 0px 0px 10px",
+                              padding: "0px 5px",
+                            }}
+                            onClick={() => fieldEdit("nickName")}
+                          >
+                            {edit.nickName ? "취소" : "수정"}
+                          </Button>
+                          {edit.nickName && (
+                            <Button
+                              variant="light"
+                              style={{
+                                margin: "-5px 0px 0px 10px",
+                                padding: "0px 5px",
+                              }}
+                              onClick={() => updateOk("nickName")}
+                            >
+                              확인
+                            </Button>
+                          )}
                         </ListGroup.Item>
                         <ListGroup.Item>
                           <div>이름 : {profile.name}</div>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                          연락처 : {edit.phone ? (<Input type="text" value={profile.phone} onChange={(e) => changeValue(e, "phone")}/>) : (<span>{profile.phone}</span>)}<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => fieldEdit("phone")}>{edit.phone ? "취소" : "수정"}</Button>
-                          {edit.phone && (<Button variant="light" style={{margin: "-5px 0px 0px 10px", padding: "0px 5px"}} onClick={() => updateOk("phone")}>확인</Button>)}
+                          연락처 :{" "}
+                          {edit.phone ? (
+                            <Input
+                              type="text"
+                              value={profile.phone}
+                              onChange={(e) => changeValue(e, "phone")}
+                            />
+                          ) : (
+                            <span>{profile.phone}</span>
+                          )}
+                          <Button
+                            variant="light"
+                            style={{
+                              margin: "-5px 0px 0px 10px",
+                              padding: "0px 5px",
+                            }}
+                            onClick={() => fieldEdit("phone")}
+                          >
+                            {edit.phone ? "취소" : "수정"}
+                          </Button>
+                          {edit.phone && (
+                            <Button
+                              variant="light"
+                              style={{
+                                margin: "-5px 0px 0px 10px",
+                                padding: "0px 5px",
+                              }}
+                              onClick={() => updateOk("phone")}
+                            >
+                              확인
+                            </Button>
+                          )}
                         </ListGroup.Item>
                         <ListGroup.Item>
+
                         <div>이메일 : {profile.email}</div>
+
 
 
 
@@ -555,14 +805,11 @@ const UserInfoPage = () => {
                       <ReservedPage userId={profile.id} />
                     </Tab>
                     <Tab eventKey="review" title="내가 쓴 리뷰">
-
-                      <ReviewPage/>
-
+                      <ReviewPage />
                     </Tab>
                     <Tab eventKey="follow" title="팔로우">
                       {FollowPage}
                     </Tab>
-
                   </Tabs>
                 )}
               </div>
