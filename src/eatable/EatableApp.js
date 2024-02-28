@@ -226,9 +226,9 @@ const EatableApp = () => {
 
             <Route path="/stoermenu/:id" Component={StoreReviewList} />
           </Routes>
-        </Container>
-       <Footer/>
+        </Container>      
       </AuthProvider>
+       <Footer/>
     </div>
   );
 };

@@ -102,11 +102,8 @@ const LoginPage = () => {
 
 
 
-
-    const saveTokensToLocalStorage = (token) => {
-      localStorage.setItem("token", token);
-      // localStorage.setItem("refreshToken", refreshToken);
-
+    const saveTokensToLocalStorage = (accessToken) => {
+      localStorage.setItem("token", accessToken);
     };
 
     if (!usernameError && !passwordError) {
@@ -126,10 +123,10 @@ const LoginPage = () => {
           const data = await response.json();
           console.log("로그인 성공", data);
           alert("로그인 성공!");
-
+ 
           saveTokensToLocalStorage(data.token); // 액세스 토큰과 리프레시 토큰 저장
-
-
+          // JWT에서 사용자 정보 추출 (예: 닉네임)
+          // 이후 로직...
           // JWT에서 사용자 정보 추출 (예: 닉네임)
 
           const profileResponse = await fetch(
@@ -205,14 +202,13 @@ const LoginPage = () => {
   };
 
   return (
-
-    
-    <Container className="mt-3 col-6 flex justify-content-center" style={{backgroundColor: "white", marginTop: "250px", borderRadius: "10px"}}>
-      <Form onSubmit={submitUser}>
-        <Form.Group className="mt-3" controlId="formBasicUsername">
-          <Form.Label>아이디</Form.Label>
-          <Form.Control
-
+ 
+    <StyledContainer >
+    <Styledh2 style={{ textAlign: "center" }}><span class="entypo-login"><i class="fa fa-sign-in"></i></span>로그인</Styledh2>
+    <Form onSubmit={submitUser}>
+      <Form.Group className="mt-3 row" controlId="formBasicUsername">
+        <div className="col-sm-9 mx-auto">
+          <StyledInput
             type="text"
             name="username"
             placeholder="아이디를 입력해주세요."
@@ -222,23 +218,37 @@ const LoginPage = () => {
           {user.usernameError && (
             <div className="text-danger">{user.usernameError}</div>
           )}
+        </div>
+      </Form.Group>
 
-        </Form.Group>
+      <Form.Group className="mt-3 row" controlId="formBasicPassword">
+        <div className="col-sm-9 mx-auto">
+          <StyledInput
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력해주세요."
+            value={user.password}
+            onChange={changeValue}
+          />
+          {user.passwordError && (
+            <div className="text-danger">{user.passwordError}</div>
+          )}
+        </div>
+      </Form.Group>
 
-        <Form.Group className="mt-3" controlId="formBasicPassword">
-          <Form.Label>비밀번호</Form.Label>
-          <Form.Control type="password" name="password" placeholder="비밀번호를 입력해주세요." value={user.password} onChange={changeValue}/>
-          {user.passwordError && (<div className="text-danger">{user.passwordError}</div>)}
-        </Form.Group>
+      {user.submitError && (
+        <div className="text-danger">{user.submitError}</div>
+      )}
 
-        {user.submitError && (<div className="text-danger">{user.submitError}</div>)}
-        <Button variant="light" type="submit" style={{marginRight: "5px", marginBottom: "5px"}}>로그인</Button>
-        <Button variant="light" type="button" onClick={provision} style={{marginBottom: "5px"}}>회원가입</Button>
-        <NaverLogin/>
-      </Form>
-    </Container>
-  );
-
+      <div style={{marginTop:'20px'}}className="d-flex justify-content-center">
+        <StyledButton className="m-2" variant="primary" type="submit" style={{ width: '222px' }}>로그인</StyledButton>
+        <StyledButton className="m-2" variant="primary" type="button" onClick={provision} style={{ width: '222px' }}>회원가입</StyledButton>
+      </div>
+      <NaverLogin />
+    </Form>
+  </StyledContainer>
+  
+);
 };
 
 export default LoginPage;
