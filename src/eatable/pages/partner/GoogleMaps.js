@@ -249,7 +249,9 @@ const GoogleMaps = () => {
             lat: selectedLocation.address.lat,
             lng: selectedLocation.address.lng,
           }}
-          onCloseClick={() => setSelectedLocation(null)}
+          onCloseClick={() => {setSelectedLocation(null)
+            setInitialZoom(11);
+          }}
         >
           <div>
             <p>{selectedLocation.id}</p>
