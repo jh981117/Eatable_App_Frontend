@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   Card,
   Col,
@@ -22,23 +22,16 @@ import styled from "styled-components";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserWaitingPage from "../userDetails/waiting/userWaitingPage"; // userWaitingPage import 추가
-import SignDrop from "./SignDrop";
 import ReviewPage from "./ReviewPage";
 import FollowPage from "./FollowPage";
 import { jwtDecode } from "jwt-decode";
 import UserReservationPage from "../userDetails/waiting/userReservationPage";
 
+import SignDrop from "./SignDrop";
 import ReservedPage from "./ReservedPage";
-import fetchWithToken from "../../rolecomponents/FetchCustom";
+
 import BlackToken from "../chenkBlackToken";
-import useUserProfile from "./UserProfile";
-
-// const ResponsiveTabs = styled(Tabs)`
-//     @media screen and (max-width: 600px) {
-//       font-size:0.5rem; /* 600px 이하일 때 h3 요소의 글자 크기를 줄임 */
-
-//     }
-// `;
+import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 const StyledContainer = styled(Container)`
   @media screen and (max-width: 600px) {
@@ -47,10 +40,6 @@ const StyledContainer = styled(Container)`
   }
 `;
 
-// import BlackToken from "../chenkBlackToken";
-// import useUserProfile from "./UserProfile";
-// import fetchWithToken from "../../rolecomponents/FetchCustom";
-
 const UserInfoPage = () => {
   const navigate = useNavigate();
   const [edit, setEdit] = useState(false);
@@ -58,9 +47,9 @@ const UserInfoPage = () => {
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const fileInputRef = useRef();
-  const { auth, setAuth, updateProfile } = useAuth();
+  const { auth, setAuth, updateProfile, updateToken } = useAuth();
   const [modal, setModal] = useState(false);
-
+  const [profile, setProfile] = useState(null);
   const [inputs, setInputs] = useState({
     oldPassword: "",
     newPassword: "",
@@ -118,26 +107,41 @@ const UserInfoPage = () => {
     verifyToken();
   }, [navigate]); // navigate 함수를 의존성 배열에 추가
 
-  // useUserProfile 훅 사용
-  const {
-    profile,
-    error: profileError,
-    fetchProfile,
-    setProfile,
-  } = useUserProfile();
-
-  // useEffect(() => {
-  //   if (profileError) {
-  //     toast.error("프로필 정보를 불러오는데 실패했습니다.");
-  //     navigate("/login");
-  //   }
-  // }, [profileError, navigate]);
-
   useEffect(() => {
-    if (!profile) {
-      fetchProfile(); // 프로필 정보를 다시 불러옵니다.
-    }
-  }, [profile, fetchProfile]);
+    // 사용자 프로필 정보 불러오기
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+    if (!token) return false; // 토큰이 없다면 false 반환
+    const fetchProfile = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      try {
+        const response = await fetchWithToken("http://localhost:8080/api/user/profile", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            return;
+          }
+          throw new Error(`Error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProfile(data);
+        setTemperature(data.temperature);
+      } catch (error) {
+        console.error("Error:", error);
+        setError(error.toString());
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -154,10 +158,14 @@ const UserInfoPage = () => {
     // API 요청: 비밀번호 변경
     try {
       const token = localStorage.getItem("token"); // 인증 토큰 사용
-      const response = await fetchWithToken(
+      const response = await fetch(
         "http://localhost:8080/api/user/change-password",
         {
-          method: "POST",
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
 
           body: JSON.stringify({
             username: profile.username, // 사용자명 동적 할당
@@ -266,17 +274,14 @@ const UserInfoPage = () => {
   // 사용자정보 수정
   const handleUpdate = async (field, value) => {
     try {
-      const response = await fetchWithToken(
-        "http://localhost:8080/api/user/update",
-        {
-          method: "PUT",
+      const response = await fetch("http://localhost:8080/api/user/update", {
+        method: "PUT",
 
-          body: JSON.stringify({
-            ...profile,
-            [field.name]: auth.profile[field],
-          }),
-        }
-      );
+        body: JSON.stringify({
+          ...profile,
+          [field.name]: auth.profile[field],
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`Error! status: ${response.status}`);

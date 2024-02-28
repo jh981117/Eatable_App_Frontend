@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination } from "swiper"
-import fetchWithToken from "../../rolecomponents/FetchCustom";
+
 
 const PartnerDetail = () => {
   const token = localStorage.getItem("token");
