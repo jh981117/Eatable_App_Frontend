@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { GeoJson } from "./components/GeoJson"; // GeoJson.js 파일에서 GeoJson 데이터 import
 import TabMenu from "./TabMenu";
+import { Button, Modal } from "react-bootstrap";
 
 const GoogleMaps = () => {
   const [locations, setLocations] = useState([]); // 서버로부터 받아온 위치 데이터를 저장할 상태
@@ -16,18 +17,15 @@ const GoogleMaps = () => {
   const [map,setMap] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [Keyword,setKeyword] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  
+  const [initialZoom, setInitialZoom] = useState(13);
 
   const center = { lat: 37.5511694, lng: 126.9882266 };
-
-  const options = { 
-    zoom: 11,
-    mapId: "81bc4809ac9f2bc7"
-  };
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_KEY,
-   
   });
 
   useEffect(() => {
@@ -48,13 +46,21 @@ const GoogleMaps = () => {
         .catch((error) => console.error("Error fetching search results:", error));
   }, [inputValue, Keyword]);
 
-  
-
-
   const mapContainerStyle = {
     height: "500px",
     width: "100%",
     borderRadius: "20px",
+  };
+
+  const handleMarkerClick = (location) => {
+    setSelectedLocation(location);
+    setShowModal(true);
+    setInitialZoom(13);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedLocation(null);
   };
 
   const clickedPolygonRef = useRef(null);
@@ -112,6 +118,7 @@ const GoogleMaps = () => {
         });
 
         polygon.setMap(map);
+        setInitialZoom(11);
 
         // 각 구의 중심점을 계산하여 구 이름을 표시합니다.
         const bounds = new window.google.maps.LatLngBounds();
@@ -187,7 +194,7 @@ const GoogleMaps = () => {
       center={center}
       options={{
         mapId: "81bc4809ac9f2bc7",
-        zoom: 11 // 여기에서 zoom 속성을 설정합니다.
+        zoom: initialZoom 
       }}
       onLoad={onMapLoad} // 여기에서 onMapLoad 함수를 onLoad prop으로 전달
     >
@@ -202,9 +209,7 @@ const GoogleMaps = () => {
               lat: location.address.lat,
               lng: location.address.lng,
             }}
-            onClick={(event) => {
-              setSelectedLocation(location);
-            }}
+            onClick={(event) => handleMarkerClick(location)}
             clusterer={clusterer} // MarkerClusterer에 의해 관리됩니다.
             icon={{
               url: 'https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1709017055899-image.png',
@@ -214,6 +219,30 @@ const GoogleMaps = () => {
           ))
         }
       </MarkerClusterer>
+
+      {/* <Modal show={showModal} onHide={handleCloseModal} style={{ margin: "auto"}}>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedLocation?.storeName}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex">
+          <p>{selectedLocation?.id}</p>
+          <Link to={"/userdetail/" + selectedLocation?.id} style={{ textDecoration: "none" }}>
+          <img 
+                  src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708165487160-free-icon-right-arrow-3272421.png"
+                  style={{ width: "px", marginLeft: "14px"}}
+                />
+          </Link>
+          </div>
+          <img src={selectedLocation?.fileList[0]?.imageUrl} style={{ width: "100%" }} alt="store" />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            닫기
+          </Button>
+        </Modal.Footer>
+      </Modal> */}
+      
       {selectedLocation && ( 
         <InfoWindow 
           position={{
@@ -238,11 +267,12 @@ const GoogleMaps = () => {
             </Link>
             <img
               src={selectedLocation.fileList[0].imageUrl}
-              style={{ width: "100%" }}
+              style={{ height: "200px",width: "100%" }}
             ></img>
           </div>
         </InfoWindow>
       )}
+      
     </GoogleMap>
     </>
   ) : (
