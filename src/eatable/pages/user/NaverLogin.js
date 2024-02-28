@@ -39,7 +39,7 @@ const NaverLoginBtn = styled.button`
   margin-top: 20px; 
   transition: background-color 0.3s; 
   &:hover {
-    background-color: #e74c3c;
+    background-color: gray;
   }
 `;
 

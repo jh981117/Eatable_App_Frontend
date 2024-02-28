@@ -44,6 +44,7 @@ import { MenuList } from "@material-ui/core";
 import Timeline from "./pages/userreview/Timeline";
 import TimeLineTab from "./pages/userreview/TimeLineTab";
 import TabMenu from "./pages/partner/TabMenu";
+import Footer from "./pages/fregment/Footer";
 
 
 const EatableApp = () => {
@@ -226,6 +227,7 @@ const EatableApp = () => {
             <Route path="/stoermenu/:id" Component={StoreReviewList} />
           </Routes>
         </Container>
+       <Footer/>
       </AuthProvider>
     </div>
   );
