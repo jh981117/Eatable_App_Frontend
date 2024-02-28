@@ -79,8 +79,57 @@ const Reservation = () => {
       dispatch({ type: "SET_STOMP_CLIENT", payload: client });
     };
 
-    client.onStompError = function (frame) {
-      console.error("WebSocket 연결 실패:", frame);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const decoded = jwtDecode(token);
+            dispatch({ type: 'SET_USER_ID', payload: decoded.userId });
+        }
+    }, []);
+
+    useEffect(() => {
+        const client = new Client({
+            brokerURL: 'ws://localhost:8080/ws',
+            debug: function (str) {
+                console.log(str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+        });
+
+        client.onConnect = function () {
+            console.log('WebSocket 연결 성공');
+            client.subscribe('/topic/waitingConfirmation', function (message) {
+                // 웨이팅 확정 메시지 수신 시, 대기열 정보 업데이트
+                fetchWaitings();
+            });
+            dispatch({ type: 'SET_STOMP_CLIENT', payload: client });
+        };
+
+        client.onStompError = function (frame) {
+            console.error('WebSocket 연결 실패:', frame);
+        };
+
+        client.activate();
+
+        
+ 
+    }, []);
+
+    const fetchWaitings = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/waiting/waitingList/${id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch waitings');
+            }
+            const data = await response.json();
+            dispatch({ type: 'SET_WAITINGS', payload: data });
+        } catch (error) {
+            console.error('Error fetching waitings:', error);
+        }
+
     };
 
     client.activate();
@@ -118,15 +167,46 @@ const Reservation = () => {
       waitingState: "False",
     };
 
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/waiting/addWaiting/` + id,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(reservationData),
+
+    // 예약 확정 및 웨이팅 정보 요청
+    const showReservationOk = async () => {
+        const { selectedDate, adultCount, userId, stompClient } = state;
+        const reservationData = {
+            partnerId: id,
+            userId: userId,
+            people: adultCount,
+            waitingRegDate: selectedDate.toISOString(),
+            waitingState: "False"
+        };
+        
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/waiting/addWaiting/` + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reservationData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save reservation');
+            }
+
+            const data = await response.json();
+            dispatch({ type: 'SET_RESERVATION_ID', payload: data.reservationId });
+            alert('예약이 확정되었습니다.');
+
+            if (stompClient) {
+                // 대기열 정보 요청
+                stompClient.publish({
+                    destination: '/topic/updateWaitingList',
+                    body: JSON.stringify({ partnerId: id }),
+                });
+            }
+        } catch (error) {
+            console.error('Error saving reservation:', error);
+
         }
       );
 
@@ -213,12 +293,10 @@ const Reservation = () => {
             {reservationId && (
               <WaitingCount partnerId={id} reservationId={reservationId} />
             )}
-          </div>
-        </>
-      )}
-      <div>현재 대기열 수: {waitingCount}</div>
-    </div>
-  );
+
+        </div>
+    );
+
 };
 
 export default Reservation;
