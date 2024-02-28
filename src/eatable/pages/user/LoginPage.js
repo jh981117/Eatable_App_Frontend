@@ -18,7 +18,7 @@ const StyledInput = styled(Form.Control)`
   margin-right: 160px;
   border: 2px solid #555555;
   &::placeholder {
-    color: #e74c3c;
+    color: gray;
     font-weight: bold;
   }
 
@@ -34,7 +34,7 @@ const StyledInput = styled(Form.Control)`
 
 const StyledButton =styled(Button)`
   &:hover {
-    background-color: #e74c3c;
+    background-color: gray;
   }
 `;
 
@@ -53,7 +53,7 @@ const StyledContainer = styled(Container)`
 
 
 const Styledh2 = styled.h2`
-  color: #e74c3c;
+  color: black;
     font-weight: bold;
     font-size: 50px;
 `;
