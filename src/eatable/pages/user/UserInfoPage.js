@@ -31,7 +31,6 @@ import SignDrop from "./SignDrop";
 import ReservedPage from "./ReservedPage";
 
 import BlackToken from "../chenkBlackToken";
-import useUserProfile from "./UserProfile";
 import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 // const ResponsiveTabs = styled(Tabs)`
@@ -604,7 +603,6 @@ const UserInfoPage = () => {
 
 
 
-                </div>
               </span>
 
               <span style={{width: "100%",  flex: 1, marginLeft: "30px"}}>
