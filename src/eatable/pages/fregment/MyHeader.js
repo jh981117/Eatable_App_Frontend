@@ -155,6 +155,27 @@ const MyHeader = () => {
               </>
             ) : (
               <>
+                {/* 로그인 했을 때 보여줄 링크들 */}
+                <Link
+                  to="/searchPage"
+                  style={{
+                    marginRight: "10px",
+                    marginTop: "10px",
+                    textDecoration: "none",
+                    color: "gray",
+                  }}
+                >
+                  <span
+                    className="d-flex align-items-center"
+                    style={{ width: "60px" }}
+                  >
+                    <img
+                      src="https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708835552667-free-icon-magnifier-2866321.png"
+                      style={{ width: "30px" }}
+                    />{" "}
+                    검색
+                  </span>
+                </Link>
                 <Link to="/login" className="btn btn-outline-secondary">
                   로그인
                 </Link>

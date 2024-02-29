@@ -4,14 +4,16 @@ import { throttle } from "lodash";
 import { EffectCoverflow, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import FollowButton from "./Item/FollowButton ";
-import { Container, Spinner } from "react-bootstrap";
+import { Container, Spinner ,Image} from "react-bootstrap";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import { useNavigate } from "react-router-dom";
 import CommentsModal from "./Item/CommentsModal";
 import { jwtDecode } from "jwt-decode";
 import CommentLength from "./Item/CommentLength";
+import { useAuth } from "../../rolecomponents/AuthContext";
 const FollorReviewList = (toId1) => {
+  const auth = useAuth;
   const [reviewList, setReviews] = useState([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [page, setPage] = useState(0);
@@ -53,6 +55,23 @@ const FollorReviewList = (toId1) => {
         comment.id === updatedComment.id ? updatedComment : comment
       )
     );
+  };
+  const tempColor = (temperature) => {
+    if (temperature >= 20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070778358-1.png";
+    } else if (temperature >= 10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070780292-2.png";
+    } else if (temperature >= 0) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070782389-3.png";
+    } else if (temperature >= -10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070790881-33.png";
+    } else if (temperature >= -20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070787692-22.png";
+    } else if (temperature >= -30) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070784217-11.png";
+    } else {
+      return "Gray"; // 기본값은 회색
+    }
   };
 
   const removeComment = (commentId) => {
@@ -225,6 +244,19 @@ const FollorReviewList = (toId1) => {
                   />
                   <span style={{ fontSize: "13px" }}>
                     {review.user.nickName}
+                  </span>
+
+                  <span
+                    className="responsive-span"
+                    style={{ marginRight: "5px" }}
+                  >
+                    <Image
+                      src={tempColor(
+                        auth.profile ? auth.profile.temperature : ""
+                      )}
+                      style={{ width: "20px" }}
+                    />
+                    {auth.profile ? auth.profile.temperature : ""}
                   </span>
                 </span>
                 <span style={{ fontSize: "13px", marginTop: "5px" }}>

@@ -11,9 +11,19 @@ const Roulette = () => {
 
   const originalProducts = [
     // "한식", "중식", "일식", "이탈리아", "프랑스", "유러피안", "퓨전", "스페인", "아메리칸", "스시", "한우", "소고기구이", "와인", "코스요리", "고기요리", "한정식", "파스타", "해물", "다이닝바", "브런치", "카페", "치킨", "레스토랑", "피자", "백반", "국수", "비건"
-    "족발.보쌈", "돈까스", "고기.구이", "피자", "찜.탕.찌개", "양식", "중식", "아시안", "치킨", "한식", "버거", "분식"
+    "족발.보쌈",
+    "돈까스",
+    "고기.구이",
+    "피자",
+    "찜.탕.찌개",
+    "양식",
+    "중식",
+    "아시안",
+    "치킨",
+    "한식",
+    "버거",
+    "분식",
   ];
-
 
   const getRandomProducts = (arr, num) => {
     const shuffled = arr.sort(() => 0.5 - Math.random());
@@ -91,40 +101,38 @@ const Roulette = () => {
       const rotate = ran * arc + 3600 + arc * 3 - arc / 4;
 
       canvas.style.transform = `rotate(-${rotate}deg)`;
-      canvas.style.transition = `2s`;  // 2초에 걸쳐 회전 css
+      canvas.style.transition = `2s`; // 2초에 걸쳐 회전 css
 
       const expressions = [
-        `오늘은 ${product[ran]} 어때?`,
-        `${product[ran]} 땡기는데 같이 먹을래?`,
-        `${product[ran]} 생각나서 먹고 싶은데, 어때?`,
-        `이번에 ${product[ran]} 먹어보는 거 어떨까?`,
-        `오늘은 ${product[ran]} 시켜볼까?`,
-        `${product[ran]} 맛있게 먹을래?`,
-        `슬슬 배고픈데, 오늘은 ${product[ran]} 어때?`,
-        `${product[ran]} 주문해서 같이 먹을래?`,
-        `${product[ran]} 먹을 만한데 어때?`,
-        `${product[ran]} 시켜서 맛있게 먹자!`,
-        `${product[ran]} 땡기는 거 같아서 추천해봤어.`,
-        `이럴 땐 ${product[ran]} 어때?`,
-        `오늘은 ${product[ran]} 시켜서 먹어볼까?`,
-        `${product[ran]} 시켜서 조금씩 나눠서 먹어볼까?`,
-        `오늘은 ${product[ran]} 먹고 싶은데 같이 먹을래?`,
-        `${product[ran]} 먹으면서 영화나 볼까?`,
-        `${product[ran]} 먹으면서 이야기 나눠볼까?`,
-        `${product[ran]} 먹으면서 재미있는 게임이나 하자!`,
-        `오늘 저녁은 ${product[ran]} 어때?`,
-        `${product[ran]} 먹을 때 좋아하는 영화나 드라마 추천해줄래?`,
+        `오늘은 ${product[ran]} 어때? `,
+        `${product[ran]} 땡기는데 같이 먹을래? `,
+        `${product[ran]} 생각나서 먹고 싶은데, 어때? `,
+        `이번에 ${product[ran]} 먹어보는 거 어떨까? `,
+        `오늘은 ${product[ran]} 시켜볼까? `,
+        `${product[ran]} 맛있게 먹을래? `,
+        `슬슬 배고픈데, 오늘은 ${product[ran]} 어때? `,
+        `${product[ran]} 주문해서 같이 먹을래? `,
+        `${product[ran]} 먹을 만한데 어때? `,
+        `${product[ran]} 시켜서 맛있게 먹자! `,
+        `${product[ran]} 땡기는 거 같아서 추천해봤어. `,
+        `이럴 땐 ${product[ran]} 어때? `,
+        `오늘은 ${product[ran]} 시켜서 먹어볼까? `,
+        `${product[ran]} 시켜서 조금씩 나눠서 먹어볼까? `,
+        `오늘은 ${product[ran]} 먹고 싶은데 같이 먹을래? `,
+        `${product[ran]} 먹으면서 영화나 볼까? `,
+        `${product[ran]} 먹으면서 이야기 나눠볼까? `,
+        `${product[ran]} 먹으면서 재미있는 게임이나 하자! `,
+        `오늘 저녁은 ${product[ran]} 어때? `,
+        `${product[ran]} 먹을 때 좋아하는 영화나 드라마 추천해줄래? `,
       ];
 
       const selectedExpression =
         expressions[Math.floor(Math.random() * expressions.length)];
 
       setTimeout(() => {
-        toast(selectedExpression);
+        toast(`${selectedExpression} `);
       }, 2000);
-
-    }, 1);  // 클릭후 1초뒤에 스핀 시작
-
+    }, 1); // 클릭후 1초뒤에 스핀 시작
   };
 
   const handleToastClose = () => {
@@ -133,7 +141,6 @@ const Roulette = () => {
 
   return (
     <Container>
-
       <ToastContainer
         position="top-center"
         autoClose={4000}
@@ -160,7 +167,6 @@ const Roulette = () => {
           룰렛 돌리기
         </button>
       </div>
-
     </Container>
   );
 };

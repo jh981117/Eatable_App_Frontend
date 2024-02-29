@@ -5,7 +5,7 @@ import { EffectCoverflow, Pagination } from "swiper";
 // Swiper styles
 import "swiper/css";
 import "swiper/css/effect-coverflow";
-import { Button, Container, Spinner } from "react-bootstrap";
+import { Button, Container, Spinner ,Image } from "react-bootstrap";
 import { throttle } from "lodash";
 import FollowButton from "./Item/FollowButton ";
 import { jwtDecode } from "jwt-decode";
@@ -14,7 +14,9 @@ import { useNavigate } from "react-router-dom";
 import TopCategoty from "../fregment/TopCategoty";
 import CommentsModal from "./Item/CommentsModal";
 import CommentLength from "./Item/CommentLength";
+import { useAuth } from "../../rolecomponents/AuthContext";
 const RandomReviewList = (toId1) => {
+  const auth = useAuth;
   const [reviewList, setReviews] = useState([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [page, setPage] = useState(0);
@@ -70,6 +72,27 @@ const RandomReviewList = (toId1) => {
     console.log(comments, "댓글 데이터 업데이트 후");
   }, [comments]);
 
+
+
+  const tempColor = (temperature) => {
+    if (temperature >= 20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070778358-1.png";
+    } else if (temperature >= 10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070780292-2.png";
+    } else if (temperature >= 0) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070782389-3.png";
+    } else if (temperature >= -10) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070790881-33.png";
+    } else if (temperature >= -20) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070787692-22.png";
+    } else if (temperature >= -30) {
+      return "https://eatablebucket.s3.ap-northeast-2.amazonaws.com/1708070784217-11.png";
+    } else {
+      return "Gray"; // 기본값은 회색
+    }
+  };
+
+
   // 댓글 제출 핸들러
   const handleSubmitComment = async ({ reviewId, text }) => {
     try {
@@ -82,6 +105,8 @@ const RandomReviewList = (toId1) => {
       const decoded = jwtDecode(token);
       const userId = decoded.userId; // 토큰에 저장된 사용자 ID 필드명에 맞게 조정해야 할 수 있음
 
+
+     
       const response = await fetch("http://localhost:8080/api/comments/write", {
         method: "POST",
         headers: {
@@ -251,6 +276,18 @@ const RandomReviewList = (toId1) => {
                   />
                   <span style={{ fontSize: "13px" }}>
                     {review.user.nickName}
+                  </span>
+                  <span
+                    className="responsive-span"
+                    style={{ marginRight: "5px" }}
+                  >
+                    <Image
+                      src={tempColor(
+                        auth.profile ? auth.profile.temperature : ""
+                      )}
+                      style={{ width: "20px" }}
+                    />
+                    {auth.profile ? auth.profile.temperature : ""}
                   </span>
                 </span>
                 <span style={{ fontSize: "13px", marginTop: "5px" }}>
