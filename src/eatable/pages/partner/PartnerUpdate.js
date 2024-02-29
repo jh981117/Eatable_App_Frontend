@@ -504,7 +504,7 @@ const PartnerUpdate = () => {
             <span className="text-danger">{errorMessages.storeInfo}</span>
           )}
         </div>
-          {/* 예상 소요시간 */}
+          {/* 예상 소요시간
           <span>
             <label htmlFor="tableCnt">
               <h5>예상 소요시간</h5>
@@ -523,7 +523,7 @@ const PartnerUpdate = () => {
             />
             <span style={{width: "100%" , maxWidth: "400px", marginTop:"9px"}}>분</span>
             </div>
-          </span>
+          </span> */}
         {/* 테이블수 */}
         <div className="mt-3">
           <label htmlFor="tableCnt">

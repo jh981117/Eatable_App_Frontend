@@ -35,7 +35,7 @@ const Tbody = (p) => {
         <small>{post.storePhone}</small>
       </td>
       <td>
-        {!post.favorite ? ( <small>--</small>): (<small>{post.favorite}</small> ) }
+        {!post.favorite ? <small>--</small> : <small>{post.favorite}</small>}
       </td>
       <td>
         <small>{post.createdAt}</small>
@@ -143,14 +143,14 @@ const PartnerList = () => {
       </Table>
 
       <div>
-        <div className="d-flex justify-content-end my-2">
+        {/* <div className="d-flex justify-content-end my-2">
           <Link
             to="/partnerwrite"
             className="btn btn-outline-dark partner-write-btn"
           >
             작성
           </Link>
-        </div>
+        </div> */}
       </div>
 
       <div

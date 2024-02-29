@@ -30,50 +30,48 @@ const ReviewPage = () => {
 
     setLoading(true);
     setError();
-    fetch(`http://localhost:8080/api/store/user/${decoded.userId}`)
+    fetch(`http://localhost:8080/api/store/reviews/${decoded.userId}`)
+      //     setLoading(true);
+      //     setError(null);
 
+      //     // 프로필 가져오기
+      //     fetch("http://localhost:8080/api/user/profile", {
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //     })
+      //     .then((response) => {
+      //       if (!response.ok) {
+      //         throw new Error('Failed to fetch user profile');
+      //       }
+      //       return response.json();
+      //     })
+      //     .then((data) => {
+      //       setUser(data);
+      //       setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
+      //     })
+      //     .catch((error) => {
+      //       setError(error.message);
+      //       setLoading(false);
+      //     });
 
-//     setLoading(true);
-//     setError(null);
+      //     // 사용자 리뷰 가져오기
+      //     fetch(`http://localhost:8080/api/store/user/${decoded.id}`)
 
-//     // 프로필 가져오기
-//     fetch("http://localhost:8080/api/user/profile", {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw new Error('Failed to fetch user profile');
-//       }
-//       return response.json();
-//     })
-//     .then((data) => {
-//       setUser(data);
-//       setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
-//     })
-//     .catch((error) => {
-//       setError(error.message);
-//       setLoading(false);
-//     });
-
-//     // 사용자 리뷰 가져오기
-//     fetch(`http://localhost:8080/api/store/user/${decoded.id}`)
-
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch user reviews');
-      }
-      return response.json();
-    })
-    .then((data) => {
-      setReviews(data);
-      setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
-    })
-    .catch((error) => {
-      setError(error.message);
-      setLoading(false);
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch user reviews");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setReviews(data);
+        setLoading(false); // 데이터가 가져와지면 로딩 상태 설정 해제
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
   }, []);
 
   if (loading) { return <div>로딩중...</div> }

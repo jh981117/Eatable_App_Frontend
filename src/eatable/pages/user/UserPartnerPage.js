@@ -232,14 +232,18 @@ const UserPartnerPage = () => {
         </Card>
 
         <Card>
-          <h2>예약관리</h2>
-          {stores.map((store, index) => (
-            <PartnerWaitingPage id={store.id} />
-          ))}
+          <br />
+          <h2 style={{marginLeft:"5px"}}>예약관리</h2>
+          <br />
+          <Card.Body>
+            {stores.map((store, index) => (
+              <PartnerWaitingPage id={store.id} />
+            ))}
 
-          {stores.map((store, index) => (
-            <PartnerReservationPage id={store.id} />
-          ))}
+            {stores.map((store, index) => (
+              <PartnerReservationPage id={store.id} />
+            ))}
+          </Card.Body>
         </Card>
       </Container>
       <br />

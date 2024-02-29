@@ -216,7 +216,7 @@ const PartnerDetail = () => {
       </div>
 
       {/* 테이블수 */}
-      <span>
+      {/* <span>
         <label htmlFor="tableCnt">
           <h5>예상 소요시간</h5>
         </label>
@@ -236,7 +236,7 @@ const PartnerDetail = () => {
             분
           </span>
         </div>
-      </span>
+      </span> */}
 
       {/* 테이블수 */}
       <div className="mt-3">

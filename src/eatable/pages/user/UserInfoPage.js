@@ -35,11 +35,10 @@ import fetchWithToken from "../../rolecomponents/FetchCustom";
 
 // const ResponsiveTabs = styled(Tabs)`
 //     @media screen and (max-width: 600px) {
-//       font-size:0.5rem; /* 600px 이하일 때 h3 요소의 글자 크기를 줄임 */ 
-     
+//       font-size:0.5rem; /* 600px 이하일 때 h3 요소의 글자 크기를 줄임 */
+
 //     }
 // `;
-
 
 const StyledContainer = styled(Container)`
   @media screen and (max-width: 600px) {
@@ -47,13 +46,6 @@ const StyledContainer = styled(Container)`
     padding: 10px; /* 카드의 패딩을 조정하여 요소들 사이의 간격을 조절함 */
   }
 `;
-
-
-
-
-
-
-
 
 const UserInfoPage = () => {
   const navigate = useNavigate();
@@ -132,13 +124,16 @@ const UserInfoPage = () => {
         return;
       }
       try {
-        const response = await fetchWithToken("http://localhost:8080/api/user/profile", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetchWithToken(
+          "http://localhost:8080/api/user/profile",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           if (response.status === 401) {
@@ -599,17 +594,17 @@ const UserInfoPage = () => {
                       </span>
                     </div>
                   </div>
+                </span>
 
-
-
-
-              </span>
-
-              <span style={{width: "100%",  flex: 1, marginLeft: "30px"}}>
-                <Image src={temperColor(auth.profile ? auth.profile.temperature : "")} style={{ width: "80px"}}/>
-                {auth.profile ? auth.profile.temperature : ""}
-              </span>
-
+                <span style={{ width: "100%", flex: 1, marginLeft: "30px" }}>
+                  <Image
+                    src={temperColor(
+                      auth.profile ? auth.profile.temperature : ""
+                    )}
+                    style={{ width: "80px" }}
+                  />
+                  {auth.profile ? auth.profile.temperature : ""}
+                </span>
               </div>
 
               <div
@@ -768,12 +763,7 @@ const UserInfoPage = () => {
                           )}
                         </ListGroup.Item>
                         <ListGroup.Item>
-
-                        <div>이메일 : {profile.email}</div>
-
-
-
-
+                          <div>이메일 : {profile.email}</div>
                         </ListGroup.Item>
                         {/* <Button onClick={updateInfo}>수정</Button> */}
                         {/* <Button onClick={dropOK}>회원탈퇴</Button> */}
@@ -802,12 +792,12 @@ const UserInfoPage = () => {
                     <Tab eventKey="reserved" title="예약 했던곳">
                       <ReservedPage userId={profile.id} />
                     </Tab>
-                    <Tab eventKey="review" title="내가 쓴 리뷰">
+                    {/* <Tab eventKey="review" title="내가 쓴 리뷰">
                       <ReviewPage />
                     </Tab>
                     <Tab eventKey="follow" title="팔로우">
                       {FollowPage}
-                    </Tab>
+                    </Tab> */}
                   </Tabs>
                 )}
               </div>
